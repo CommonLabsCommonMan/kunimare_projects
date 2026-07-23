@@ -24,6 +24,9 @@
   --color-gold:#d19900; --color-gold-highlight:#e9e0c6;
   --color-blue:#006494; --color-blue-highlight:#c6d8e4;
   --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
+  /* Branch connectors need far more contrast than a divider to read as lines.
+     Held at >=3:1 against the card surface (WCAG non-text contrast). */
+  --tree-line:#8f8981;
   --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px;
   --transition-interactive:180ms cubic-bezier(.16,1,.3,1);
   --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06); --shadow-md:0 4px 12px oklch(0.2 0.01 80/.08); --shadow-lg:0 12px 32px oklch(0.2 0.01 80/.12);
@@ -40,6 +43,7 @@
   --color-gold:#e8af34; --color-gold-highlight:#4d4332;
   --color-blue:#5591c7; --color-blue-highlight:#3a4550;
   --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
+  --tree-line:#6f6b66;
   --shadow-sm:0 1px 2px oklch(0 0 0/.2); --shadow-md:0 4px 12px oklch(0 0 0/.3); --shadow-lg:0 12px 32px oklch(0 0 0/.4);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -53,10 +57,14 @@ a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 /* Layout shell */
-.shell{display:grid;grid-template-columns:220px 1fr;min-height:100dvh}
-@media (max-width:900px){.shell{grid-template-columns:1fr}}
+/* minmax(0,…) not 1fr: a bare 1fr track takes its minimum from content, so a wide
+   child (the nav row on mobile) stretches the whole page instead of scrolling itself. */
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100dvh}
+@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}}
 .sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:0;height:100dvh}
-@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
+/* min-width:0 — as a grid item the sidebar defaults to min-width:auto, which lets
+   the nav row push it wider than the viewport instead of scrolling inside it. */
+@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;min-width:0;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
 .brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:600;font-size:1.05rem;white-space:nowrap}
 .brand svg{color:var(--color-primary);flex:0 0 auto}
 .nav{display:flex;flex-direction:column;gap:.25rem}
@@ -199,21 +207,35 @@ select.select-chip{cursor:pointer}
 .today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--color-error);z-index:2}
 .today-flag{position:absolute;top:0;transform:translateX(-50%);background:var(--color-error);color:#fff;font-size:.6rem;font-weight:700;padding:.05rem .3rem;border-radius:0 0 var(--radius-sm) var(--radius-sm);white-space:nowrap;z-index:4}
 
-/* Tree / hierarchy view */
-.tree-wrap{overflow:auto;padding:1rem 0}
-.tree{display:flex;gap:2.5rem;padding:1rem 1.5rem;min-width:max-content}
-.tree-node{border-radius:var(--radius-md);padding:.7rem 1rem;font-size:.86rem;line-height:1.55;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:190px;max-width:260px}
-.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.95rem;min-width:220px}
-.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);font-weight:600}
-.tree-node.l3{background:var(--color-surface);color:var(--color-text)}
-.tree-node.l3.done{border-color:var(--color-gold)}
-.tree-node .tn-sub{display:block;font-size:.72rem;opacity:.85;margin-top:.25rem;font-weight:400}
-.tree-col{display:flex;flex-direction:column;gap:.6rem;align-items:center;position:relative;padding-top:1.25rem}
-.tree-col::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.25rem;background:var(--color-divider)}
-.tree-l1-block{position:relative;padding-top:1.5rem}
-.tree-l1-block::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.5rem;background:var(--color-divider)}
-.tree-l2-row{display:flex;gap:1.25rem}
-.tree-tasks{display:flex;flex-direction:column;gap:.5rem}
+/* Tree / hierarchy view — indented tree, one card per L1 project.
+   Connectors: each branch draws its own vertical spine segment (top→bottom, so
+   consecutive siblings join seamlessly) plus a horizontal elbow into its node.
+   The last sibling's spine stops at the elbow, closing the branch. --elbow must
+   track the vertical centre of a node's first text line. */
+.tree-wrap{padding:.25rem 0}
+.tree{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,430px),1fr));gap:1rem;align-items:start;--elbow:33px}
+.tree-project{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow-sm)}
+.tree-children{position:relative;margin-left:20px;padding-left:26px}
+.tree-branch{position:relative;padding-top:12px}
+.tree-branch::after{content:'';position:absolute;left:-26px;top:0;bottom:0;width:2px;background:var(--tree-line);border-radius:1px}
+.tree-branch:last-child::after{bottom:auto;height:var(--elbow)}
+.tree-branch::before{content:'';position:absolute;left:-26px;top:var(--elbow);width:20px;height:2px;background:var(--tree-line);border-radius:1px}
+.tree-node{border-radius:var(--radius-md);padding:.6rem .75rem;font-size:.85rem;line-height:1.5;border:1px solid var(--color-divider);background:var(--color-surface-2)}
+.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);border-color:var(--color-text);font-family:var(--font-display);font-size:.98rem;padding:.7rem .85rem}
+.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);border-color:var(--color-primary);font-weight:600}
+.tree-node.l3{background:var(--color-surface-2);color:var(--color-text)}
+.tree-node.l3.doing{border-color:color-mix(in oklch,var(--color-primary) 45%,var(--color-border))}
+.tree-node.l3.done{border-color:var(--color-gold);background:color-mix(in oklch,var(--color-gold) 8%,var(--color-surface-2))}
+.tn-head{display:flex;align-items:flex-start;gap:.4rem}
+.tn-title{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}
+.tree-node.l3 .tn-title{font-weight:500}
+.tn-meta{display:flex;align-items:center;gap:.45rem;margin-top:.45rem;font-size:.72rem;flex-wrap:wrap}
+.tree-node.l1 .tn-meta,.tree-node.l2 .tn-meta{opacity:.92}
+.tn-cat{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.tn-prog{flex:1;min-width:46px;height:5px;border-radius:var(--radius-full);background:rgba(255,255,255,.24);overflow:hidden}
+.tn-prog-bar{display:block;height:100%;border-radius:var(--radius-full);background:var(--color-gold)}
+.tn-meta b{font-variant-numeric:tabular-nums}
+.tree-empty{padding:.7rem .2rem;font-size:.78rem;color:var(--color-text-faint)}
 
 .section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
 .card-panel{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)}
@@ -270,8 +292,9 @@ select.select-chip{cursor:pointer}
 .mini-btn:hover{background:var(--color-primary);color:var(--color-text-inverse)}
 .mini-btn.danger:hover{background:var(--color-error);color:#fff}
 .mini-btn svg{width:12px;height:12px}
-.tree-node .row-actions{margin-top:.35rem;margin-left:0;display:flex;justify-content:center}
-.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.16);color:inherit}
+.tree-node .row-actions{margin:0;flex:0 0 auto}
+.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.18);color:inherit}
+.tree-node.l1 .mini-btn:hover,.tree-node.l2 .mini-btn:hover{background:rgba(255,255,255,.34)}
 .add-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .75rem;border:1px dashed var(--color-border);border-radius:var(--radius-md);font-size:.75rem;font-weight:600;color:var(--color-text-muted);transition:all var(--transition-interactive)}
 .add-btn:hover{border-color:var(--color-primary);color:var(--color-primary);border-style:solid}
 .add-btn svg{width:13px;height:13px}
@@ -745,42 +768,79 @@ function renderTree(){
     </div>
     <div class="tree-wrap">
       <div class="tree">
-      ${DATA.map(p=>`
-        <div class="tree-l1-block">
-          <div class="tree-node l1">${T(p.name)}<span class="tn-sub">${projectProgress(p)}% · ${p.owner}</span>
-            <div class="row-actions">
-              <button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
-              <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
-              <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>
-            </div>
-          </div>
-          <div class="tree-l2-row" style="margin-top:1.25rem">
-            ${p.milestones.map(m=>`
-              <div class="tree-col">
-                <div class="tree-node l2">${T(m.name)}<span class="tn-sub">${progressOf(m.tasks)}%</span>
-                  <div class="row-actions">
-                    <button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
-                    <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
-                    <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>
-                  </div>
-                </div>
-                <div class="tree-tasks" style="margin-top:1rem">
-                  ${m.tasks.map(t=>`<div class="tree-node l3 ${t.status}">${T(t.name)}<span class="status-chip ${t.status}" style="margin-top:.35rem">${T(STATUS_LABEL[t.status])}</span>
-                    <div class="row-actions">
-                      <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
-                      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
-                    </div></div>`).join('') || `<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`}
-                </div>
-              </div>`).join('') || `<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`}
-          </div>
-        </div>`).join('')}
+      ${DATA.map(p=>treeProject(p)).join('')}
       </div>
     </div>
     <div class="legend">
-      <span><span class="sw" style="background:var(--color-text)"></span>L1</span>
-      <span><span class="sw" style="background:var(--color-primary)"></span>L2</span>
-      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
+      <span><span class="sw" style="background:var(--color-text)"></span><span class="ja">L1 プロジェクト</span><span class="en">L1 Project</span></span>
+      <span><span class="sw" style="background:var(--color-primary)"></span><span class="ja">L2 マイルストーン</span><span class="en">L2 Milestone</span></span>
+      <span><span class="sw" style="background:var(--color-surface-dynamic)"></span><span class="ja">L3 タスク</span><span class="en">L3 Task</span></span>
+      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">完了</span><span class="en">Done</span></span>
     </div>`;
+}
+
+/* ----- tree node builders ----- */
+function rowActions(btns){ return btns ? `<div class="row-actions">${btns}</div>` : ''; }
+
+/* A branch with no children still needs a connector stub, so the "empty" text
+   sits inside a real .tree-branch rather than replacing the whole subtree. */
+function treeEmptyChild(addBtn, ja, en){
+  return `<div class="tree-children"><div class="tree-branch"><div class="tree-empty">${
+    addBtn || `<span class="ja">${ja}</span><span class="en">${en}</span>`
+  }</div></div></div>`;
+}
+
+function treeTask(t){
+  const btns = t.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
+      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>` : '';
+  const owner = (t.owner && t.owner !== '—') ? `<span>${t.owner}</span>` : '';
+  return `<div class="tree-branch">
+    <div class="tree-node l3 ${t.status}">
+      <div class="tn-head"><span class="tn-title">${T(t.name)}</span>${rowActions(btns)}</div>
+      <div class="tn-meta"><span class="status-chip ${t.status}">${T(STATUS_LABEL[t.status])}</span>${owner}</div>
+    </div>
+  </div>`;
+}
+
+function treeMilestone(m){
+  const prog = progressOf(m.tasks);
+  const btns = m.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
+      <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
+      <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>` : '';
+  const kids = m.tasks.length
+    ? `<div class="tree-children">${m.tasks.map(treeTask).join('')}</div>`
+    : treeEmptyChild(m.pageId?`<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`:'',
+        'タスク未登録', 'No tasks yet');
+  return `<div class="tree-branch">
+    <div class="tree-node l2 ${m.status}">
+      <div class="tn-head"><span class="tn-title">${T(m.name)}</span>${rowActions(btns)}</div>
+      <div class="tn-meta"><span class="tn-prog"><span class="tn-prog-bar" style="width:${prog}%"></span></span><b>${prog}%</b></div>
+    </div>
+    ${kids}
+  </div>`;
+}
+
+function treeProject(p){
+  const prog = projectProgress(p);
+  const cat = p.category || 'product';
+  const btns = p.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
+      <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
+      <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>` : '';
+  const kids = p.milestones.length
+    ? `<div class="tree-children">${p.milestones.map(treeMilestone).join('')}</div>`
+    : treeEmptyChild(p.pageId?`<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`:'',
+        'マイルストーン未登録', 'No milestones yet');
+  return `<div class="tree-project">
+    <div class="tree-node l1">
+      <div class="tn-head"><span class="tn-title">${T(p.name)}</span>${rowActions(btns)}</div>
+      <div class="tn-meta">
+        <span class="tn-cat" style="background:var(--cat-${cat})"></span><span>${T(CAT_LABEL[cat])}</span>
+        <span>·</span><span>${p.owner}</span>
+        <span class="tn-prog"><span class="tn-prog-bar" style="width:${prog}%"></span></span><b>${prog}%</b>
+      </div>
+    </div>
+    ${kids}
+  </div>`;
 }
 
 /* ---------- TODAY (daily checklist + today's project tasks) ---------- */
