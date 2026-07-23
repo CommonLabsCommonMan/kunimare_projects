@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=boska@500,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
 <style>
 /* Art direction: Japanese brewery ops tool -> disciplined, quiet-confident, industrial-clean.
    Palette: cool neutral stone surfaces, single indigo-teal accent (Hydra Teal), warm gold for done states.
@@ -26,12 +27,12 @@
   --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px;
   --transition-interactive:180ms cubic-bezier(.16,1,.3,1);
   --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06); --shadow-md:0 4px 12px oklch(0.2 0.01 80/.08); --shadow-lg:0 12px 32px oklch(0.2 0.01 80/.12);
-  --font-display:'Boska','Georgia',serif; --font-body:'General Sans','Helvetica Neue',sans-serif;
+  --font-display:'Boska','Noto Serif JP','Georgia',serif; --font-body:'General Sans','Noto Sans JP','Helvetica Neue',sans-serif;
 }
 [data-theme="dark"]{
   --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-surface-offset:#1d1c1a; --color-surface-offset-2:#22211f;
   --color-surface-dynamic:#2d2c2a; --color-divider:#262523; --color-border:#393836;
-  --color-text:#cdccca; --color-text-muted:#797876; --color-text-faint:#5a5957; --color-text-inverse:#2b2a28;
+  --color-text:#eceae7; --color-text-muted:#a3a19d; --color-text-faint:#7c7a77; --color-text-inverse:#2b2a28;
   --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-primary-active:#1a626b; --color-primary-highlight:#313b3b;
   --color-warning:#bb653b; --color-warning-highlight:#564942;
   --color-error:#d163a7; --color-error-highlight:#4c3d46;
@@ -143,11 +144,11 @@ main{padding:1.5rem}
 
 /* Kanban */
 .kanban-wrap{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem}
-.kanban-col{background:var(--color-surface-offset);border-radius:var(--radius-lg);min-width:280px;flex:1 1 280px;display:flex;flex-direction:column;max-height:calc(100dvh - 220px);border-top:3px solid var(--color-text-faint)}
+.kanban-col{background:var(--color-surface-offset);border-radius:var(--radius-lg);min-width:310px;flex:1 1 310px;display:flex;flex-direction:column;max-height:calc(100dvh - 220px);border-top:3px solid var(--color-text-faint)}
 .kanban-col.todo{border-top-color:var(--color-text-faint)}
 .kanban-col.doing{border-top-color:var(--color-primary)}
 .kanban-col.done{border-top-color:var(--color-gold)}
-.kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted);border-bottom:1px solid var(--color-divider)}
+.kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text);border-bottom:1px solid var(--color-divider)}
 .kanban-count{background:var(--color-surface-dynamic);color:var(--color-text);font-size:.7rem;padding:.1rem .5rem;border-radius:var(--radius-full)}
 .kanban-list{padding:.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;flex:1;min-height:60px}
 .task-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
@@ -155,15 +156,15 @@ main{padding:1.5rem}
 .task-card.cat-quality::before{background:var(--cat-quality)}
 .task-card.cat-strategy::before{background:var(--cat-strategy)}
 .task-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.task-card .tc-id{font-size:.65rem;color:var(--color-text-faint);font-weight:600;letter-spacing:.03em}
-.task-card .tc-title{font-size:.85rem;font-weight:600;margin:.25rem 0 .5rem;line-height:1.3}
-.task-card .tc-title small{display:block;font-weight:400;color:var(--color-text-muted);font-size:.72rem;margin-top:.15rem}
-.task-card .tc-meta{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--color-text-muted);gap:.5rem}
+.task-card .tc-id{font-size:.7rem;color:var(--color-text-faint);font-weight:600;letter-spacing:.03em}
+.task-card .tc-title{font-size:.95rem;font-weight:600;margin:.3rem 0 .55rem;line-height:1.55;color:var(--color-text)}
+.task-card .tc-title small{display:block;font-weight:400;color:var(--color-text-muted);font-size:.8rem;margin-top:.25rem;line-height:1.5}
+.task-card .tc-meta{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--color-text-muted);gap:.5rem}
 .tc-owner{display:flex;align-items:center;gap:.35rem;min-width:0}
 .tc-owner span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tc-owner .dot{width:18px;height:18px;border-radius:50%;background:var(--color-primary-highlight);color:var(--color-primary-hover);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex:0 0 auto}
 .tc-date{white-space:nowrap;color:var(--color-text-faint)}
-.tc-proj{font-size:.65rem;color:var(--color-text-faint);margin-top:.4rem;padding-top:.4rem;border-top:1px solid var(--color-divider);display:flex;align-items:center;gap:.35rem}
+.tc-proj{font-size:.72rem;color:var(--color-text-muted);margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--color-divider);display:flex;align-items:center;gap:.35rem;line-height:1.4}
 .tc-proj .cat-dot{width:7px;height:7px;border-radius:2px;flex:0 0 auto}
 .col-empty{font-size:.75rem;color:var(--color-text-faint);padding:1.25rem;text-align:center}
 
@@ -173,14 +174,14 @@ main{padding:1.5rem}
 select.select-chip{cursor:pointer}
 .gantt-wrap{overflow-x:auto;border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface)}
 .gantt-grid{display:grid;min-width:900px}
-.gantt-row{display:grid;grid-template-columns:260px 1fr;border-bottom:1px solid var(--color-divider)}
+.gantt-row{display:grid;grid-template-columns:300px 1fr;border-bottom:1px solid var(--color-divider)}
 .gantt-row:last-child{border-bottom:none}
 .gantt-row.axis{background:var(--color-surface-offset);position:sticky;top:0;z-index:3}
-.gantt-label{padding:.6rem .85rem;font-size:.78rem;display:flex;align-items:center;gap:.4rem;border-right:1px solid var(--color-divider);position:sticky;left:0;background:var(--color-surface);z-index:1}
-.gantt-row.axis .gantt-label{background:var(--color-surface-offset);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted)}
+.gantt-label{padding:.7rem .9rem;font-size:.85rem;line-height:1.5;display:flex;align-items:center;gap:.4rem;border-right:1px solid var(--color-divider);position:sticky;left:0;background:var(--color-surface);z-index:1}
+.gantt-row.axis .gantt-label{background:var(--color-surface-offset);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted)}
 .gantt-label.l1{font-weight:700;font-family:var(--font-display)}
-.gantt-label.l2{padding-left:1.6rem;color:var(--color-primary-hover);font-weight:600}
-.gantt-label.l3{padding-left:2.6rem;color:var(--color-text-muted);font-size:.74rem}
+.gantt-label.l2{padding-left:1.7rem;color:var(--color-primary-hover);font-weight:600;font-size:.82rem}
+.gantt-label.l3{padding-left:2.8rem;color:var(--color-text-muted);font-size:.8rem}
 .gantt-track{position:relative;min-height:38px}
 .gantt-months{position:relative;height:100%}
 .gantt-month{position:absolute;top:0;bottom:0;border-left:1px solid var(--color-divider);font-size:.68rem;color:var(--color-text-muted);padding:.55rem .4rem;white-space:nowrap}
@@ -201,12 +202,12 @@ select.select-chip{cursor:pointer}
 /* Tree / hierarchy view */
 .tree-wrap{overflow:auto;padding:1rem 0}
 .tree{display:flex;gap:2.5rem;padding:1rem 1.5rem;min-width:max-content}
-.tree-node{border-radius:var(--radius-md);padding:.6rem .9rem;font-size:.78rem;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:170px}
-.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.85rem;min-width:200px}
+.tree-node{border-radius:var(--radius-md);padding:.7rem 1rem;font-size:.86rem;line-height:1.55;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:190px;max-width:260px}
+.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.95rem;min-width:220px}
 .tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);font-weight:600}
 .tree-node.l3{background:var(--color-surface);color:var(--color-text)}
 .tree-node.l3.done{border-color:var(--color-gold)}
-.tree-node .tn-sub{display:block;font-size:.62rem;opacity:.85;margin-top:.15rem;font-weight:400}
+.tree-node .tn-sub{display:block;font-size:.72rem;opacity:.85;margin-top:.25rem;font-weight:400}
 .tree-col{display:flex;flex-direction:column;gap:.6rem;align-items:center;position:relative;padding-top:1.25rem}
 .tree-col::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.25rem;background:var(--color-divider)}
 .tree-l1-block{position:relative;padding-top:1.5rem}
@@ -223,6 +224,39 @@ select.select-chip{cursor:pointer}
 [data-jaen="ja"] .en{display:none}
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:1rem}
 .back-link:hover{color:var(--color-primary)}
+
+/* Today view: daily checklist + today's project tasks */
+.today-date{font-size:.85rem;color:var(--color-text-muted);margin-bottom:1rem;font-weight:500}
+.today-grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:1rem;align-items:start}
+@media (max-width:1100px){.today-grid{grid-template-columns:1fr}}
+.check-progress{display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:.9rem}
+.check-progress .trend-bar-bg{height:6px}
+.check-list{list-style:none;display:flex;flex-direction:column;gap:.15rem}
+.check-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:var(--radius-md);transition:background var(--transition-interactive)}
+.check-item:hover{background:var(--color-surface-offset)}
+.check-item input[type=checkbox]{appearance:none;-webkit-appearance:none;width:19px;height:19px;border:1.5px solid var(--color-border);border-radius:6px;cursor:pointer;flex:0 0 auto;display:grid;place-content:center;background:var(--color-surface-2);transition:background var(--transition-interactive),border-color var(--transition-interactive)}
+.check-item input[type=checkbox]:checked{background:var(--color-primary);border-color:var(--color-primary)}
+.check-item input[type=checkbox]:checked::before{content:'';width:10px;height:10px;background:var(--color-text-inverse);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%)}
+.check-text{flex:1;font-size:.88rem;min-width:0;overflow-wrap:anywhere;line-height:1.45}
+.check-item.done .check-text{text-decoration:line-through;color:var(--color-text-faint)}
+.check-item .mini-btn{opacity:.3}
+.check-item:hover .mini-btn,.check-item .mini-btn:focus-visible{opacity:1}
+.repeat-badge{display:flex;align-items:center;justify-content:center;width:20px;height:20px;color:var(--color-primary);flex:0 0 auto}
+.repeat-badge svg{width:12px;height:12px;display:block}
+.carry-badge{display:inline-block;margin-left:.4rem;font-size:.62rem;font-weight:600;color:var(--color-warning);background:var(--color-warning-highlight);border-radius:var(--radius-full);padding:.1rem .45rem;vertical-align:middle}
+.check-add{display:flex;gap:.5rem;margin-top:.9rem}
+.check-add input[type=text]{flex:1;min-width:0;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;font-family:inherit}
+.check-add .btn svg{width:15px;height:15px;display:block}
+.check-hint{font-size:.68rem;color:var(--color-text-faint);margin-top:.6rem}
+.tmr-wrap{margin-top:.9rem;padding-top:.75rem;border-top:1px dashed var(--color-divider)}
+.tmr-head{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-faint);margin-bottom:.3rem}
+.tmr-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--color-text-faint);padding:.25rem .5rem}
+.tmr-item span{flex:1;min-width:0;overflow-wrap:anywhere}
+.due-badge{display:inline-flex;align-items:center;font-size:.62rem;font-weight:700;padding:.12rem .45rem;border-radius:var(--radius-full);margin-left:.4rem;vertical-align:middle}
+.due-badge.today{background:var(--color-gold-highlight);color:var(--color-warning)}
+.due-badge.overdue{background:var(--color-error-highlight);color:var(--color-error)}
+.today-tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.65rem}
+.today-empty{font-size:.8rem;color:var(--color-text-muted);padding:.75rem 0}
 
 /* empty state */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.6rem;padding:3rem 1.5rem;color:var(--color-text-muted)}
@@ -278,6 +312,7 @@ select.select-chip{cursor:pointer}
     <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l-1 6H7L6 3z"/><path d="M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z"/><path d="M9 13h6"/></svg>
       <span class="ja">国稀ハブ</span><span class="en">Brewery Hub</span></div>
     <nav class="nav" id="mainNav">
+      <a href="#today" data-view="today"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><span class="ja">今日</span><span class="en">Today</span></a>
       <a href="#home" data-view="home"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="ja">ホーム</span><span class="en">Home</span></a>
       <a href="#kanban" data-view="kanban"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg><span class="ja">かんばん</span><span class="en">Kanban</span></a>
       <a href="#gantt" data-view="gantt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h8M3 12h14M3 18h6"/></svg><span class="ja">ガント</span><span class="en">Gantt</span></a>
@@ -305,7 +340,8 @@ select.select-chip{cursor:pointer}
       </div>
     </div>
     <main>
-      <section class="view active" id="view-home"></section>
+      <section class="view active" id="view-today"></section>
+      <section class="view" id="view-home"></section>
       <section class="view" id="view-kanban"></section>
       <section class="view" id="view-gantt"></section>
       <section class="view" id="view-tree"></section>
@@ -372,10 +408,16 @@ document.querySelectorAll('.lang-toggle button').forEach(b=>b.addEventListener('
 
 /* ---------- Helpers ---------- */
 const L = ()=>document.body.getAttribute('data-jaen');
-const T = obj => obj ? (obj[L()] ?? obj.en ?? obj.ja ?? '') : '';
+/* Use || not ?? — an empty string must fall through to the other language,
+   otherwise a title with a missing half renders as a blank card. */
+const T = obj => {
+  if(!obj) return '';
+  if(typeof obj === 'string') return obj;
+  return obj[L()] || obj.en || obj.ja || '';
+};
 const STATUS_LABEL = { todo:{ja:'未着手',en:'To Do'}, doing:{ja:'進行中',en:'In Progress'}, done:{ja:'完了',en:'Done'} };
 const CAT_LABEL = { product:{ja:'製品',en:'Product'}, quality:{ja:'品質',en:'Quality'}, strategy:{ja:'戦略',en:'Strategy'} };
-const VIEW_TITLE = { home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
+const VIEW_TITLE = { today:{ja:'今日',en:'Today'}, home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
 
 function hasDates(x){ return !!(x && x.start && x.end); }
 function allTasks(){
@@ -395,23 +437,24 @@ function setActiveNav(view){
   document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active', a.dataset.view===view));
 }
 function navigate(){
-  const hash = (location.hash||'#home').replace('#','');
+  const hash = (location.hash||'#today').replace('#','');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const el = document.getElementById('view-'+hash) || document.getElementById('view-home');
+  const el = document.getElementById('view-'+hash) || document.getElementById('view-today');
   el.classList.add('active');
-  setActiveNav(hash in VIEW_TITLE ? hash : 'home');
+  setActiveNav(hash in VIEW_TITLE ? hash : 'today');
   render(hash);
 }
 window.addEventListener('hashchange', navigate);
 
 /* ---------- Renderers ---------- */
 function render(hash){
-  hash = hash || (location.hash||'#home').replace('#','');
+  hash = hash || (location.hash||'#today').replace('#','');
   if(hash==='home') renderHome();
   else if(hash==='kanban') renderKanban();
   else if(hash==='gantt') renderGantt();
   else if(hash==='tree') renderTree();
-  const vt = VIEW_TITLE[hash] || VIEW_TITLE.home;
+  else renderToday();
+  const vt = VIEW_TITLE[hash] || VIEW_TITLE.today;
   document.getElementById('viewTitle').textContent = T(vt);
 }
 
@@ -437,6 +480,9 @@ function renderHome(){
   const taskDoing = tasks.filter(t=>t.status==='doing').length;
   const taskTodo = tasks.filter(t=>t.status==='todo').length;
   const C = 2*Math.PI*40; // ring circumference (r=40)
+  const dsToday = dailyStats();
+  const tpToday = todayProjectTasks();
+  const todayTaskCount = tpToday.active.length + tpToday.overdue.length;
 
   el.innerHTML = `
   <div class="view-toolbar">
@@ -509,6 +555,15 @@ function renderHome(){
       <div class="label"><span class="ja">構造マップ</span><span class="en">Structure Map</span></div>
       <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">親子チャートを開く</span><span class="en">Open Hierarchy</span></div>
       <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <div class="bento-card clickable span-2" onclick="location.hash='#today'">
+      <div class="label"><span class="ja">今日</span><span class="en">Today</span></div>
+      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600">
+        <span class="ja">チェックリスト ${dsToday.done}/${dsToday.total} ・ タスク ${todayTaskCount}件</span>
+        <span class="en">Checklist ${dsToday.done}/${dsToday.total} · ${todayTaskCount} task${todayTaskCount===1?'':'s'} today</span>
+      </div>
+      <div class="badge-cta"><span class="ja">今日のビューを開く</span><span class="en">Open Today</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
     </div>
 
   </div>`;
@@ -728,6 +783,202 @@ function renderTree(){
     </div>`;
 }
 
+/* ---------- TODAY (daily checklist + today's project tasks) ---------- */
+/* The checklist is personal scratch space stored in this browser's localStorage,
+   deliberately not synced to Notion (no Code.gs change needed). Done-checks are
+   stored per date, so recurring items reset themselves every morning. */
+const DAILY_KEY = 'breweryHub.daily.items';
+const DAILY_DONE_KEY = 'breweryHub.daily.done';
+
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addDaysStr(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function loadDailyItems(){ try{ return JSON.parse(localStorage.getItem(DAILY_KEY)) || []; }catch(e){ return []; } }
+function saveDailyItems(list){ try{ localStorage.setItem(DAILY_KEY, JSON.stringify(list)); }catch(e){} }
+function loadDailyDone(){ try{ return JSON.parse(localStorage.getItem(DAILY_DONE_KEY)) || {}; }catch(e){ return {}; } }
+function saveDailyDone(map){
+  const cutoff=addDaysStr(todayStr(),-30); // prune old dates so storage never bloats
+  Object.keys(map).forEach(k=>{ if(k<cutoff) delete map[k]; });
+  try{ localStorage.setItem(DAILY_DONE_KEY, JSON.stringify(map)); }catch(e){}
+}
+
+/* item: {id, text, repeat:bool, date (one-offs: the day it shows), snooze (repeats: hidden until), completed, doneOn, created} */
+function dailyVisible(it, D){
+  if(it.repeat) return !(it.snooze && it.snooze > D);
+  if(it.completed) return it.doneOn === D;   // struck-through until midnight, then gone
+  return it.date <= D;                        // unfinished one-offs carry over
+}
+function dailyChecked(it, D, doneToday){
+  return it.repeat ? doneToday.indexOf(it.id)>=0 : !!(it.completed && it.doneOn===D);
+}
+function dailyStats(){
+  const D=todayStr();
+  const doneToday=loadDailyDone()[D]||[];
+  const vis=loadDailyItems().filter(it=>dailyVisible(it,D));
+  return { total:vis.length, done:vis.filter(it=>dailyChecked(it,D,doneToday)).length };
+}
+function todayProjectTasks(){
+  const D=todayStr();
+  const open=allTasks().filter(t=>t.status!=='done');
+  const overdue = open.filter(t=>t.end && t.end<D).sort((a,b)=>a.end<b.end?-1:1);
+  const active = open.filter(t=>{
+    if(t.start && t.end) return t.start<=D && t.end>=D;
+    return t.end===D || t.start===D; // partially-dated items still surface on their day
+  }).sort((a,b)=>((a.end===D?0:1)-(b.end===D?0:1)) || ((a.end||'9999')<(b.end||'9999')?-1:1));
+
+  /* Until Start/End dates are filled in Notion, nothing can match "today" and this
+     panel would sit empty forever. Fall back to whatever is in progress so the view
+     is useful immediately; `undated` tells the UI to explain why. */
+  if(!overdue.length && !active.length && !open.some(t=>t.start||t.end)){
+    return { overdue:[], active: open.filter(t=>t.status==='doing'), undated:true };
+  }
+  return { overdue, active, undated:false };
+}
+
+function toggleDaily(id){
+  const D=todayStr(), items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
+  if(it.repeat){
+    const map=loadDailyDone(); const arr=map[D]=map[D]||[];
+    const i=arr.indexOf(id); i>=0 ? arr.splice(i,1) : arr.push(id);
+    saveDailyDone(map);
+  }else{
+    if(it.completed && it.doneOn===D){ it.completed=false; delete it.doneOn; }
+    else { it.completed=true; it.doneOn=D; }
+    saveDailyItems(items);
+  }
+  renderToday();
+}
+function postponeDaily(id){
+  const D=todayStr(), tmr=addDaysStr(D,1);
+  const items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
+  if(it.repeat) it.snooze=tmr;
+  else { it.date=tmr; it.completed=false; delete it.doneOn; }
+  saveDailyItems(items);
+  toast(L()==='ja'?'明日へ移動しました':'Moved to tomorrow');
+  renderToday();
+}
+function unpostponeDaily(id){
+  const D=todayStr(), items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
+  if(it.repeat) delete it.snooze; else it.date=D;
+  saveDailyItems(items);
+  renderToday();
+}
+function deleteDaily(id){
+  saveDailyItems(loadDailyItems().filter(x=>x.id!==id));
+  toast(L()==='ja'?'削除しました':'Deleted');
+  renderToday();
+}
+function addDailyItem(){
+  const inp=document.getElementById('dailyNewText'); if(!inp) return;
+  const text=inp.value.trim(); if(!text) return;
+  const repeat=document.getElementById('dailyNewRepeat').value==='1';
+  const items=loadDailyItems();
+  items.push({ id:'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), text, repeat, date:repeat?null:todayStr(), created:todayStr() });
+  saveDailyItems(items);
+  inp.value='';
+  renderToday();
+}
+
+function renderToday(){
+  const el=document.getElementById('view-today'); if(!el) return;
+  const D=todayStr(), tmr=addDaysStr(D,1);
+
+  // preserve the add-form state across re-renders (the 60s sync also lands here)
+  const oldInp=document.getElementById('dailyNewText');
+  const keepText=oldInp?oldInp.value:'', hadFocus=!!oldInp && document.activeElement===oldInp;
+  const oldSel=document.getElementById('dailyNewRepeat');
+  const keepRepeat=oldSel?oldSel.value:'1';
+
+  const items=loadDailyItems();
+  const doneToday=loadDailyDone()[D]||[];
+  const visible=items.filter(it=>dailyVisible(it,D));
+  const checkedOf=it=>dailyChecked(it,D,doneToday);
+  const sorted=[...visible.filter(it=>!checkedOf(it)), ...visible.filter(checkedOf)];
+  const doneN=visible.filter(checkedOf).length;
+  const pct=visible.length?Math.round(doneN/visible.length*100):0;
+  const tmrItems=items.filter(it=> it.repeat ? it.snooze===tmr : (!it.completed && it.date===tmr));
+
+  const dObj=new Date();
+  const dateLine=`<div class="today-date"><span class="ja">${dObj.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</span><span class="en">${dObj.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}</span></div>`;
+
+  const rows=sorted.map(it=>{
+    const done=checkedOf(it);
+    const carried=!it.repeat && !it.completed && it.date<D;
+    return `<li class="check-item ${done?'done':''}">
+      <input type="checkbox" ${done?'checked':''} onchange="toggleDaily('${it.id}')" aria-label="${esc(it.text)}">
+      <span class="check-text">${esc(it.text)}${carried?`<span class="carry-badge"><span class="ja">持ち越し</span><span class="en">carried over</span></span>`:''}</span>
+      ${it.repeat?`<span class="repeat-badge" title="${L()==='ja'?'毎日くり返し':'Repeats daily'}">${ICON_REPEAT}</span>`:''}
+      <button class="mini-btn" title="${L()==='ja'?'明日へ':'Postpone to tomorrow'}" onclick="postponeDaily('${it.id}')">${ICON_FWD}</button>
+      <button class="mini-btn danger" title="${L()==='ja'?'削除':'Delete'}" onclick="deleteDaily('${it.id}')">${ICON_DEL}</button>
+    </li>`;
+  }).join('');
+
+  const tmrHtml=tmrItems.length?`<div class="tmr-wrap">
+      <div class="tmr-head"><span class="ja">明日へ（${tmrItems.length}）</span><span class="en">Tomorrow (${tmrItems.length})</span></div>
+      ${tmrItems.map(it=>`<div class="tmr-item"><span>${esc(it.text)}</span>
+        <button class="mini-btn" title="${L()==='ja'?'今日に戻す':'Bring back to today'}" onclick="unpostponeDaily('${it.id}')">${ICON_UNDO}</button></div>`).join('')}
+    </div>`:'';
+
+  const checklist=`<div class="card-panel" style="margin-bottom:0">
+    <div class="section-title"><span class="ja">毎日のチェックリスト</span><span class="en">Daily Checklist</span></div>
+    <div class="check-progress"><span style="font-weight:700">${doneN}/${visible.length}</span>
+      <div class="trend-bar-bg"><div class="trend-bar" style="width:${pct}%;${pct===100&&visible.length?'background:var(--color-gold)':''}"></div></div>
+    </div>
+    <ul class="check-list">${rows||`<li class="today-empty"><span class="ja">まだ項目がありません。下の欄から追加してください。</span><span class="en">No items yet — add your first one below.</span></li>`}</ul>
+    ${tmrHtml}
+    <div class="check-add">
+      <input type="text" id="dailyNewText" maxlength="200" placeholder="${L()==='ja'?'新しい項目を追加…':'Add an item…'}" onkeydown="if(event.key==='Enter')addDailyItem()">
+      <select id="dailyNewRepeat" class="select-chip">
+        <option value="1">${L()==='ja'?'毎日':'Daily'}</option>
+        <option value="0">${L()==='ja'?'今日のみ':'Today only'}</option>
+      </select>
+      <button class="btn btn-primary" onclick="addDailyItem()" aria-label="${L()==='ja'?'追加':'Add'}">${ICON_ADD}</button>
+    </div>
+    <div class="check-hint"><span class="ja">チェックは毎朝自動でリセットされます。この端末のブラウザにのみ保存されます。</span><span class="en">Checks reset automatically each morning. Stored in this browser only.</span></div>
+  </div>`;
+
+  const {overdue,active,undated}=todayProjectTasks();
+  function tcard(t){
+    const od=!!(t.end&&t.end<D), dueToday=t.end===D;
+    const badge= od?`<span class="due-badge overdue">${dayDiff(t.end,D)}${L()==='ja'?'日遅れ':'d late'}</span>`
+        : dueToday?`<span class="due-badge today"><span class="ja">今日締切</span><span class="en">Due today</span></span>`:'';
+    const dates=hasDates(t)?`<span class="tc-date">${t.start.slice(5)} → ${t.end.slice(5)}</span>`:(t.end?`<span class="tc-date">→ ${t.end.slice(5)}</span>`:'');
+    const ctrls=t.pageId?`<div class="row-actions">
+        <select class="status-select" onchange="quickStatus('task','${t.pageId}',this.value)">
+          ${OPT_STATUS.map(o=>`<option value="${o[0]}" ${o[0]===t.status?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('')}
+        </select>
+        <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
+      </div>`:'';
+    return `<div class="task-card cat-${t.projectCategory}">
+      <div class="tc-id">${t.projectId} · ${t.id}${badge}</div>
+      <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
+      <div class="tc-meta"><span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>${dates}</div>
+      <div class="tc-proj"><span class="cat-dot" style="background:var(--cat-${t.projectCategory})"></span>${T(t.projectName)}</div>
+      ${ctrls}
+    </div>`;
+  }
+  const overduePanel=overdue.length?`<div class="card-panel">
+      <div class="section-title" style="color:var(--color-error)"><span class="ja">期限超過</span><span class="en">Overdue</span>&nbsp;(${overdue.length})</div>
+      <div class="today-tasks-grid">${overdue.map(tcard).join('')}</div>
+    </div>`:'';
+  const activePanel=`<div class="card-panel" style="margin-bottom:0">
+      <div class="section-title">
+        ${undated?`<span class="ja">進行中のプロジェクトタスク</span><span class="en">Project Tasks In Progress</span>`
+                 :`<span class="ja">今日のプロジェクトタスク</span><span class="en">Today's Project Tasks</span>`}&nbsp;(${active.length})</div>
+      ${undated?`<div class="check-hint" style="margin:-.4rem 0 .8rem"><span class="ja">Notion に開始日・終了日を入力すると、日付でその日のタスクだけを表示します。</span><span class="en">Add Start/End dates in Notion and this switches to showing only what is scheduled for today.</span></div>`:''}
+      ${active.length?`<div class="today-tasks-grid">${active.map(tcard).join('')}</div>`
+        :`<div class="today-empty"><span class="ja">今日予定されているプロジェクトタスクはありません。</span><span class="en">No project tasks scheduled for today.</span></div>`}
+    </div>`;
+
+  el.innerHTML=dateLine+`<div class="today-grid">${checklist}<div>${overduePanel}${activePanel}</div></div>`;
+
+  const ni=document.getElementById('dailyNewText');
+  if(ni){ ni.value=keepText; if(hadFocus) ni.focus(); }
+  const ns=document.getElementById('dailyNewRepeat');
+  if(ns) ns.value=keepRepeat;
+}
+
 /* ---------- Write layer (create / update / archive in Notion) ---------- */
 const LS_KEY_APP = 'breweryHub.appKey';
 function loadKey(){ try{ return localStorage.getItem(LS_KEY_APP) || ""; }catch(e){ return ""; } }
@@ -899,6 +1150,9 @@ function findProj(pid){ return DATA.find(p=>p.pageId===pid)||null; }
 const ICON_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 const ICON_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
 const ICON_ADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+const ICON_FWD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h12M13 6l6 6-6 6"/></svg>';
+const ICON_UNDO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+const ICON_REPEAT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>';
 
 /* ---------- Live Notion Sync ---------- */
 /* The Apps Script URL is stored per-browser (localStorage), never in this repo.
@@ -993,6 +1247,13 @@ document.getElementById('modalDisconnect').addEventListener('click', ()=>{
   APP_KEY = ''; saveKey('');
   applyConnection('');
 });
+
+/* Re-render when the date flips, so an always-open tab gets a fresh
+   checklist in the morning (also fires when a sleeping laptop wakes up). */
+let _lastDay = todayStr();
+function checkDayChange(){ if(todayStr() !== _lastDay){ _lastDay = todayStr(); render(); } }
+setInterval(checkDayChange, 60000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkDayChange(); });
 
 navigate();
 // Reconnect automatically if this browser already knows the URL.

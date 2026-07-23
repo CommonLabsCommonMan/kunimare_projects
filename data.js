@@ -1,104 +1,130 @@
+/* Brewery Project Hub — bundled offline data.
+   Generated from the Notion "Brewery Project Hub" databases on 2026-07-23.
+   This is what the public GitHub Pages site shows when no live Notion
+   connection is configured. Connecting via the sync badge replaces all of it
+   with live data. Dates and owners are blank because they are not yet filled
+   in Notion — add them there and they appear here automatically. */
 const PROJECTS = [
   {
     id:'PRJ-01',
-    name:{ja:'新クラフトビール立ち上げ',en:'New Craft Beer Launch'},
-    category:'product',
-    status:'doing',
-    owner:'Pratik',
-    start:'2026-06-01', end:'2026-09-30',
+    name:{ja:'栄養抽出（酒粕・BSG）',en:'Sake-kasu / BSG Nutrient Extraction'},
+    category:'strategy',
+    status:'todo',
+    owner:'—',
     milestones:[
-      { id:'M1', name:{ja:'試作レシピが承認された状態',en:'Trial recipe approved'}, status:'done', start:'2026-06-01', end:'2026-06-20',
-        tasks:[
-          { id:'T1-1', name:{ja:'酵母Aで小仕込みテストを行う',en:'Run small trial batch with Yeast A'}, status:'done', start:'2026-06-01', end:'2026-06-05', owner:'Pratik'},
-          { id:'T1-2', name:{ja:'官能評価会を1回実施する',en:'Hold one sensory evaluation session'}, status:'done', start:'2026-06-06', end:'2026-06-10', owner:'Team'},
-          { id:'T1-3', name:{ja:'レシピを最終承認する',en:'Finalize recipe approval'}, status:'done', start:'2026-06-15', end:'2026-06-20', owner:'Pratik'}
-        ]},
-      { id:'M2', name:{ja:'本仕込みが完了した状態',en:'Main brew completed'}, status:'doing', start:'2026-06-21', end:'2026-08-15',
-        tasks:[
-          { id:'T2-1', name:{ja:'麦芽を発注する',en:'Order malt'}, status:'done', start:'2026-06-21', end:'2026-06-23', owner:'Pratik'},
-          { id:'T2-2', name:{ja:'仕込み釜を準備する',en:'Prepare brew kettle'}, status:'doing', start:'2026-07-15', end:'2026-07-18', owner:'Team'},
-          { id:'T2-3', name:{ja:'発酵管理表を作成する',en:'Create fermentation log sheet'}, status:'todo', start:'2026-07-20', end:'2026-07-22', owner:'Pratik'},
-          { id:'T2-4', name:{ja:'本仕込みを実施する',en:'Execute main brew'}, status:'todo', start:'2026-07-25', end:'2026-08-10', owner:'Team'}
-        ]},
-      { id:'M3', name:{ja:'出荷判定が完了した状態',en:'Shipping approval completed'}, status:'todo', start:'2026-08-16', end:'2026-09-30',
-        tasks:[
-          { id:'T3-1', name:{ja:'ATP検査を実施する',en:'Run ATP sanitation test'}, status:'todo', start:'2026-08-16', end:'2026-08-18', owner:'Pratik'},
-          { id:'T3-2', name:{ja:'品質検査を実施する',en:'Run quality inspection'}, status:'todo', start:'2026-08-20', end:'2026-08-25', owner:'Team'},
-          { id:'T3-3', name:{ja:'出荷可否を判定する',en:'Decide shipping approval'}, status:'todo', start:'2026-09-01', end:'2026-09-05', owner:'Pratik'}
-        ]}
+      { id:'M1', name:{ja:'酒粕・BSGからの栄養抽出手順を確立した状態',en:'Nutrient extraction protocol established'}, status:'todo',
+        tasks:[] }
     ]
   },
   {
     id:'PRJ-02',
-    name:{ja:'CIP水量・時間の最適化',en:'CIP Water & Time Optimisation'},
-    category:'quality',
-    status:'doing',
-    owner:'Pratik',
-    start:'2026-07-01', end:'2026-10-15',
+    name:{ja:'増毛フルーツビール',en:'Mashike Fruit Beer'},
+    category:'product',
+    status:'todo',
+    owner:'—',
     milestones:[
-      { id:'M1', name:{ja:'現状データが収集された状態',en:'Baseline data collected'}, status:'done', start:'2026-07-01', end:'2026-07-10',
+      { id:'M1', name:{ja:'地元フルーツの選定と調達を完了した状態',en:'Local fruit selected and sourced'}, status:'todo',
+        tasks:[] },
+      { id:'M2', name:{ja:'試作バッチとブランディング（コースター）を準備した状態',en:'Trial batch + branding (coasters) prepared'}, status:'todo',
         tasks:[
-          { id:'T1-1', name:{ja:'現行CIPサイクル時間を記録する',en:'Log current CIP cycle time'}, status:'done', start:'2026-07-01', end:'2026-07-05', owner:'Pratik'},
-          { id:'T1-2', name:{ja:'ATP測定を3点で実施する',en:'Run ATP test at 3 points'}, status:'done', start:'2026-07-06', end:'2026-07-10', owner:'Pratik'}
-        ]},
-      { id:'M2', name:{ja:'新プロトコルが検証された状態',en:'New protocol validated'}, status:'doing', start:'2026-07-11', end:'2026-09-15',
-        tasks:[
-          { id:'T2-1', name:{ja:'すすぎ終点の電導度基準を設定する',en:'Set conductivity endpoint for final rinse'}, status:'doing', start:'2026-07-15', end:'2026-07-25', owner:'Pratik'},
-          { id:'T2-2', name:{ja:'FV-3で試験CIPを実施する',en:'Trial CIP run on FV-3'}, status:'todo', start:'2026-08-01', end:'2026-08-10', owner:'Team'},
-          { id:'T2-3', name:{ja:'ATP結果を比較する',en:'Compare ATP results'}, status:'todo', start:'2026-08-11', end:'2026-08-15', owner:'Pratik'}
-        ]},
-      { id:'M3', name:{ja:'SOPが更新された状態',en:'SOP updated'}, status:'todo', start:'2026-09-16', end:'2026-10-15',
-        tasks:[
-          { id:'T3-1', name:{ja:'新SOPドラフトを作成する',en:'Draft new SOP'}, status:'todo', start:'2026-09-16', end:'2026-09-25', owner:'Pratik'},
-          { id:'T3-2', name:{ja:'チームトレーニングを実施する',en:'Run team training'}, status:'todo', start:'2026-10-01', end:'2026-10-10', owner:'Team'}
-        ]}
+          { id:'T2-1', name:{ja:'コースターをデザインし発注する',en:'Design and order coasters'}, status:'todo', owner:'—' }
+        ] }
     ]
   },
   {
     id:'PRJ-03',
-    name:{ja:'来期事業計画の策定',en:'Next-Term Business Plan'},
-    category:'strategy',
-    status:'todo',
-    owner:'Pratik',
-    start:'2026-09-01', end:'2026-12-20',
+    name:{ja:'酒酵母ビール開発',en:'Sake Yeast Beer Development'},
+    category:'product',
+    status:'doing',
+    owner:'—',
     milestones:[
-      { id:'M1', name:{ja:'市場分析が完了した状態',en:'Market analysis completed'}, status:'todo', start:'2026-09-01', end:'2026-09-30',
+      { id:'M1', name:{ja:'酵母供給源を確保した状態',en:'Yeast source secured'}, status:'doing',
         tasks:[
-          { id:'T1-1', name:{ja:'競合ブルワリーを調査する',en:'Survey competitor breweries'}, status:'todo', start:'2026-09-01', end:'2026-09-15', owner:'Pratik'},
-          { id:'T1-2', name:{ja:'観光需要データを収集する',en:'Collect tourism demand data'}, status:'todo', start:'2026-09-16', end:'2026-09-30', owner:'Team'}
-        ]},
-      { id:'M2', name:{ja:'計画案が承認された状態',en:'Draft plan approved'}, status:'todo', start:'2026-10-01', end:'2026-11-30',
+          { id:'T1-1', name:{ja:'菅野さんにアンプルの使用を相談する',en:'Consult Sugano-san on using existing ampules'}, status:'doing', owner:'—' },
+          { id:'T1-2', name:{ja:'アンプルの培養利用を菅野（Kanno）さんに確認する',en:'Confirm ampule cultivation with Mr. Kanno'}, status:'todo', owner:'—' },
+          { id:'T1-3', name:{ja:'ドライ酵母代替案を検討する',en:'Evaluate dry yeast as a cost-cutting alternative'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M2', name:{ja:'限定試作バッチを製造した状態',en:'Limited trial batch produced'}, status:'todo',
         tasks:[
-          { id:'T2-1', name:{ja:'事業計画書を作成する',en:'Draft business plan document'}, status:'todo', start:'2026-10-01', end:'2026-10-31', owner:'Pratik'},
-          { id:'T2-2', name:{ja:'経営会議で説明する',en:'Present at management meeting'}, status:'todo', start:'2026-11-15', end:'2026-11-30', owner:'Pratik'}
-        ]},
-      { id:'M3', name:{ja:'予算が確定した状態',en:'Budget finalized'}, status:'todo', start:'2026-12-01', end:'2026-12-20',
-        tasks:[
-          { id:'T3-1', name:{ja:'部門別予算を配分する',en:'Allocate departmental budgets'}, status:'todo', start:'2026-12-01', end:'2026-12-15', owner:'Pratik'}
-        ]}
+          { id:'T2-1', name:{ja:'酒酵母で限定バッチを仕込む',en:'Brew a limited batch with sake yeast'}, status:'todo', owner:'—' },
+          { id:'T2-2', name:{ja:'ALDC酵素の適用を試す',en:'Trial ALDC enzyme for diacetyl control'}, status:'todo', owner:'—' },
+          { id:'T2-3', name:{ja:'マルトエキス（Maltoex）を試す',en:'Trial malt extract (Maltoex)'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M3', name:{ja:'レシピ原料量を確定した状態',en:'Recipe ingredient quantities finalized'}, status:'todo',
+        tasks:[] }
     ]
   },
   {
     id:'PRJ-04',
-    name:{ja:'ラベル・パッケージ更新',en:'Label & Packaging Refresh'},
-    category:'product',
-    status:'done',
-    owner:'Team',
-    start:'2026-04-01', end:'2026-06-30',
+    name:{ja:'HACCP体制構築',en:'HACCP System Implementation'},
+    category:'quality',
+    status:'doing',
+    owner:'—',
     milestones:[
-      { id:'M1', name:{ja:'デザインが確定した状態',en:'Design finalized'}, status:'done', start:'2026-04-01', end:'2026-05-10',
+      { id:'M1', name:{ja:'報告CCPフォーマットを作成した状態',en:'CCP report format built'}, status:'doing',
         tasks:[
-          { id:'T1-1', name:{ja:'デザイン案を3種作成する',en:'Create 3 design concepts'}, status:'done', start:'2026-04-01', end:'2026-04-20', owner:'Team'},
-          { id:'T1-2', name:{ja:'デザインを最終承認する',en:'Approve final design'}, status:'done', start:'2026-05-01', end:'2026-05-10', owner:'Pratik'}
-        ]},
-      { id:'M2', name:{ja:'印刷データが校了した状態',en:'Print files finalized'}, status:'done', start:'2026-05-11', end:'2026-06-05',
+          { id:'T1-1', name:{ja:'フォーマット・Notion・Claudeを連携させてCCP報告を作成する',en:'Build CCP report via format + Notion + Claude'}, status:'doing', owner:'—' },
+          { id:'T1-2', name:{ja:'カウンター・阿部キッチン・藤屋の報告経路を定める',en:'Define report routing for counter, Abe kitchen, Fujiya'}, status:'todo', owner:'—' },
+          { id:'T1-3', name:{ja:'ムカイヤマさんとHACCP分担を協議する',en:'Discuss HACCP division with Mukaiyama-san'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M2', name:{ja:'日次HACCP監視を運用した状態',en:'Daily HACCP monitoring operational'}, status:'doing',
         tasks:[
-          { id:'T2-1', name:{ja:'ラベル校了データを送る',en:'Send final label print files'}, status:'done', start:'2026-05-11', end:'2026-06-05', owner:'Team'}
-        ]},
-      { id:'M3', name:{ja:'新ラベルが導入された状態',en:'New labels in production'}, status:'done', start:'2026-06-06', end:'2026-06-30',
+          { id:'T2-1', name:{ja:'発酵データを毎日取得する（藤屋）',en:'Collect fermentation data daily (Fujiya)'}, status:'doing', owner:'—' },
+          { id:'T2-2', name:{ja:'塩素水検査を毎日実施し必要なら補充する',en:'Run chlorine water test daily, refill if depleted'}, status:'doing', owner:'—' },
+          { id:'T2-3', name:{ja:'不適合例（缶破損等）の対応フローを規定する',en:'Define non-conformance response flow (e.g. damaged can)'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M3', name:{ja:'仕入先トレーサビリティとA/B/C評価を確立した状態',en:'Supplier traceability + A/B/C evaluation established'}, status:'todo',
         tasks:[
-          { id:'T3-1', name:{ja:'新ラベルで初回充填を行う',en:'Run first fill with new labels'}, status:'done', start:'2026-06-06', end:'2026-06-30', owner:'Team'}
-        ]}
+          { id:'T3-1', name:{ja:'鍵の保持・貸与台帳を運用する',en:'Operate key possession & lending log'}, status:'todo', owner:'—' },
+          { id:'T3-2', name:{ja:'受入原材料（企業・製造元・種別・日付）を記録する',en:'Log incoming materials: company, maker, type, date'}, status:'todo', owner:'—' },
+          { id:'T3-3', name:{ja:'仕入先をA/B/Cで月次評価する',en:'Evaluate suppliers monthly on A/B/C scale'}, status:'todo', owner:'—' }
+        ] }
+    ]
+  },
+  {
+    id:'PRJ-05',
+    name:{ja:'在庫・備品管理',en:'Inventory & Stock Management'},
+    category:'strategy',
+    status:'doing',
+    owner:'—',
+    milestones:[
+      { id:'M1', name:{ja:'自区域の在庫を棚卸しリスト化した状態',en:'Area inventory tallied and listed'}, status:'doing',
+        tasks:[
+          { id:'T1-1', name:{ja:'自区域の必要物品を集計し在庫リストに追加する',en:'Tally area items and add to inventory list'}, status:'doing', owner:'—' },
+          { id:'T1-2', name:{ja:'セキデラさんと施設を巡回し清揃対象箇所をリスト化する',en:'Tour facility with Sekidera, list cleaning spots'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M2', name:{ja:'食品・工場部門の冷蔵庫・備品在庫管理を確立した状態',en:'F&B + factory fridge & equipment stock control established'}, status:'todo',
+        tasks:[] }
+    ]
+  },
+  {
+    id:'PRJ-06',
+    name:{ja:'BSGキノコ栽培',en:'BSG Mushroom Cultivation'},
+    category:'product',
+    status:'todo',
+    owner:'—',
+    milestones:[
+      { id:'M1', name:{ja:'BSG基質での初回栽培を完了した状態',en:'First cultivation on BSG substrate completed'}, status:'todo',
+        tasks:[
+          { id:'T1-1', name:{ja:'BSGと枝・おがくずでヒラタケ・ヤマブシタケを栽培する',en:"Cultivate oyster & lion's mane on BSG + branch sawdust"}, status:'todo', owner:'—' }
+        ] },
+      { id:'M2', name:{ja:'グローキット小売モデルを検討した状態',en:'Grow-kit retail model scoped'}, status:'todo',
+        tasks:[] }
+    ]
+  },
+  {
+    id:'PRJ-07',
+    name:{ja:'酒粕BSF幼虫飼料',en:'Sake-kasu BSF Larvae Feed'},
+    category:'product',
+    status:'todo',
+    owner:'—',
+    milestones:[
+      { id:'M1', name:{ja:'酒粕基盤の飼育試験を完了した状態',en:'Sake-kasu rearing trial completed'}, status:'todo',
+        tasks:[
+          { id:'T1-1', name:{ja:'酒粕と補完廃棄物でBSF幼虫を飼育する',en:'Rear BSF larvae on sake-kasu + complementary waste'}, status:'todo', owner:'—' }
+        ] },
+      { id:'M2', name:{ja:'飼料品質を検証した状態',en:'Feed quality validated'}, status:'todo',
+        tasks:[] }
     ]
   }
 ];
