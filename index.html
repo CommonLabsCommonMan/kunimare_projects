@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brewery Project Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=boska@500,600&display=swap" rel="stylesheet">
+<style>
+/* Art direction: Japanese brewery ops tool -> disciplined, quiet-confident, industrial-clean.
+   Palette: cool neutral stone surfaces, single indigo-teal accent (Hydra Teal), warm gold for done states.
+   Type: Boska (display) + General Sans (body/UI). Signature: the L1->L2->L3 hierarchy. */
+:root, [data-theme="light"]{
+  --color-bg:#f7f6f2; --color-surface:#f9f8f5; --color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec; --color-surface-offset-2:#edeae5; --color-surface-dynamic:#e6e4df;
+  --color-divider:#dcd9d5; --color-border:#d4d1ca;
+  --color-text:#28251d; --color-text-muted:#7a7974; --color-text-faint:#bab9b4; --color-text-inverse:#f9f8f4;
+  --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-primary-active:#0f3638; --color-primary-highlight:#cedcd8;
+  --color-warning:#964219; --color-warning-highlight:#ddcfc6;
+  --color-error:#a12c7b; --color-error-highlight:#e0ced7;
+  --color-success:#437a22; --color-success-highlight:#d4dfcc;
+  --color-gold:#d19900; --color-gold-highlight:#e9e0c6;
+  --color-blue:#006494; --color-blue-highlight:#c6d8e4;
+  --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
+  --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px;
+  --transition-interactive:180ms cubic-bezier(.16,1,.3,1);
+  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06); --shadow-md:0 4px 12px oklch(0.2 0.01 80/.08); --shadow-lg:0 12px 32px oklch(0.2 0.01 80/.12);
+  --font-display:'Boska','Georgia',serif; --font-body:'General Sans','Helvetica Neue',sans-serif;
+}
+[data-theme="dark"]{
+  --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-surface-offset:#1d1c1a; --color-surface-offset-2:#22211f;
+  --color-surface-dynamic:#2d2c2a; --color-divider:#262523; --color-border:#393836;
+  --color-text:#cdccca; --color-text-muted:#797876; --color-text-faint:#5a5957; --color-text-inverse:#2b2a28;
+  --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-primary-active:#1a626b; --color-primary-highlight:#313b3b;
+  --color-warning:#bb653b; --color-warning-highlight:#564942;
+  --color-error:#d163a7; --color-error-highlight:#4c3d46;
+  --color-success:#6daa45; --color-success-highlight:#3a4435;
+  --color-gold:#e8af34; --color-gold-highlight:#4d4332;
+  --color-blue:#5591c7; --color-blue-highlight:#3a4550;
+  --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
+  --shadow-sm:0 1px 2px oklch(0 0 0/.2); --shadow-md:0 4px 12px oklch(0 0 0/.3); --shadow-lg:0 12px 32px oklch(0 0 0/.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{min-height:100dvh;font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--color-text);background:var(--color-bg)}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-sm)}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+
+/* Layout shell */
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100dvh}
+@media (max-width:900px){.shell{grid-template-columns:1fr}}
+.sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:0;height:100dvh}
+@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
+.brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:600;font-size:1.05rem;white-space:nowrap}
+.brand svg{color:var(--color-primary);flex:0 0 auto}
+.nav{display:flex;flex-direction:column;gap:.25rem}
+@media (max-width:900px){.nav{flex-direction:row}}
+.nav a{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:var(--radius-md);font-size:.85rem;color:var(--color-text-muted);transition:background var(--transition-interactive),color var(--transition-interactive);white-space:nowrap}
+.nav a:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.nav a.active{background:var(--color-primary-highlight);color:var(--color-primary-hover);font-weight:600}
+.nav a svg{width:16px;height:16px;flex:0 0 auto}
+.sidebar-footer{margin-top:auto;font-size:.7rem;color:var(--color-text-faint);display:flex;flex-direction:column;gap:.5rem}
+@media (max-width:900px){.sidebar-footer{display:none}}
+
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in oklch, var(--color-bg) 85%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--color-divider)}
+@media (max-width:900px){.topbar{top:57px}}
+.topbar h1{font-family:var(--font-display);font-size:1.15rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;align-items:center;gap:.5rem;flex:0 0 auto}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition-interactive),color var(--transition-interactive)}
+.icon-btn:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.lang-toggle{display:flex;border:1px solid var(--color-border);border-radius:var(--radius-full);overflow:hidden}
+.lang-toggle button{padding:.4rem .8rem;font-size:.75rem;font-weight:600;color:var(--color-text-muted)}
+.lang-toggle button.active{background:var(--color-primary);color:var(--color-text-inverse)}
+
+/* Sync pill */
+.sync-pill{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:.72rem;font-weight:600;color:var(--color-text-muted);transition:border-color var(--transition-interactive),color var(--transition-interactive)}
+.sync-pill:hover{border-color:var(--color-primary);color:var(--color-text)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--color-text-faint);flex:0 0 auto}
+.sync-pill.live{border-color:color-mix(in oklch,var(--color-success) 50%,var(--color-border));color:var(--color-success)}
+.sync-pill.live .sync-dot{background:var(--color-success)}
+.sync-pill.error{border-color:color-mix(in oklch,var(--color-error) 50%,var(--color-border));color:var(--color-error)}
+.sync-pill.error .sync-dot{background:var(--color-error)}
+.sync-pill.syncing .sync-dot{background:var(--color-primary);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sync-pill .pill-time{color:var(--color-text-faint);font-weight:400}
+@media (max-width:560px){.sync-pill .pill-label,.sync-pill .pill-time{display:none}.sync-pill{padding:.4rem}}
+
+/* top loading bar */
+.loadbar{position:fixed;top:0;left:0;height:2px;width:0;background:var(--color-primary);z-index:200;transition:width .3s ease,opacity .3s ease;opacity:0}
+.loadbar.on{opacity:1;width:80%}
+.loadbar.done{width:100%;opacity:0}
+
+main{padding:1.5rem}
+@media (max-width:900px){main{padding:1rem}}
+.view{display:none}
+.view.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* Bento grid - home */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(120px,auto);gap:1rem}
+@media (max-width:1100px){.bento{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.bento{grid-template-columns:1fr}}
+.bento-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;gap:.5rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
+.bento-card.clickable{cursor:pointer}
+.bento-card.clickable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.bento-card.clickable:active{transform:translateY(0)}
+.bento-card .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--color-text-muted);font-weight:600}
+.bento-card .big-num{font-family:var(--font-display);font-size:2.6rem;font-weight:600;line-height:1}
+.bento-card .sub{font-size:.78rem;color:var(--color-text-muted)}
+.bento-card.span-2{grid-column:span 2}
+.bento-card.span-2-row{grid-row:span 2}
+@media (max-width:560px){.bento-card.span-2{grid-column:span 1}}
+
+/* hero progress ring */
+.hero-card{background:linear-gradient(135deg,color-mix(in oklch,var(--color-primary) 8%,var(--color-surface)),var(--color-surface));align-items:flex-start}
+.ring-wrap{display:flex;align-items:center;gap:1.4rem;width:100%;flex-wrap:wrap}
+.ring{width:120px;height:120px;flex:0 0 auto}
+.ring .num{font-family:var(--font-display);font-weight:600;font-size:.62rem;fill:var(--color-text)}
+.ring-stats{display:flex;flex-direction:column;gap:.5rem;min-width:120px}
+.ring-stat{display:flex;align-items:center;gap:.5rem;font-size:.82rem}
+.ring-stat b{font-family:var(--font-display);font-size:1.05rem;font-weight:600;min-width:1.5rem}
+.ring-stat .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+.stat-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}
+.trend-list{display:flex;flex-direction:column;gap:.55rem;margin-top:.35rem}
+.trend-item{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;gap:.5rem}
+.trend-name{display:flex;align-items:center;gap:.45rem;width:42%;overflow:hidden}
+.trend-name .cat-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.trend-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trend-bar-bg{flex:1;height:7px;background:var(--color-surface-offset-2);border-radius:var(--radius-full);overflow:hidden}
+.trend-bar{height:100%;border-radius:var(--radius-full);background:var(--color-primary);transition:width .5s cubic-bezier(.16,1,.3,1)}
+.status-chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;padding:.2rem .55rem;border-radius:var(--radius-full)}
+.status-chip.todo{background:var(--color-surface-offset-2);color:var(--color-text-muted)}
+.status-chip.doing{background:var(--color-primary-highlight);color:var(--color-primary-hover)}
+.status-chip.done{background:var(--color-gold-highlight);color:var(--color-warning)}
+.badge-cta{display:flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:600;color:var(--color-primary)}
+.badge-cta svg{width:14px;height:14px}
+
+/* Kanban */
+.kanban-wrap{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem}
+.kanban-col{background:var(--color-surface-offset);border-radius:var(--radius-lg);min-width:280px;flex:1 1 280px;display:flex;flex-direction:column;max-height:calc(100dvh - 220px);border-top:3px solid var(--color-text-faint)}
+.kanban-col.todo{border-top-color:var(--color-text-faint)}
+.kanban-col.doing{border-top-color:var(--color-primary)}
+.kanban-col.done{border-top-color:var(--color-gold)}
+.kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted);border-bottom:1px solid var(--color-divider)}
+.kanban-count{background:var(--color-surface-dynamic);color:var(--color-text);font-size:.7rem;padding:.1rem .5rem;border-radius:var(--radius-full)}
+.kanban-list{padding:.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;flex:1;min-height:60px}
+.task-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
+.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat-product)}
+.task-card.cat-quality::before{background:var(--cat-quality)}
+.task-card.cat-strategy::before{background:var(--cat-strategy)}
+.task-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.task-card .tc-id{font-size:.65rem;color:var(--color-text-faint);font-weight:600;letter-spacing:.03em}
+.task-card .tc-title{font-size:.85rem;font-weight:600;margin:.25rem 0 .5rem;line-height:1.3}
+.task-card .tc-title small{display:block;font-weight:400;color:var(--color-text-muted);font-size:.72rem;margin-top:.15rem}
+.task-card .tc-meta{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--color-text-muted);gap:.5rem}
+.tc-owner{display:flex;align-items:center;gap:.35rem;min-width:0}
+.tc-owner span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-owner .dot{width:18px;height:18px;border-radius:50%;background:var(--color-primary-highlight);color:var(--color-primary-hover);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex:0 0 auto}
+.tc-date{white-space:nowrap;color:var(--color-text-faint)}
+.tc-proj{font-size:.65rem;color:var(--color-text-faint);margin-top:.4rem;padding-top:.4rem;border-top:1px solid var(--color-divider);display:flex;align-items:center;gap:.35rem}
+.tc-proj .cat-dot{width:7px;height:7px;border-radius:2px;flex:0 0 auto}
+.col-empty{font-size:.75rem;color:var(--color-text-faint);padding:1.25rem;text-align:center}
+
+/* Gantt */
+.gantt-toolbar{display:flex;gap:.75rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
+.select-chip{border:1px solid var(--color-border);background:var(--color-surface);padding:.45rem .75rem;border-radius:var(--radius-md);font-size:.8rem;color:var(--color-text)}
+select.select-chip{cursor:pointer}
+.gantt-wrap{overflow-x:auto;border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface)}
+.gantt-grid{display:grid;min-width:900px}
+.gantt-row{display:grid;grid-template-columns:260px 1fr;border-bottom:1px solid var(--color-divider)}
+.gantt-row:last-child{border-bottom:none}
+.gantt-row.axis{background:var(--color-surface-offset);position:sticky;top:0;z-index:3}
+.gantt-label{padding:.6rem .85rem;font-size:.78rem;display:flex;align-items:center;gap:.4rem;border-right:1px solid var(--color-divider);position:sticky;left:0;background:var(--color-surface);z-index:1}
+.gantt-row.axis .gantt-label{background:var(--color-surface-offset);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted)}
+.gantt-label.l1{font-weight:700;font-family:var(--font-display)}
+.gantt-label.l2{padding-left:1.6rem;color:var(--color-primary-hover);font-weight:600}
+.gantt-label.l3{padding-left:2.6rem;color:var(--color-text-muted);font-size:.74rem}
+.gantt-track{position:relative;min-height:38px}
+.gantt-months{position:relative;height:100%}
+.gantt-month{position:absolute;top:0;bottom:0;border-left:1px solid var(--color-divider);font-size:.68rem;color:var(--color-text-muted);padding:.55rem .4rem;white-space:nowrap}
+.gantt-gridlines{position:absolute;inset:0;pointer-events:none}
+.gantt-gridline{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in oklch,var(--color-text) 5%,transparent)}
+.gantt-bar{position:absolute;top:6px;height:26px;border-radius:var(--radius-full);display:flex;align-items:center;padding:0 .55rem;font-size:.68rem;font-weight:600;color:var(--color-text-inverse);white-space:nowrap;overflow:hidden;box-shadow:var(--shadow-sm)}
+.gantt-bar.l1{background:var(--color-text);height:20px;top:9px}
+.gantt-bar.l1 .fill{position:absolute;left:0;top:0;bottom:0;background:color-mix(in oklch,var(--color-gold) 55%,transparent)}
+.gantt-bar.l1 span{position:relative}
+.gantt-bar.l2{background:var(--color-primary);height:22px;top:8px}
+.gantt-bar.l3.todo{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
+.gantt-bar.l3.doing{background:var(--color-primary)}
+.gantt-bar.l3.done{background:var(--color-gold);color:#3a2e04}
+.gantt-nodate{position:absolute;top:0;left:0;height:100%;display:flex;align-items:center;padding-left:.85rem;font-size:.7rem;color:var(--color-text-faint);font-style:italic}
+.today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--color-error);z-index:2}
+.today-flag{position:absolute;top:0;transform:translateX(-50%);background:var(--color-error);color:#fff;font-size:.6rem;font-weight:700;padding:.05rem .3rem;border-radius:0 0 var(--radius-sm) var(--radius-sm);white-space:nowrap;z-index:4}
+
+/* Tree / hierarchy view */
+.tree-wrap{overflow:auto;padding:1rem 0}
+.tree{display:flex;gap:2.5rem;padding:1rem 1.5rem;min-width:max-content}
+.tree-node{border-radius:var(--radius-md);padding:.6rem .9rem;font-size:.78rem;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:170px}
+.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.85rem;min-width:200px}
+.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);font-weight:600}
+.tree-node.l3{background:var(--color-surface);color:var(--color-text)}
+.tree-node.l3.done{border-color:var(--color-gold)}
+.tree-node .tn-sub{display:block;font-size:.62rem;opacity:.85;margin-top:.15rem;font-weight:400}
+.tree-col{display:flex;flex-direction:column;gap:.6rem;align-items:center;position:relative;padding-top:1.25rem}
+.tree-col::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.25rem;background:var(--color-divider)}
+.tree-l1-block{position:relative;padding-top:1.5rem}
+.tree-l1-block::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.5rem;background:var(--color-divider)}
+.tree-l2-row{display:flex;gap:1.25rem}
+.tree-tasks{display:flex;flex-direction:column;gap:.5rem}
+
+.section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+.card-panel{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.72rem;color:var(--color-text-muted);margin-top:.75rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.legend .sw{width:10px;height:10px;border-radius:var(--radius-full);display:inline-block}
+[data-jaen="en"] .ja{display:none}
+[data-jaen="ja"] .en{display:none}
+.back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:1rem}
+.back-link:hover{color:var(--color-primary)}
+
+/* empty state */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.6rem;padding:3rem 1.5rem;color:var(--color-text-muted)}
+.empty svg{width:34px;height:34px;color:var(--color-text-faint)}
+.empty h3{font-family:var(--font-display);font-size:1.05rem;color:var(--color-text)}
+.empty p{font-size:.82rem;max-width:46ch;line-height:1.5}
+
+/* Edit controls */
+.row-actions{display:inline-flex;gap:.2rem;margin-left:.4rem;vertical-align:middle}
+.mini-btn{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);color:var(--color-text-muted);background:var(--color-surface-offset);transition:background var(--transition-interactive),color var(--transition-interactive);flex:0 0 auto}
+.mini-btn:hover{background:var(--color-primary);color:var(--color-text-inverse)}
+.mini-btn.danger:hover{background:var(--color-error);color:#fff}
+.mini-btn svg{width:12px;height:12px}
+.tree-node .row-actions{margin-top:.35rem;margin-left:0;display:flex;justify-content:center}
+.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.16);color:inherit}
+.add-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .75rem;border:1px dashed var(--color-border);border-radius:var(--radius-md);font-size:.75rem;font-weight:600;color:var(--color-text-muted);transition:all var(--transition-interactive)}
+.add-btn:hover{border-color:var(--color-primary);color:var(--color-primary);border-style:solid}
+.add-btn svg{width:13px;height:13px}
+.view-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.readonly-note{font-size:.75rem;color:var(--color-text-muted);display:flex;align-items:center;gap:.4rem}
+.status-select{font-size:.68rem;font-weight:600;padding:.15rem .35rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface-2);color:var(--color-text);cursor:pointer}
+.field{margin-bottom:.75rem}
+.field label{font-size:.72rem;font-weight:600;color:var(--color-text-muted);display:block;margin-bottom:.3rem}
+.field input,.field select{width:100%;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;font-family:inherit}
+.field-row{display:flex;gap:.6rem}
+.field-row .field{flex:1}
+.modal.wide{max-width:520px}
+.form-err{font-size:.75rem;color:var(--color-error);margin-top:.5rem;min-height:1rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.toast{position:fixed;bottom:1.25rem;left:50%;transform:translateX(-50%) translateY(120%);background:var(--color-text);color:var(--color-text-inverse);padding:.7rem 1.1rem;border-radius:var(--radius-full);font-size:.8rem;font-weight:600;box-shadow:var(--shadow-lg);z-index:300;transition:transform .3s cubic-bezier(.16,1,.3,1);max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--color-error);color:#fff}
+.modal-backdrop{position:fixed;inset:0;background:oklch(0.15 0.01 80/.5);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--color-surface);border-radius:var(--radius-xl);padding:1.5rem;max-width:460px;width:100%;box-shadow:var(--shadow-lg);border:1px solid var(--color-divider)}
+.modal h2{font-family:var(--font-display);font-size:1.1rem;margin-bottom:.5rem}
+.modal p{font-size:.8rem;color:var(--color-text-muted);margin-bottom:1rem;line-height:1.5}
+.modal label{font-size:.72rem;font-weight:600;color:var(--color-text-muted);display:block;margin-bottom:.35rem}
+.modal input{width:100%;padding:.6rem .75rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;margin-bottom:.5rem}
+.modal .hint{font-size:.72rem;color:var(--color-text-faint);margin-bottom:.75rem}
+.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
+.btn{padding:.55rem 1.1rem;border-radius:var(--radius-md);font-size:.82rem;font-weight:600}
+.btn-primary{background:var(--color-primary);color:var(--color-text-inverse)}
+.btn-primary:hover{background:var(--color-primary-hover)}
+.btn-ghost{color:var(--color-text-muted)}
+.btn-ghost:hover{background:var(--color-surface-offset)}
+</style>
+</head>
+<body data-jaen="ja">
+<div class="loadbar" id="loadbar"></div>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l-1 6H7L6 3z"/><path d="M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z"/><path d="M9 13h6"/></svg>
+      <span class="ja">国稀ハブ</span><span class="en">Brewery Hub</span></div>
+    <nav class="nav" id="mainNav">
+      <a href="#home" data-view="home"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="ja">ホーム</span><span class="en">Home</span></a>
+      <a href="#kanban" data-view="kanban"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg><span class="ja">かんばん</span><span class="en">Kanban</span></a>
+      <a href="#gantt" data-view="gantt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h8M3 12h14M3 18h6"/></svg><span class="ja">ガント</span><span class="en">Gantt</span></a>
+      <a href="#tree" data-view="tree"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M12 6v3M6 14v3M18 14v3M8.5 6.5L10 8M15.5 6.5L14 8"/></svg><span class="ja">構造図</span><span class="en">Structure</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="ja">L1プロジェクト→L2マイルストーン→L3タスク</span><span class="en">L1 Project → L2 Milestone → L3 Task</span>
+      <span>国稀酒造株式会社</span>
+    </div>
+  </aside>
+  <div>
+    <div class="topbar">
+      <h1 id="viewTitle" class="ja">ホーム</h1>
+      <div class="topbar-actions">
+        <button class="sync-pill" id="connectBtn" title="Connect to Notion">
+          <span class="sync-dot" id="syncDot"></span>
+          <span class="pill-label" id="syncLabel"><span class="ja">サンプル</span><span class="en">Sample</span></span>
+          <span class="pill-time" id="syncTime"></span>
+        </button>
+        <div class="lang-toggle">
+          <button data-lang="ja" class="active">日本語</button>
+          <button data-lang="en">EN</button>
+        </div>
+        <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      </div>
+    </div>
+    <main>
+      <section class="view active" id="view-home"></section>
+      <section class="view" id="view-kanban"></section>
+      <section class="view" id="view-gantt"></section>
+      <section class="view" id="view-tree"></section>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="connectModal">
+  <div class="modal">
+    <h2><span class="ja">Notionと接続</span><span class="en">Connect to Notion</span></h2>
+    <p><span class="ja">Code.gs をデプロイした Google Apps Script の Web アプリ URL を貼り付けてください。空欄のままだとサンプルデータを表示します。</span><span class="en">Paste the Google Apps Script Web App URL from deploying Code.gs. Leave blank to keep using sample data.</span></p>
+    <label for="gasUrlInput">Web App URL</label>
+    <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/xxxx/exec">
+    <label for="appKeyInput"><span class="ja">アプリキー（編集に必要）</span><span class="en">App key (required for editing)</span></label>
+    <input type="password" id="appKeyInput" placeholder="APP_KEY from Code.gs">
+    <div class="hint"><span class="ja">接続後は60秒ごとに自動更新します。URLはこのブラウザにのみ保存され、公開ページには含まれません。ガントには開始日・終了日が必要です（Notion側で入力）。</span><span class="en">Refreshes every 60s once connected. The URL is saved in this browser only — it is never published with the page. The Gantt needs Start/End dates, added in Notion.</span></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalDisconnect"><span class="ja">切断</span><span class="en">Disconnect</span></button>
+      <button class="btn btn-ghost" id="modalCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
+      <button class="btn btn-primary" id="modalConnect"><span class="ja">接続</span><span class="en">Connect</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="editModal">
+  <div class="modal wide">
+    <h2 id="editTitle"></h2>
+    <div id="editBody"></div>
+    <div class="form-err" id="editErr"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="editCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
+      <button class="btn btn-primary" id="editSave"><span class="ja">保存</span><span class="en">Save</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h2><span class="ja">ゴミ箱へ移動しますか？</span><span class="en">Move to Trash?</span></h2>
+    <p id="confirmText"></p>
+    <p style="font-size:.75rem;color:var(--color-text-faint)"><span class="ja">Notionのゴミ箱に移動します。30日以内なら復元できます。子項目は削除されず、親を失うだけです。</span><span class="en">This moves the page to Notion's Trash, restorable for 30 days. Child items are not deleted — they simply lose their parent.</span></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
+      <button class="btn btn-primary" id="confirmOk" style="background:var(--color-error)"><span class="ja">移動する</span><span class="en">Move to Trash</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="./data.js"></script>
+<script>
+/* ---------- Data source (decoupled from data.js const so live sync can replace it) ---------- */
+let DATA = (typeof PROJECTS !== 'undefined' && Array.isArray(PROJECTS)) ? PROJECTS.slice() : [];
+
+/* ---------- Theme + Lang ---------- */
+(function(){const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';r.setAttribute('data-theme',d);t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d)})})();
+document.querySelectorAll('.lang-toggle button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.lang-toggle button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.body.setAttribute('data-jaen', b.dataset.lang);
+  render();
+}));
+
+/* ---------- Helpers ---------- */
+const L = ()=>document.body.getAttribute('data-jaen');
+const T = obj => obj ? (obj[L()] ?? obj.en ?? obj.ja ?? '') : '';
+const STATUS_LABEL = { todo:{ja:'未着手',en:'To Do'}, doing:{ja:'進行中',en:'In Progress'}, done:{ja:'完了',en:'Done'} };
+const CAT_LABEL = { product:{ja:'製品',en:'Product'}, quality:{ja:'品質',en:'Quality'}, strategy:{ja:'戦略',en:'Strategy'} };
+const VIEW_TITLE = { home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
+
+function hasDates(x){ return !!(x && x.start && x.end); }
+function allTasks(){
+  const out=[];
+  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
+  return out;
+}
+function progressOf(list){ if(!list.length) return 0; return Math.round(list.filter(x=>x.status==='done').length/list.length*100); }
+function projectProgress(p){
+  const msProg = p.milestones.map(m=>progressOf(m.tasks));
+  return msProg.length ? Math.round(msProg.reduce((a,b)=>a+b,0)/msProg.length) : 0;
+}
+function initials(name){ if(!name||name==='—') return '—'; return name.trim()[0].toUpperCase(); }
+
+/* ---------- Router ---------- */
+function setActiveNav(view){
+  document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active', a.dataset.view===view));
+}
+function navigate(){
+  const hash = (location.hash||'#home').replace('#','');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el = document.getElementById('view-'+hash) || document.getElementById('view-home');
+  el.classList.add('active');
+  setActiveNav(hash in VIEW_TITLE ? hash : 'home');
+  render(hash);
+}
+window.addEventListener('hashchange', navigate);
+
+/* ---------- Renderers ---------- */
+function render(hash){
+  hash = hash || (location.hash||'#home').replace('#','');
+  if(hash==='home') renderHome();
+  else if(hash==='kanban') renderKanban();
+  else if(hash==='gantt') renderGantt();
+  else if(hash==='tree') renderTree();
+  const vt = VIEW_TITLE[hash] || VIEW_TITLE.home;
+  document.getElementById('viewTitle').textContent = T(vt);
+}
+
+function noDataEmpty(){
+  return `<div class="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg>
+    <h3><span class="ja">データがありません</span><span class="en">Nothing to show yet</span></h3>
+    <p><span class="ja">右上の同期バッジから Notion に接続するか、data.js のサンプルを読み込んでください。</span><span class="en">Connect to Notion from the sync badge (top right), or load the data.js sample.</span></p>
+  </div>`;
+}
+
+/* HOME */
+function renderHome(){
+  const el = document.getElementById('view-home');
+  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
+  const tasks = allTasks();
+  const total = DATA.length;
+  const inProgress = DATA.filter(p=>p.status==='doing').length;
+  const doneCount = DATA.filter(p=>p.status==='done').length;
+  const todoCount = DATA.filter(p=>p.status==='todo').length;
+  const pct = progressOf(tasks);
+  const taskDone = tasks.filter(t=>t.status==='done').length;
+  const taskDoing = tasks.filter(t=>t.status==='doing').length;
+  const taskTodo = tasks.filter(t=>t.status==='todo').length;
+  const C = 2*Math.PI*40; // ring circumference (r=40)
+
+  el.innerHTML = `
+  <div class="view-toolbar">
+    <button class="add-btn" onclick="openEditor('project','create')">${ICON_ADD}<span class="ja">プロジェクトを追加</span><span class="en">Add Project</span></button>
+    ${canEdit()?`<span class="readonly-note"><span class="ja">Notionと同期中 — 変更は即反映</span><span class="en">Synced with Notion — changes save instantly</span></span>`:`<span class="readonly-note"><span class="ja">閲覧のみ — 同期バッジから接続</span><span class="en">Read-only — connect via the sync badge</span></span>`}
+  </div>
+  <div class="bento">
+
+    <div class="bento-card hero-card span-2 span-2-row">
+      <div class="label"><span class="ja">全体の完了率</span><span class="en">Overall completion</span></div>
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-surface-offset-2)" stroke-width="9"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-primary)" stroke-width="9" stroke-linecap="round"
+            stroke-dasharray="${(pct/100*C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 50 50)"/>
+          <text class="num" x="50" y="50" text-anchor="middle" dominant-baseline="central" style="font-size:1.4rem">${pct}%</text>
+        </svg>
+        <div class="ring-stats">
+          <div class="ring-stat"><span class="dot" style="background:var(--color-gold)"></span><b>${taskDone}</b><span class="ja">完了タスク</span><span class="en">tasks done</span></div>
+          <div class="ring-stat"><span class="dot" style="background:var(--color-primary)"></span><b>${taskDoing}</b><span class="ja">進行中</span><span class="en">in progress</span></div>
+          <div class="ring-stat"><span class="dot" style="background:var(--color-text-faint)"></span><b>${taskTodo}</b><span class="ja">未着手</span><span class="en">to do</span></div>
+        </div>
+      </div>
+      <div class="sub"><span class="ja">${tasks.length}件のタスク全体の完了割合</span><span class="en">Share of all ${tasks.length} tasks completed</span></div>
+    </div>
+
+    <div class="bento-card">
+      <div class="label"><span class="ja">進行中</span><span class="en">In Progress</span></div>
+      <div class="big-num" style="color:var(--color-primary)">${inProgress}</div>
+      <div class="sub"><span class="ja">全${total}プロジェクト中</span><span class="en">of ${total} projects</span></div>
+    </div>
+
+    <div class="bento-card">
+      <div class="label"><span class="ja">完了</span><span class="en">Completed</span></div>
+      <div class="big-num" style="color:var(--color-gold)">${doneCount}</div>
+      <div class="sub"><span class="ja">達成済み</span><span class="en">shipped</span></div>
+    </div>
+
+    <div class="bento-card">
+      <div class="label"><span class="ja">未着手</span><span class="en">Not Started</span></div>
+      <div class="big-num" style="color:var(--color-text-muted)">${todoCount}</div>
+      <div class="sub"><span class="ja">計画待ち</span><span class="en">awaiting kickoff</span></div>
+    </div>
+
+    <div class="bento-card clickable" onclick="location.hash='#kanban'">
+      <div class="label"><span class="ja">タスクボード</span><span class="en">Task Board</span></div>
+      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">かんばんを開く</span><span class="en">Open Kanban</span></div>
+      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <div class="bento-card span-2">
+      <div class="label"><span class="ja">プロジェクト別進捗</span><span class="en">Progress by Project</span></div>
+      <div class="trend-list">
+      ${DATA.map(p=>`
+        <div class="trend-item">
+          <span class="trend-name"><span class="cat-dot" style="background:var(--cat-${p.category||'product'})"></span><span>${T(p.name)}</span></span>
+          <div class="trend-bar-bg"><div class="trend-bar" style="width:${projectProgress(p)}%;background:${p.status==='done'?'var(--color-gold)':'var(--color-primary)'}"></div></div>
+          <span style="width:34px;text-align:right;font-weight:600">${projectProgress(p)}%</span>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="bento-card clickable" onclick="location.hash='#gantt'">
+      <div class="label"><span class="ja">スケジュール</span><span class="en">Schedule</span></div>
+      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">ガントを開く</span><span class="en">Open Gantt</span></div>
+      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <div class="bento-card clickable" onclick="location.hash='#tree'">
+      <div class="label"><span class="ja">構造マップ</span><span class="en">Structure Map</span></div>
+      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">親子チャートを開く</span><span class="en">Open Hierarchy</span></div>
+      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+    </div>
+
+  </div>`;
+}
+
+/* KANBAN */
+function renderKanban(){
+  const el = document.getElementById('view-kanban');
+  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
+  const tasks = allTasks();
+  const cols = [ {key:'todo'}, {key:'doing'}, {key:'done'} ];
+  el.innerHTML = `
+    <div class="kanban-wrap">
+    ${cols.map(c=>{
+      const items = tasks.filter(t=>t.status===c.key);
+      return `<div class="kanban-col ${c.key}">
+        <div class="kanban-col-head"><span>${T(STATUS_LABEL[c.key])}</span><span class="kanban-count">${items.length}</span></div>
+        <div class="kanban-list">
+        ${items.map(t=>{
+          const dates = hasDates(t) ? `<span class="tc-date">${t.start.slice(5)} → ${t.end.slice(5)}</span>` : '';
+          const ctrls = t.pageId ? `<div class="row-actions">
+              <select class="status-select" onchange="quickStatus('task','${t.pageId}',this.value)">
+                ${OPT_STATUS.map(o=>`<option value="${o[0]}" ${o[0]===t.status?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('')}
+              </select>
+              <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
+              <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
+            </div>` : '';
+          return `<div class="task-card cat-${t.projectCategory}">
+            <div class="tc-id">${t.projectId} · ${t.id}</div>
+            <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
+            <div class="tc-meta">
+              <span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>
+              ${dates}
+            </div>
+            <div class="tc-proj"><span class="cat-dot" style="background:var(--cat-${t.projectCategory})"></span>${T(t.projectName)}</div>
+            ${ctrls}
+          </div>`;
+        }).join('') || `<div class="col-empty">—</div>`}
+        </div>
+      </div>`;
+    }).join('')}
+    </div>`;
+}
+
+/* GANTT */
+const DAYWIDTH = 10;
+function dayDiff(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+let ganttFilter = 'all';
+
+function datedItems(){
+  // every item that has both dates, to compute the range
+  const items=[];
+  DATA.forEach(p=>{
+    if(ganttFilter!=='all' && p.id!==ganttFilter) return;
+    if(hasDates(p)) items.push(p);
+    p.milestones.forEach(m=>{ if(hasDates(m)) items.push(m); m.tasks.forEach(t=>{ if(hasDates(t)) items.push(t); }); });
+  });
+  return items;
+}
+function ganttRange(){
+  let min=null,max=null;
+  datedItems().forEach(x=>{
+    const s=new Date(x.start), e=new Date(x.end);
+    if(!min||s<min) min=s; if(!max||e>max) max=e;
+  });
+  return {min,max};
+}
+function barStyle(rangeMin, start, end){
+  const left = dayDiff(rangeMin, start)*DAYWIDTH;
+  const width = Math.max(dayDiff(start,end)*DAYWIDTH, DAYWIDTH*1.5);
+  return `left:${left}px;width:${width}px;`;
+}
+function monthMarkers(min, totalDays){
+  // returns {labels:[{left,text}], lines:[left]}
+  const labels=[], lines=[];
+  const d = new Date(min.getFullYear(), min.getMonth(), 1);
+  const end = new Date(min); end.setDate(end.getDate()+totalDays);
+  while(d <= end){
+    const left = dayDiff(min, d.toISOString().slice(0,10))*DAYWIDTH;
+    if(left >= 0){
+      labels.push({left, text:(d.getMonth()+1)+ (L()==='ja'?'月':'') + (d.getMonth()===0?` ${d.getFullYear()}`:'')});
+      lines.push(left);
+    }
+    d.setMonth(d.getMonth()+1);
+  }
+  return {labels, lines};
+}
+function renderGantt(){
+  const el = document.getElementById('view-gantt');
+  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
+
+  const projectOptions = `<option value="all">${L()==='ja'?'全プロジェクト':'All projects'}</option>` +
+    DATA.map(p=>`<option value="${p.id}" ${ganttFilter===p.id?'selected':''}>${T(p.name)}</option>`).join('');
+  const toolbar = `<div class="gantt-toolbar">
+      <select class="select-chip" id="ganttFilter">${projectOptions}</select>
+    </div>`;
+
+  const items = datedItems();
+  if(!items.length){
+    el.innerHTML = toolbar + `<div class="card-panel"><div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+      <h3><span class="ja">日付が未入力です</span><span class="en">No dates yet</span></h3>
+      <p><span class="ja">タイムラインを表示するには、Notion の各項目に「開始日」と「終了日」を入力してください。日付が入り次第、ここに自動で表示されます。</span><span class="en">Add a Start Date and End Date to items in Notion to see the timeline. Bars appear here automatically once dates exist.</span></p>
+    </div></div>`;
+    document.getElementById('ganttFilter').addEventListener('change', e=>{ ganttFilter=e.target.value; renderGantt(); });
+    return;
+  }
+
+  const {min,max} = ganttRange();
+  const totalDays = dayDiff(min,max)+5;
+  const trackW = totalDays*DAYWIDTH;
+  const todayLeft = dayDiff(min, new Date().toISOString().slice(0,10))*DAYWIDTH;
+  const showToday = todayLeft>=0 && todayLeft<=trackW;
+  const {labels, lines} = monthMarkers(min, totalDays);
+  const gridlines = `<div class="gantt-gridlines">${lines.map(l=>`<div class="gantt-gridline" style="left:${l}px"></div>`).join('')}${showToday?`<div class="today-line" style="left:${todayLeft}px"></div>`:''}</div>`;
+
+  function trackCell(inner){
+    return `<div class="gantt-track" style="width:${trackW}px">${gridlines}${inner}</div>`;
+  }
+  function bar(cls, style, label){ return `<div class="gantt-bar ${cls}" style="${style}">${label}</div>`; }
+  function noDate(){ return `<div class="gantt-nodate"><span class="ja">日付なし</span><span class="en">no dates</span></div>`; }
+
+  let rows='';
+  DATA.forEach(p=>{
+    if(ganttFilter!=='all' && p.id!==ganttFilter) return;
+    const pProg = projectProgress(p);
+    const pBar = hasDates(p)
+      ? bar('l1', barStyle(min,p.start,p.end), `<span class="fill" style="width:${pProg}%"></span><span>${pProg}%</span>`)
+      : noDate();
+    rows += `<div class="gantt-row"><div class="gantt-label l1">${T(p.name)}</div>${trackCell(pBar)}</div>`;
+    p.milestones.forEach(m=>{
+      const mBar = hasDates(m) ? bar('l2', barStyle(min,m.start,m.end), m.id) : noDate();
+      rows += `<div class="gantt-row"><div class="gantt-label l2">${T(m.name)}</div>${trackCell(mBar)}</div>`;
+      m.tasks.forEach(t=>{
+        const tBar = hasDates(t) ? bar('l3 '+t.status, barStyle(min,t.start,t.end), t.owner) : noDate();
+        rows += `<div class="gantt-row"><div class="gantt-label l3">${t.id} ${T(t.name)}</div>${trackCell(tBar)}</div>`;
+      });
+    });
+  });
+
+  const axis = `<div class="gantt-row axis">
+      <div class="gantt-label"><span class="ja">階層 / 名称</span><span class="en">Layer / Name</span></div>
+      <div class="gantt-track" style="width:${trackW}px">
+        <div class="gantt-months">
+          ${labels.map(l=>`<div class="gantt-month" style="left:${l.left}px">${l.text}</div>`).join('')}
+          ${showToday?`<div class="today-flag" style="left:${todayLeft}px"><span class="ja">本日</span><span class="en">Today</span></div>`:''}
+        </div>
+      </div>
+    </div>`;
+
+  el.innerHTML = toolbar + `
+    <div class="gantt-wrap"><div class="gantt-grid">${axis}${rows}</div></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--color-text)"></span><span class="ja">L1 プロジェクト（バー内は進捗）</span><span class="en">L1 Project (fill = progress)</span></span>
+      <span><span class="sw" style="background:var(--color-primary)"></span><span class="ja">L2 マイルストーン</span><span class="en">L2 Milestone</span></span>
+      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
+      <span><span class="sw" style="background:var(--color-surface-dynamic)"></span><span class="ja">L3 未着手</span><span class="en">L3 To Do</span></span>
+      <span><span class="sw" style="background:var(--color-error)"></span><span class="ja">本日</span><span class="en">Today</span></span>
+    </div>`;
+
+  document.getElementById('ganttFilter').addEventListener('change', e=>{ ganttFilter=e.target.value; renderGantt(); });
+}
+
+/* TREE */
+function renderTree(){
+  const el = document.getElementById('view-tree');
+  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
+  el.innerHTML = `
+    <div class="card-panel">
+      <div class="section-title"><span class="ja">分解（上→下）と集約（下→上）</span><span class="en">Decompose (top-down) & roll-up (bottom-up)</span></div>
+      <p style="font-size:.82rem;color:var(--color-text-muted);max-width:72ch">
+        <span class="ja">L1プロジェクト（1〜6ヶ月・名詞目標）を3〜7個のL2マイルストーン（1〜4週間・状態）に分解し、L2を3〜10個のL3タスク（半日〜3日・動詞）に分解します。タスクの完了がマイルストーンへ、マイルストーンの進捗がプロジェクトへ自動集約されます。</span>
+        <span class="en">L1 Projects (1–6 mo, noun-goal) break into 3–7 L2 Milestones (1–4 wk, state), which break into 3–10 L3 Tasks (half-day to 3 days, verb-action). Task completion rolls up into milestone progress, and milestone progress rolls up into project progress.</span>
+      </p>
+    </div>
+    <div class="view-toolbar">
+      <button class="add-btn" onclick="openEditor('project','create')">${ICON_ADD}<span class="ja">プロジェクトを追加</span><span class="en">Add Project</span></button>
+      ${canEdit()?'':`<span class="readonly-note"><span class="ja">閲覧のみ — 編集するには同期バッジから接続</span><span class="en">Read-only — connect via the sync badge to edit</span></span>`}
+    </div>
+    <div class="tree-wrap">
+      <div class="tree">
+      ${DATA.map(p=>`
+        <div class="tree-l1-block">
+          <div class="tree-node l1">${T(p.name)}<span class="tn-sub">${projectProgress(p)}% · ${p.owner}</span>
+            <div class="row-actions">
+              <button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
+              <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
+              <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>
+            </div>
+          </div>
+          <div class="tree-l2-row" style="margin-top:1.25rem">
+            ${p.milestones.map(m=>`
+              <div class="tree-col">
+                <div class="tree-node l2">${T(m.name)}<span class="tn-sub">${progressOf(m.tasks)}%</span>
+                  <div class="row-actions">
+                    <button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
+                    <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
+                    <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>
+                  </div>
+                </div>
+                <div class="tree-tasks" style="margin-top:1rem">
+                  ${m.tasks.map(t=>`<div class="tree-node l3 ${t.status}">${T(t.name)}<span class="status-chip ${t.status}" style="margin-top:.35rem">${T(STATUS_LABEL[t.status])}</span>
+                    <div class="row-actions">
+                      <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
+                      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
+                    </div></div>`).join('') || `<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`}
+                </div>
+              </div>`).join('') || `<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--color-text)"></span>L1</span>
+      <span><span class="sw" style="background:var(--color-primary)"></span>L2</span>
+      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
+    </div>`;
+}
+
+/* ---------- Write layer (create / update / archive in Notion) ---------- */
+const LS_KEY_APP = 'breweryHub.appKey';
+function loadKey(){ try{ return localStorage.getItem(LS_KEY_APP) || ""; }catch(e){ return ""; } }
+function saveKey(k){ try{ k ? localStorage.setItem(LS_KEY_APP,k) : localStorage.removeItem(LS_KEY_APP); }catch(e){} }
+let APP_KEY = loadKey();
+
+const canEdit = () => !!(GAS_URL && APP_KEY);
+
+function toast(msg, isErr){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(isErr?' err':'');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>{ t.className='toast'+(isErr?' err':''); }, 3200);
+}
+
+/* Sent as text/plain on purpose: Apps Script cannot answer CORS preflight,
+   and application/json would trigger one and be blocked by the browser. */
+async function writeAction(payload){
+  if(!GAS_URL) throw new Error(L()==='ja'?'先にNotionへ接続してください。':'Connect to Notion first.');
+  if(!APP_KEY) throw new Error(L()==='ja'?'アプリキーが未設定です。':'App key is not set.');
+  loadbar('on');
+  try{
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({...payload, key: APP_KEY})
+    });
+    const out = await res.json();
+    if(!out.ok) throw new Error(out.error || 'Unknown error');
+    if(Array.isArray(out.data)){ DATA = out.data; stamp(); render(); }
+    return out;
+  } finally { loadbar('off'); }
+}
+
+/* ----- editor modal ----- */
+let editState = null;
+const OPT_STATUS = [['todo','未着手','To Do'],['doing','進行中','In Progress'],['done','完了','Done']];
+const OPT_CAT = [['product','製品','Product'],['quality','品質','Quality'],['strategy','戦略','Strategy']];
+function optionsHtml(list, selected){
+  return list.map(o=>`<option value="${o[0]}" ${o[0]===selected?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('');
+}
+function parentOptions(entity, selected){
+  if(entity==='milestone'){
+    return DATA.map(p=>`<option value="${p.pageId}" ${p.pageId===selected?'selected':''}>${T(p.name)}</option>`).join('');
+  }
+  if(entity==='task'){
+    let out='';
+    DATA.forEach(p=>p.milestones.forEach(m=>{
+      out+=`<option value="${m.pageId}" ${m.pageId===selected?'selected':''}>${T(p.name)} › ${T(m.name)}</option>`;
+    }));
+    return out;
+  }
+  return '';
+}
+const ENTITY_LABEL={project:{ja:'プロジェクト',en:'Project'},milestone:{ja:'マイルストーン',en:'Milestone'},task:{ja:'タスク',en:'Task'}};
+
+function openEditor(entity, mode, item, parentId){
+  if(!canEdit()){
+    toast(L()==='ja'?'編集にはNotion接続とアプリキーが必要です':'Editing needs a Notion connection and app key', true);
+    document.getElementById('connectModal').classList.add('open');
+    return;
+  }
+  editState={entity, mode, pageId:item?item.pageId:null};
+  const it=item||{};
+  const isNew = mode==='create';
+  document.getElementById('editTitle').textContent =
+    (isNew ? (L()==='ja'?'新規 ':'New ') : (L()==='ja'?'編集 ':'Edit ')) + T(ENTITY_LABEL[entity]);
+
+  const nameHint = entity==='milestone'
+    ? (L()==='ja'?'「〜した状態」で書く':'Write as "… is completed"')
+    : entity==='task' ? (L()==='ja'?'「〜する」で書く':'Write as an action, "Order malt"') : '';
+
+  let html = `
+    <div class="field-row">
+      <div class="field"><label>日本語 ${nameHint?`<span style="font-weight:400">— ${nameHint}</span>`:''}</label>
+        <input type="text" id="f_ja" value="${(it.name&&it.name.ja||'').replace(/"/g,'&quot;')}"></div>
+      <div class="field"><label>English</label>
+        <input type="text" id="f_en" value="${(it.name&&it.name.en||'').replace(/"/g,'&quot;')}"></div>
+    </div>`;
+
+  if(entity!=='project'){
+    html += `<div class="field"><label>${entity==='milestone'?(L()==='ja'?'親プロジェクト':'Parent Project'):(L()==='ja'?'親マイルストーン':'Parent Milestone')}</label>
+      <select id="f_parent">${parentOptions(entity, parentId||null)}</select></div>`;
+  }
+  html += `<div class="field-row">
+      <div class="field"><label>${L()==='ja'?'ステータス':'Status'}</label>
+        <select id="f_status">${optionsHtml(OPT_STATUS, it.status||'todo')}</select></div>`;
+  if(entity==='project'){
+    html += `<div class="field"><label>${L()==='ja'?'カテゴリ':'Category'}</label>
+        <select id="f_cat">${optionsHtml(OPT_CAT, it.category||'product')}</select></div>`;
+  }
+  html += `</div>
+    <div class="field-row">
+      <div class="field"><label>${L()==='ja'?'開始日':'Start Date'}</label><input type="date" id="f_start" value="${it.start||''}"></div>
+      <div class="field"><label>${L()==='ja'?'終了日':'End Date'}</label><input type="date" id="f_end" value="${it.end||''}"></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--color-text-faint)">${L()==='ja'?'日付を入れるとガントチャートに表示されます。担当者はNotion側で設定してください。':'Dates make the item appear on the Gantt. Set Owner in Notion.'}</div>`;
+
+  document.getElementById('editBody').innerHTML = html;
+  document.getElementById('editErr').textContent = '';
+  document.getElementById('editModal').classList.add('open');
+  setTimeout(()=>{ const f=document.getElementById('f_ja'); if(f) f.focus(); }, 50);
+}
+
+document.getElementById('editCancel').addEventListener('click', ()=>document.getElementById('editModal').classList.remove('open'));
+document.getElementById('editModal').addEventListener('click', e=>{ if(e.target.id==='editModal') e.currentTarget.classList.remove('open'); });
+
+document.getElementById('editSave').addEventListener('click', async ()=>{
+  if(!editState) return;
+  const g=id=>{ const el=document.getElementById(id); return el?el.value:undefined; };
+  const fields={ ja:g('f_ja')||'', en:g('f_en')||'', status:g('f_status'), start:g('f_start')||'', end:g('f_end')||'' };
+  if(editState.entity==='project') fields.category=g('f_cat');
+  else fields.parentId=g('f_parent');
+
+  if(!fields.ja.trim() && !fields.en.trim()){
+    document.getElementById('editErr').textContent = L()==='ja'?'名前を入力してください。':'Please enter a name.';
+    return;
+  }
+  if(editState.entity!=='project' && !fields.parentId){
+    document.getElementById('editErr').textContent = L()==='ja'?'先に親を作成してください。':'Create a parent first.';
+    return;
+  }
+  if(fields.start && fields.end && fields.end < fields.start){
+    document.getElementById('editErr').textContent = L()==='ja'?'終了日が開始日より前です。':'End date is before start date.';
+    return;
+  }
+  const btn=document.getElementById('editSave'); btn.disabled=true;
+  try{
+    await writeAction({ action:editState.mode==='create'?'create':'update', entity:editState.entity, id:editState.pageId, fields });
+    document.getElementById('editModal').classList.remove('open');
+    toast(L()==='ja'?'Notionに保存しました':'Saved to Notion');
+  }catch(err){
+    document.getElementById('editErr').textContent = err.message;
+  }finally{ btn.disabled=false; }
+});
+
+/* ----- archive ----- */
+let pendingArchive=null;
+function askArchive(entity, item){
+  if(!canEdit()){ toast(L()==='ja'?'編集にはNotion接続が必要です':'Editing needs a Notion connection', true); return; }
+  pendingArchive={entity, pageId:item.pageId};
+  document.getElementById('confirmText').textContent = T(item.name);
+  document.getElementById('confirmModal').classList.add('open');
+}
+document.getElementById('confirmCancel').addEventListener('click', ()=>document.getElementById('confirmModal').classList.remove('open'));
+document.getElementById('confirmModal').addEventListener('click', e=>{ if(e.target.id==='confirmModal') e.currentTarget.classList.remove('open'); });
+document.getElementById('confirmOk').addEventListener('click', async ()=>{
+  if(!pendingArchive) return;
+  const btn=document.getElementById('confirmOk'); btn.disabled=true;
+  try{
+    await writeAction({ action:'archive', entity:pendingArchive.entity, id:pendingArchive.pageId });
+    document.getElementById('confirmModal').classList.remove('open');
+    toast(L()==='ja'?'ゴミ箱へ移動しました':'Moved to Trash');
+  }catch(err){ toast(err.message, true); }
+  finally{ btn.disabled=false; pendingArchive=null; }
+});
+
+/* ----- quick status change from the kanban ----- */
+async function quickStatus(entity, pageId, status){
+  try{ await writeAction({action:'update', entity, id:pageId, fields:{status}}); toast(L()==='ja'?'更新しました':'Updated'); }
+  catch(err){ toast(err.message, true); render(); }
+}
+
+/* Lookup helpers so inline handlers can find the live object by page id */
+function findTask(pid){ for(const p of DATA) for(const m of p.milestones) for(const t of m.tasks) if(t.pageId===pid) return t; return null; }
+function findMs(pid){ for(const p of DATA) for(const m of p.milestones) if(m.pageId===pid) return m; return null; }
+function findProj(pid){ return DATA.find(p=>p.pageId===pid)||null; }
+
+const ICON_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+const ICON_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
+const ICON_ADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+
+/* ---------- Live Notion Sync ---------- */
+/* The Apps Script URL is stored per-browser (localStorage), never in this repo.
+   That keeps your brewery data off a public GitHub page: a visitor without the
+   URL just sees the sample data. Wrapped in try/catch so the app still works in
+   sandboxed previews where storage is blocked. */
+const LS_KEY = 'breweryHub.gasUrl';
+function loadSavedUrl(){
+  try{ return localStorage.getItem(LS_KEY) || ""; }catch(e){ return ""; }
+}
+function saveUrl(url){
+  try{ url ? localStorage.setItem(LS_KEY, url) : localStorage.removeItem(LS_KEY); }catch(e){}
+}
+// ?gas=<url> in the address bar overrides the saved value (handy for bookmarks).
+function urlFromQuery(){
+  try{ return new URLSearchParams(location.search).get('gas') || ""; }catch(e){ return ""; }
+}
+let GAS_URL = urlFromQuery() || loadSavedUrl();
+function setSync(state, label){
+  const pill=document.getElementById('connectBtn');
+  pill.className='sync-pill'+(state?(' '+state):'');
+  const lbl=document.getElementById('syncLabel');
+  if(label) lbl.innerHTML = `<span class="ja">${label.ja}</span><span class="en">${label.en}</span>`;
+}
+function stamp(){
+  const d=new Date();
+  document.getElementById('syncTime').textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+function loadbar(state){
+  const b=document.getElementById('loadbar');
+  if(state==='on'){ b.className='loadbar on'; }
+  else { b.className='loadbar done'; setTimeout(()=>{ b.className='loadbar'; }, 350); }
+}
+async function fetchLiveData(){
+  if(!GAS_URL){ setSync('', {ja:'サンプル',en:'Sample'}); return; }
+  setSync('syncing', {ja:'同期中…',en:'Syncing…'});
+  loadbar('on');
+  try{
+    const res = await fetch(GAS_URL);
+    const json = await res.json();
+    if(json.ok && Array.isArray(json.data)){
+      DATA = json.data;
+      setSync('live', {ja:'ライブ',en:'Live'});
+      stamp();
+      render();
+    } else {
+      setSync('error', {ja:'同期エラー',en:'Sync error'});
+    }
+  }catch(err){
+    setSync('error', {ja:'接続エラー',en:'Connection error'});
+  }finally{
+    loadbar('off');
+  }
+}
+document.getElementById('connectBtn').addEventListener('click', ()=>{
+  document.getElementById('gasUrlInput').value = GAS_URL;
+  document.getElementById('appKeyInput').value = APP_KEY;
+  document.getElementById('connectModal').classList.add('open');
+});
+document.getElementById('modalCancel').addEventListener('click', ()=>{
+  document.getElementById('connectModal').classList.remove('open');
+});
+document.getElementById('connectModal').addEventListener('click', e=>{
+  if(e.target.id==='connectModal') e.currentTarget.classList.remove('open');
+});
+let syncTimer=null;
+function applyConnection(url){
+  GAS_URL = url;
+  saveUrl(url);
+  if(syncTimer){ clearInterval(syncTimer); syncTimer=null; }
+  if(GAS_URL){
+    fetchLiveData();
+    syncTimer = setInterval(fetchLiveData, 60000);
+  } else {
+    // Disconnected: fall back to the bundled sample data.
+    DATA = (typeof PROJECTS !== 'undefined' && Array.isArray(PROJECTS)) ? PROJECTS.slice() : [];
+    document.getElementById('syncTime').textContent = '';
+    setSync('', {ja:'サンプル',en:'Sample'});
+    render();
+  }
+}
+document.getElementById('modalConnect').addEventListener('click', ()=>{
+  document.getElementById('connectModal').classList.remove('open');
+  APP_KEY = document.getElementById('appKeyInput').value.trim();
+  saveKey(APP_KEY);
+  applyConnection(document.getElementById('gasUrlInput').value.trim());
+});
+document.getElementById('modalDisconnect').addEventListener('click', ()=>{
+  document.getElementById('gasUrlInput').value = '';
+  document.getElementById('appKeyInput').value = '';
+  document.getElementById('connectModal').classList.remove('open');
+  APP_KEY = ''; saveKey('');
+  applyConnection('');
+});
+
+navigate();
+// Reconnect automatically if this browser already knows the URL.
+if(GAS_URL){ applyConnection(GAS_URL); }
+</script>
+</body>
+</html>
