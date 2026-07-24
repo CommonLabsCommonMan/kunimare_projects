@@ -121,7 +121,8 @@ const PROJECTS = [
     milestones:[
       { id:'M1', name:{ja:'酒粕基盤の飼育試験を完了した状態',en:'Sake-kasu rearing trial completed'}, status:'todo',
         tasks:[
-          { id:'T1-1', name:{ja:'酒粕と補完廃棄物でBSF幼虫を飼育する',en:'Rear BSF larvae on sake-kasu + complementary waste'}, status:'todo', owner:'—' }
+          { id:'T1-1', name:{ja:'酒粕と補完廃棄物でBSF幼虫を飼育する',en:'Rear BSF larvae on sake-kasu + complementary waste'}, status:'todo', owner:'—' },
+          { id:'T1-2', name:{ja:'サワダさんの鹿肉残渣の受け入れと酒粕BSF飼料への接続計画を作成する',en:"Create a plan to take in Sawada-san's deer meat waste and connect it to Kunimare sake-kasu BSF feed"}, status:'todo', owner:'—' }
         ] },
       { id:'M2', name:{ja:'飼料品質を検証した状態',en:'Feed quality validated'}, status:'todo',
         tasks:[] }
