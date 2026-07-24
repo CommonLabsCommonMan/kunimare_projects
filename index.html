@@ -159,7 +159,10 @@ main{padding:1.5rem}
 .kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text);border-bottom:1px solid var(--color-divider)}
 .kanban-count{background:var(--color-surface-dynamic);color:var(--color-text);font-size:.7rem;padding:.1rem .5rem;border-radius:var(--radius-full)}
 .kanban-list{padding:.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;flex:1;min-height:60px}
-.task-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
+/* flex:0 0 auto is load-bearing: as flex items these default to flex-shrink:1 and
+   compress to fit the column's max-height instead of overflowing into the scroll,
+   which squashed a 171px card down to its 26px id line once a column held ~15. */
+.task-card{flex:0 0 auto;background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
 .task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat-product)}
 .task-card.cat-quality::before{background:var(--cat-quality)}
 .task-card.cat-strategy::before{background:var(--cat-strategy)}
@@ -445,8 +448,17 @@ const VIEW_TITLE = { today:{ja:'今日',en:'Today'}, home:{ja:'ホーム',en:'Ho
 function hasDates(x){ return !!(x && x.start && x.end); }
 function allTasks(){
   const out=[];
-  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
+  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectPageId:p.pageId, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
   return out;
+}
+
+/* Code.gs labels live rows with the FIRST 8 chars of the Notion page UUID, which
+   are identical for every page in a workspace — every card read "3a4f5289 ·
+   3a4f5289". The tail is what actually differs. Bundled ids (PRJ-01, T2-1) are
+   already meaningful and pass through untouched. */
+function idTag(display, pageId){
+  if(pageId && /^[0-9a-f]{8}$/i.test(display||'')) return pageId.replace(/-/g,'').slice(-5).toUpperCase();
+  return display||'';
 }
 function progressOf(list){ if(!list.length) return 0; return Math.round(list.filter(x=>x.status==='done').length/list.length*100); }
 function projectProgress(p){
@@ -615,7 +627,7 @@ function renderKanban(){
               <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
             </div>` : '';
           return `<div class="task-card cat-${t.projectCategory}">
-            <div class="tc-id">${t.projectId} · ${t.id}</div>
+            <div class="tc-id">${idTag(t.projectId,t.projectPageId)} · ${idTag(t.id,t.pageId)}</div>
             <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
             <div class="tc-meta">
               <span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>
@@ -1011,7 +1023,7 @@ function renderToday(){
         <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
       </div>`:'';
     return `<div class="task-card cat-${t.projectCategory}">
-      <div class="tc-id">${t.projectId} · ${t.id}${badge}</div>
+      <div class="tc-id">${idTag(t.projectId,t.projectPageId)} · ${idTag(t.id,t.pageId)}${badge}</div>
       <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
       <div class="tc-meta"><span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>${dates}</div>
       <div class="tc-proj"><span class="cat-dot" style="background:var(--cat-${t.projectCategory})"></span>${T(t.projectName)}</div>
