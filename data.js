@@ -127,5 +127,36 @@ const PROJECTS = [
       { id:'M2', name:{ja:'飼料品質を検証した状態',en:'Feed quality validated'}, status:'todo',
         tasks:[] }
     ]
+  },
+  {
+    id:'PRJ-08',
+    name:{ja:'国稀ビアホール インディアンナイト',en:'Indian Night at Kunimare Beer Hall'},
+    category:'product',
+    status:'todo',
+    owner:'Pratik',
+    /* August 2026 window — the exact event day is still undecided (see M3 T3-1). */
+    start:'2026-08-01', end:'2026-08-31',
+    milestones:[
+      { id:'M1', name:{ja:'メニューとビールの組み合わせを確定した状態',en:'Menu and beer pairings finalized'}, status:'todo',
+        tasks:[
+          { id:'T1-1', name:{ja:'ビリヤニのレシピと提供分量を確定する',en:'Finalize the biriyani recipe and portion size'}, status:'todo', owner:'Pratik' },
+          { id:'T1-2', name:{ja:'ライタのレシピを確定する',en:'Finalize the raita recipe'}, status:'todo', owner:'Pratik' },
+          { id:'T1-3', name:{ja:'ビールに合うつまみを3品決める',en:'Choose three tsumami to go with the beer'}, status:'todo', owner:'Pratik' },
+          { id:'T1-4', name:{ja:'各料理に合わせるビアホールのクラフトビールを選ぶ',en:'Pick the beer-hall craft beer to pair with each dish'}, status:'todo', owner:'Pratik' }
+        ] },
+      { id:'M2', name:{ja:'仕入れと仕込み体制を整えた状態',en:'Ingredients sourced and kitchen prep planned'}, status:'todo',
+        tasks:[
+          { id:'T2-1', name:{ja:'スパイス・バスマティ米などの調達先を確保する',en:'Secure suppliers for spices and basmati rice'}, status:'todo', owner:'Pratik' },
+          { id:'T2-2', name:{ja:'提供予定数を見積もり必要量を算出する',en:'Estimate covers and calculate ingredient quantities'}, status:'todo', owner:'Pratik' },
+          { id:'T2-3', name:{ja:'ビアホール厨房での仕込み手順と当日の動線を決める',en:'Define kitchen prep steps and day-of workflow'}, status:'todo', owner:'Pratik' },
+          { id:'T2-4', name:{ja:'アレルゲン表示と辛さレベル表記を準備する',en:'Prepare allergen labelling and spice-level notes'}, status:'todo', owner:'Pratik' }
+        ] },
+      { id:'M3', name:{ja:'開催日を決定し告知した状態',en:'Event date fixed and announced'}, status:'todo',
+        tasks:[
+          { id:'T3-1', name:{ja:'8月の開催日を確定する',en:'Fix the August event date'}, status:'todo', owner:'Pratik' },
+          { id:'T3-2', name:{ja:'SNS・店頭で告知を出す',en:'Announce the event on social media and in-store'}, status:'todo', owner:'Pratik' },
+          { id:'T3-3', name:{ja:'予約受付と当日運営の担当を決める',en:'Assign reservation handling and day-of roles'}, status:'todo', owner:'Pratik' }
+        ] }
+    ]
   }
 ];
