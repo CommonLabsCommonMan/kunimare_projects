@@ -2,1030 +2,1456 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brewery Project Hub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=boska@500,600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>発酵管理システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-/* Art direction: Japanese brewery ops tool -> disciplined, quiet-confident, industrial-clean.
-   Palette: cool neutral stone surfaces, single indigo-teal accent (Hydra Teal), warm gold for done states.
-   Type: Boska (display) + General Sans (body/UI). Signature: the L1->L2->L3 hierarchy. */
-:root, [data-theme="light"]{
+:root,[data-theme="light"]{
+  --font-body:'Noto Sans JP',sans-serif;
+  --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+  --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+  --space-1:.25rem; --space-2:.5rem; --space-3:.75rem; --space-4:1rem;
+  --space-5:1.25rem; --space-6:1.5rem; --space-8:2rem;
   --color-bg:#f7f6f2; --color-surface:#f9f8f5; --color-surface-2:#fbfbf9;
-  --color-surface-offset:#f3f0ec; --color-surface-offset-2:#edeae5; --color-surface-dynamic:#e6e4df;
+  --color-surface-offset:#f3f0ec; --color-surface-dynamic:#e6e4df;
   --color-divider:#dcd9d5; --color-border:#d4d1ca;
-  --color-text:#28251d; --color-text-muted:#7a7974; --color-text-faint:#bab9b4; --color-text-inverse:#f9f8f4;
-  --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-primary-active:#0f3638; --color-primary-highlight:#cedcd8;
-  --color-warning:#964219; --color-warning-highlight:#ddcfc6;
-  --color-error:#a12c7b; --color-error-highlight:#e0ced7;
+  --color-text:#28251d; --color-text-muted:#7a7974; --color-text-faint:#bab9b4;
+  --color-text-inverse:#f9f8f4;
+  --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-primary-active:#0f3638;
+  --color-primary-highlight:#cedcd8;
   --color-success:#437a22; --color-success-highlight:#d4dfcc;
-  --color-gold:#d19900; --color-gold-highlight:#e9e0c6;
+  --color-error:#a12c7b; --color-error-highlight:#e0ced7;
+  --color-warning:#964219; --color-warning-highlight:#ddcfc6;
   --color-blue:#006494; --color-blue-highlight:#c6d8e4;
-  --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
-  --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px;
-  --transition-interactive:180ms cubic-bezier(.16,1,.3,1);
-  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06); --shadow-md:0 4px 12px oklch(0.2 0.01 80/.08); --shadow-lg:0 12px 32px oklch(0.2 0.01 80/.12);
-  --font-display:'Boska','Noto Serif JP','Georgia',serif; --font-body:'General Sans','Noto Sans JP','Helvetica Neue',sans-serif;
+  --color-purple:#7a39bb; --color-purple-highlight:#dacfde;
+  --color-orange:#da7101; --color-orange-highlight:#e7d7c4;
+  --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem;
+  --radius-xl:1rem; --radius-full:9999px;
+  --shadow-sm:0 1px 2px oklch(.2 .01 80/.06);
+  --shadow-md:0 4px 12px oklch(.2 .01 80/.08);
+  --shadow-lg:0 12px 32px oklch(.2 .01 80/.12);
+  --transition:180ms cubic-bezier(.16,1,.3,1);
+  --sidebar-w:280px;
 }
 [data-theme="dark"]{
-  --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-surface-offset:#1d1c1a; --color-surface-offset-2:#22211f;
-  --color-surface-dynamic:#2d2c2a; --color-divider:#262523; --color-border:#393836;
-  --color-text:#eceae7; --color-text-muted:#a3a19d; --color-text-faint:#7c7a77; --color-text-inverse:#2b2a28;
-  --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-primary-active:#1a626b; --color-primary-highlight:#313b3b;
-  --color-warning:#bb653b; --color-warning-highlight:#564942;
-  --color-error:#d163a7; --color-error-highlight:#4c3d46;
+  --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a; --color-surface-dynamic:#2d2c2a;
+  --color-divider:#262523; --color-border:#393836;
+  --color-text:#cdccca; --color-text-muted:#797876; --color-text-faint:#5a5957;
+  --color-text-inverse:#2b2a28;
+  --color-primary:#4f98a3; --color-primary-hover:#227f8b; --color-primary-active:#1a626b;
+  --color-primary-highlight:#313b3b;
   --color-success:#6daa45; --color-success-highlight:#3a4435;
-  --color-gold:#e8af34; --color-gold-highlight:#4d4332;
+  --color-error:#d163a7; --color-error-highlight:#4c3d46;
+  --color-warning:#bb653b; --color-warning-highlight:#564942;
   --color-blue:#5591c7; --color-blue-highlight:#3a4550;
-  --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
-  --shadow-sm:0 1px 2px oklch(0 0 0/.2); --shadow-md:0 4px 12px oklch(0 0 0/.3); --shadow-lg:0 12px 32px oklch(0 0 0/.4);
+  --color-purple:#a86fdf; --color-purple-highlight:#4e4652;
+  --color-orange:#fdab43; --color-orange-highlight:#564b3e;
+  --shadow-sm:0 1px 2px oklch(0 0 0/.2);
+  --shadow-md:0 4px 12px oklch(0 0 0/.3);
+  --shadow-lg:0 12px 32px oklch(0 0 0/.4);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-body{min-height:100dvh;font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--color-text);background:var(--color-bg)}
-img{max-width:100%;display:block}
-:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-sm)}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-sm);
+  color:var(--color-text);background:var(--color-bg);overflow:hidden}
 button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
-a{color:inherit;text-decoration:none}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
-
-/* Layout shell */
-.shell{display:grid;grid-template-columns:220px 1fr;min-height:100dvh}
-@media (max-width:900px){.shell{grid-template-columns:1fr}}
-.sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:0;height:100dvh}
-@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
-.brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:600;font-size:1.05rem;white-space:nowrap}
-.brand svg{color:var(--color-primary);flex:0 0 auto}
-.nav{display:flex;flex-direction:column;gap:.25rem}
-@media (max-width:900px){.nav{flex-direction:row}}
-.nav a{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:var(--radius-md);font-size:.85rem;color:var(--color-text-muted);transition:background var(--transition-interactive),color var(--transition-interactive);white-space:nowrap}
-.nav a:hover{background:var(--color-surface-offset);color:var(--color-text)}
-.nav a.active{background:var(--color-primary-highlight);color:var(--color-primary-hover);font-weight:600}
-.nav a svg{width:16px;height:16px;flex:0 0 auto}
-.sidebar-footer{margin-top:auto;font-size:.7rem;color:var(--color-text-faint);display:flex;flex-direction:column;gap:.5rem}
-@media (max-width:900px){.sidebar-footer{display:none}}
-
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in oklch, var(--color-bg) 85%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--color-divider)}
-@media (max-width:900px){.topbar{top:57px}}
-.topbar h1{font-family:var(--font-display);font-size:1.15rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topbar-actions{display:flex;align-items:center;gap:.5rem;flex:0 0 auto}
-.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition-interactive),color var(--transition-interactive)}
-.icon-btn:hover{background:var(--color-surface-offset);color:var(--color-text)}
-.lang-toggle{display:flex;border:1px solid var(--color-border);border-radius:var(--radius-full);overflow:hidden}
-.lang-toggle button{padding:.4rem .8rem;font-size:.75rem;font-weight:600;color:var(--color-text-muted)}
-.lang-toggle button.active{background:var(--color-primary);color:var(--color-text-inverse)}
-
-/* Sync pill */
-.sync-pill{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:.72rem;font-weight:600;color:var(--color-text-muted);transition:border-color var(--transition-interactive),color var(--transition-interactive)}
-.sync-pill:hover{border-color:var(--color-primary);color:var(--color-text)}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--color-text-faint);flex:0 0 auto}
-.sync-pill.live{border-color:color-mix(in oklch,var(--color-success) 50%,var(--color-border));color:var(--color-success)}
-.sync-pill.live .sync-dot{background:var(--color-success)}
-.sync-pill.error{border-color:color-mix(in oklch,var(--color-error) 50%,var(--color-border));color:var(--color-error)}
-.sync-pill.error .sync-dot{background:var(--color-error)}
-.sync-pill.syncing .sync-dot{background:var(--color-primary);animation:pulse 1s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.sync-pill .pill-time{color:var(--color-text-faint);font-weight:400}
-@media (max-width:560px){.sync-pill .pill-label,.sync-pill .pill-time{display:none}.sync-pill{padding:.4rem}}
-
-/* top loading bar */
-.loadbar{position:fixed;top:0;left:0;height:2px;width:0;background:var(--color-primary);z-index:200;transition:width .3s ease,opacity .3s ease;opacity:0}
-.loadbar.on{opacity:1;width:80%}
-.loadbar.done{width:100%;opacity:0}
-
-main{padding:1.5rem}
-@media (max-width:900px){main{padding:1rem}}
-.view{display:none}
-.view.active{display:block;animation:fadein .25s ease}
-@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-
-/* Bento grid - home */
-.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(120px,auto);gap:1rem}
-@media (max-width:1100px){.bento{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.bento{grid-template-columns:1fr}}
-.bento-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;gap:.5rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
-.bento-card.clickable{cursor:pointer}
-.bento-card.clickable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.bento-card.clickable:active{transform:translateY(0)}
-.bento-card .label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--color-text-muted);font-weight:600}
-.bento-card .big-num{font-family:var(--font-display);font-size:2.6rem;font-weight:600;line-height:1}
-.bento-card .sub{font-size:.78rem;color:var(--color-text-muted)}
-.bento-card.span-2{grid-column:span 2}
-.bento-card.span-2-row{grid-row:span 2}
-@media (max-width:560px){.bento-card.span-2{grid-column:span 1}}
-
-/* hero progress ring */
-.hero-card{background:linear-gradient(135deg,color-mix(in oklch,var(--color-primary) 8%,var(--color-surface)),var(--color-surface));align-items:flex-start}
-.ring-wrap{display:flex;align-items:center;gap:1.4rem;width:100%;flex-wrap:wrap}
-.ring{width:120px;height:120px;flex:0 0 auto}
-.ring .num{font-family:var(--font-display);font-weight:600;font-size:.62rem;fill:var(--color-text)}
-.ring-stats{display:flex;flex-direction:column;gap:.5rem;min-width:120px}
-.ring-stat{display:flex;align-items:center;gap:.5rem;font-size:.82rem}
-.ring-stat b{font-family:var(--font-display);font-size:1.05rem;font-weight:600;min-width:1.5rem}
-.ring-stat .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-
-.stat-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}
-.trend-list{display:flex;flex-direction:column;gap:.55rem;margin-top:.35rem}
-.trend-item{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;gap:.5rem}
-.trend-name{display:flex;align-items:center;gap:.45rem;width:42%;overflow:hidden}
-.trend-name .cat-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
-.trend-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.trend-bar-bg{flex:1;height:7px;background:var(--color-surface-offset-2);border-radius:var(--radius-full);overflow:hidden}
-.trend-bar{height:100%;border-radius:var(--radius-full);background:var(--color-primary);transition:width .5s cubic-bezier(.16,1,.3,1)}
-.status-chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;padding:.2rem .55rem;border-radius:var(--radius-full)}
-.status-chip.todo{background:var(--color-surface-offset-2);color:var(--color-text-muted)}
-.status-chip.doing{background:var(--color-primary-highlight);color:var(--color-primary-hover)}
-.status-chip.done{background:var(--color-gold-highlight);color:var(--color-warning)}
-.badge-cta{display:flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:600;color:var(--color-primary)}
-.badge-cta svg{width:14px;height:14px}
-
-/* Kanban */
-.kanban-wrap{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem}
-.kanban-col{background:var(--color-surface-offset);border-radius:var(--radius-lg);min-width:310px;flex:1 1 310px;display:flex;flex-direction:column;max-height:calc(100dvh - 220px);border-top:3px solid var(--color-text-faint)}
-.kanban-col.todo{border-top-color:var(--color-text-faint)}
-.kanban-col.doing{border-top-color:var(--color-primary)}
-.kanban-col.done{border-top-color:var(--color-gold)}
-.kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text);border-bottom:1px solid var(--color-divider)}
-.kanban-count{background:var(--color-surface-dynamic);color:var(--color-text);font-size:.7rem;padding:.1rem .5rem;border-radius:var(--radius-full)}
-.kanban-list{padding:.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;flex:1;min-height:60px}
-.task-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
-.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat-product)}
-.task-card.cat-quality::before{background:var(--cat-quality)}
-.task-card.cat-strategy::before{background:var(--cat-strategy)}
-.task-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.task-card .tc-id{font-size:.7rem;color:var(--color-text-faint);font-weight:600;letter-spacing:.03em}
-.task-card .tc-title{font-size:.95rem;font-weight:600;margin:.3rem 0 .55rem;line-height:1.55;color:var(--color-text)}
-.task-card .tc-title small{display:block;font-weight:400;color:var(--color-text-muted);font-size:.8rem;margin-top:.25rem;line-height:1.5}
-.task-card .tc-meta{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--color-text-muted);gap:.5rem}
-.tc-owner{display:flex;align-items:center;gap:.35rem;min-width:0}
-.tc-owner span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tc-owner .dot{width:18px;height:18px;border-radius:50%;background:var(--color-primary-highlight);color:var(--color-primary-hover);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex:0 0 auto}
-.tc-date{white-space:nowrap;color:var(--color-text-faint)}
-.tc-proj{font-size:.72rem;color:var(--color-text-muted);margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--color-divider);display:flex;align-items:center;gap:.35rem;line-height:1.4}
-.tc-proj .cat-dot{width:7px;height:7px;border-radius:2px;flex:0 0 auto}
-.col-empty{font-size:.75rem;color:var(--color-text-faint);padding:1.25rem;text-align:center}
-
-/* Gantt */
-.gantt-toolbar{display:flex;gap:.75rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
-.select-chip{border:1px solid var(--color-border);background:var(--color-surface);padding:.45rem .75rem;border-radius:var(--radius-md);font-size:.8rem;color:var(--color-text)}
-select.select-chip{cursor:pointer}
-.gantt-wrap{overflow-x:auto;border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface)}
-.gantt-grid{display:grid;min-width:900px}
-.gantt-row{display:grid;grid-template-columns:300px 1fr;border-bottom:1px solid var(--color-divider)}
-.gantt-row:last-child{border-bottom:none}
-.gantt-row.axis{background:var(--color-surface-offset);position:sticky;top:0;z-index:3}
-.gantt-label{padding:.7rem .9rem;font-size:.85rem;line-height:1.5;display:flex;align-items:center;gap:.4rem;border-right:1px solid var(--color-divider);position:sticky;left:0;background:var(--color-surface);z-index:1}
-.gantt-row.axis .gantt-label{background:var(--color-surface-offset);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted)}
-.gantt-label.l1{font-weight:700;font-family:var(--font-display)}
-.gantt-label.l2{padding-left:1.7rem;color:var(--color-primary-hover);font-weight:600;font-size:.82rem}
-.gantt-label.l3{padding-left:2.8rem;color:var(--color-text-muted);font-size:.8rem}
-.gantt-track{position:relative;min-height:38px}
-.gantt-months{position:relative;height:100%}
-.gantt-month{position:absolute;top:0;bottom:0;border-left:1px solid var(--color-divider);font-size:.68rem;color:var(--color-text-muted);padding:.55rem .4rem;white-space:nowrap}
-.gantt-gridlines{position:absolute;inset:0;pointer-events:none}
-.gantt-gridline{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in oklch,var(--color-text) 5%,transparent)}
-.gantt-bar{position:absolute;top:6px;height:26px;border-radius:var(--radius-full);display:flex;align-items:center;padding:0 .55rem;font-size:.68rem;font-weight:600;color:var(--color-text-inverse);white-space:nowrap;overflow:hidden;box-shadow:var(--shadow-sm)}
-.gantt-bar.l1{background:var(--color-text);height:20px;top:9px}
-.gantt-bar.l1 .fill{position:absolute;left:0;top:0;bottom:0;background:color-mix(in oklch,var(--color-gold) 55%,transparent)}
-.gantt-bar.l1 span{position:relative}
-.gantt-bar.l2{background:var(--color-primary);height:22px;top:8px}
-.gantt-bar.l3.todo{background:var(--color-surface-dynamic);color:var(--color-text-muted)}
-.gantt-bar.l3.doing{background:var(--color-primary)}
-.gantt-bar.l3.done{background:var(--color-gold);color:#3a2e04}
-.gantt-nodate{position:absolute;top:0;left:0;height:100%;display:flex;align-items:center;padding-left:.85rem;font-size:.7rem;color:var(--color-text-faint);font-style:italic}
-.today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--color-error);z-index:2}
-.today-flag{position:absolute;top:0;transform:translateX(-50%);background:var(--color-error);color:#fff;font-size:.6rem;font-weight:700;padding:.05rem .3rem;border-radius:0 0 var(--radius-sm) var(--radius-sm);white-space:nowrap;z-index:4}
-
-/* Tree / hierarchy view */
-.tree-wrap{overflow:auto;padding:1rem 0}
-.tree{display:flex;gap:2.5rem;padding:1rem 1.5rem;min-width:max-content}
-.tree-node{border-radius:var(--radius-md);padding:.7rem 1rem;font-size:.86rem;line-height:1.55;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:190px;max-width:260px}
-.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.95rem;min-width:220px}
-.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);font-weight:600}
-.tree-node.l3{background:var(--color-surface);color:var(--color-text)}
-.tree-node.l3.done{border-color:var(--color-gold)}
-.tree-node .tn-sub{display:block;font-size:.72rem;opacity:.85;margin-top:.25rem;font-weight:400}
-.tree-col{display:flex;flex-direction:column;gap:.6rem;align-items:center;position:relative;padding-top:1.25rem}
-.tree-col::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.25rem;background:var(--color-divider)}
-.tree-l1-block{position:relative;padding-top:1.5rem}
-.tree-l1-block::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.5rem;background:var(--color-divider)}
-.tree-l2-row{display:flex;gap:1.25rem}
-.tree-tasks{display:flex;flex-direction:column;gap:.5rem}
-
-.section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
-.card-panel{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)}
-.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.72rem;color:var(--color-text-muted);margin-top:.75rem}
-.legend span{display:inline-flex;align-items:center;gap:.35rem}
-.legend .sw{width:10px;height:10px;border-radius:var(--radius-full);display:inline-block}
-[data-jaen="en"] .ja{display:none}
-[data-jaen="ja"] .en{display:none}
-.back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:1rem}
-.back-link:hover{color:var(--color-primary)}
-
-/* empty state */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.6rem;padding:3rem 1.5rem;color:var(--color-text-muted)}
-.empty svg{width:34px;height:34px;color:var(--color-text-faint)}
-.empty h3{font-family:var(--font-display);font-size:1.05rem;color:var(--color-text)}
-.empty p{font-size:.82rem;max-width:46ch;line-height:1.5}
-
-/* Edit controls */
-.row-actions{display:inline-flex;gap:.2rem;margin-left:.4rem;vertical-align:middle}
-.mini-btn{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);color:var(--color-text-muted);background:var(--color-surface-offset);transition:background var(--transition-interactive),color var(--transition-interactive);flex:0 0 auto}
-.mini-btn:hover{background:var(--color-primary);color:var(--color-text-inverse)}
-.mini-btn.danger:hover{background:var(--color-error);color:#fff}
-.mini-btn svg{width:12px;height:12px}
-.tree-node .row-actions{margin-top:.35rem;margin-left:0;display:flex;justify-content:center}
-.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.16);color:inherit}
-.add-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .75rem;border:1px dashed var(--color-border);border-radius:var(--radius-md);font-size:.75rem;font-weight:600;color:var(--color-text-muted);transition:all var(--transition-interactive)}
-.add-btn:hover{border-color:var(--color-primary);color:var(--color-primary);border-style:solid}
-.add-btn svg{width:13px;height:13px}
-.view-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
-.readonly-note{font-size:.75rem;color:var(--color-text-muted);display:flex;align-items:center;gap:.4rem}
-.status-select{font-size:.68rem;font-weight:600;padding:.15rem .35rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface-2);color:var(--color-text);cursor:pointer}
-.field{margin-bottom:.75rem}
-.field label{font-size:.72rem;font-weight:600;color:var(--color-text-muted);display:block;margin-bottom:.3rem}
-.field input,.field select{width:100%;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;font-family:inherit}
-.field-row{display:flex;gap:.6rem}
-.field-row .field{flex:1}
-.modal.wide{max-width:520px}
-.form-err{font-size:.75rem;color:var(--color-error);margin-top:.5rem;min-height:1rem}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
-.toast{position:fixed;bottom:1.25rem;left:50%;transform:translateX(-50%) translateY(120%);background:var(--color-text);color:var(--color-text-inverse);padding:.7rem 1.1rem;border-radius:var(--radius-full);font-size:.8rem;font-weight:600;box-shadow:var(--shadow-lg);z-index:300;transition:transform .3s cubic-bezier(.16,1,.3,1);max-width:90vw;text-align:center}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast.err{background:var(--color-error);color:#fff}
-.modal-backdrop{position:fixed;inset:0;background:oklch(0.15 0.01 80/.5);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
-.modal-backdrop.open{display:flex}
-.modal{background:var(--color-surface);border-radius:var(--radius-xl);padding:1.5rem;max-width:460px;width:100%;box-shadow:var(--shadow-lg);border:1px solid var(--color-divider)}
-.modal h2{font-family:var(--font-display);font-size:1.1rem;margin-bottom:.5rem}
-.modal p{font-size:.8rem;color:var(--color-text-muted);margin-bottom:1rem;line-height:1.5}
-.modal label{font-size:.72rem;font-weight:600;color:var(--color-text-muted);display:block;margin-bottom:.35rem}
-.modal input{width:100%;padding:.6rem .75rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;margin-bottom:.5rem}
-.modal .hint{font-size:.72rem;color:var(--color-text-faint);margin-bottom:.75rem}
-.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
-.btn{padding:.55rem 1.1rem;border-radius:var(--radius-md);font-size:.82rem;font-weight:600}
+input,select,textarea{font:inherit;color:inherit}
+table{border-collapse:collapse;width:100%}
+img{display:block;max-width:100%}
+.app{display:flex;height:100dvh;overflow:hidden}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--color-surface);
+  border-right:1px solid var(--color-border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:var(--space-4);border-bottom:1px solid var(--color-divider);
+  display:flex;align-items:center;gap:var(--space-3)}
+.sidebar-logo svg{color:var(--color-primary);flex-shrink:0}
+.sidebar-logo-text{font-size:var(--text-sm);font-weight:700;line-height:1.2}
+.sidebar-logo-text span{display:block;font-size:var(--text-xs);font-weight:400;color:var(--color-text-muted)}
+.sidebar-section{padding:var(--space-3) var(--space-3) 0}
+.sidebar-section-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.08em;
+  color:var(--color-text-faint);text-transform:uppercase;padding:0 var(--space-1) var(--space-2)}
+.tank-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);padding:0 var(--space-1) var(--space-3)}
+.tank-card{background:var(--color-surface-2);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--space-3);cursor:pointer;position:relative;
+  transition:box-shadow var(--transition),border-color var(--transition)}
+.tank-card:hover{box-shadow:var(--shadow-sm);border-color:var(--color-primary)}
+.tank-card.active{background:color-mix(in oklch,var(--color-primary) 8%,var(--color-surface-2));
+  border-color:var(--color-primary);box-shadow:var(--shadow-sm)}
+.tank-card.empty{opacity:.75}
+.tank-card-num{font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);margin-bottom:var(--space-1)}
+.tank-card-name{font-size:var(--text-xs);font-weight:500;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;margin-bottom:2px}
+.tank-card-sub{font-size:10px;color:var(--color-text-muted)}
+.tank-card-dot{width:8px;height:8px;border-radius:var(--radius-full);position:absolute;
+  top:var(--space-2);right:var(--space-2);background:var(--color-text-faint)}
+.tank-card-dot.active{background:var(--color-success)}
+.tank-card:nth-child(5){grid-column:1/-1}
+.sidebar-actions{padding:var(--space-2) var(--space-3) var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)}
+.sidebar-footer{margin-top:auto;padding:var(--space-3);border-top:1px solid var(--color-divider);display:flex;gap:var(--space-2)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:var(--space-3) var(--space-6);background:var(--color-surface);
+  border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.topbar-batch{flex:1;min-width:0}
+.topbar-batch-name{font-size:var(--text-base);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-batch-meta{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px}
+.topbar-actions{display:flex;gap:var(--space-2);align-items:center;flex-shrink:0}
+.workspace{flex:1;overflow-y:auto;padding:var(--space-5) var(--space-6);display:flex;flex-direction:column;gap:var(--space-5)}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-3)}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4)}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-1);font-weight:500}
+.kpi-value{font-size:var(--text-lg);font-weight:700;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:var(--text-xs);color:var(--color-text-faint);margin-top:2px}
+.panels-row{display:grid;grid-template-columns:1fr 300px;gap:var(--space-4)}
+.panel{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-4)}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);gap:var(--space-2);flex-wrap:wrap}
+.panel-title{font-size:var(--text-sm);font-weight:700}
+.panel-actions{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.chart-wrap{position:relative;height:280px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-3)}
+.info-row{padding:var(--space-1) 0;border-bottom:1px solid var(--color-divider)}
+.info-row:last-child{border:none}
+.info-label{font-size:var(--text-xs);color:var(--color-text-muted)}
+.info-val{font-size:var(--text-xs);font-weight:500;margin-top:1px}
+.tabs-section{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);overflow:hidden}
+.tab-nav{display:flex;border-bottom:1px solid var(--color-divider)}
+.tab-btn{flex:1;padding:var(--space-3) var(--space-2);font-size:var(--text-xs);font-weight:500;
+  color:var(--color-text-muted);border-bottom:2px solid transparent;transition:color var(--transition),border-color var(--transition)}
+.tab-btn.active{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:700}
+.tab-btn:hover:not(.active){color:var(--color-text)}
+.tab-content{display:none;padding:var(--space-5) var(--space-5) var(--space-4)}
+.tab-content.active{display:block}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-3) var(--space-4)}
+.form-group{display:flex;flex-direction:column;gap:var(--space-1)}
+.form-group label{font-size:var(--text-xs);font-weight:500;color:var(--color-text-muted)}
+.form-group input,.form-group select,.form-group textarea{padding:var(--space-2) var(--space-3);
+  background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);
+  font-size:var(--text-sm);color:var(--color-text);width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:2px solid var(--color-primary);border-color:var(--color-primary)}
+.form-group.full{grid-column:1/-1}
+.form-actions{grid-column:1/-1;display:flex;gap:var(--space-3);padding-top:var(--space-2)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--color-border);margin-top:var(--space-4)}
+.data-table{width:100%}
+.data-table th{padding:var(--space-2) var(--space-3);background:var(--color-surface-offset);
+  font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);text-align:left;white-space:nowrap}
+.data-table td{padding:var(--space-2) var(--space-3);font-size:var(--text-xs);
+  border-top:1px solid var(--color-divider);font-variant-numeric:tabular-nums}
+.data-table tr:hover td{background:var(--color-surface-offset)}
+.badge{display:inline-flex;align-items:center;padding:1px var(--space-2);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:700}
+.badge-pass{background:var(--color-success-highlight);color:var(--color-success)}
+.badge-fail{background:var(--color-error-highlight);color:var(--color-error)}
+.badge-cold{background:var(--color-blue-highlight);color:var(--color-blue)}
+.badge-dryhop{background:var(--color-success-highlight);color:var(--color-success)}
+.badge-other{background:var(--color-surface-offset);color:var(--color-text-muted)}
+.badge-active{background:var(--color-success-highlight);color:var(--color-success)}
+.badge-closed{background:var(--color-surface-offset);color:var(--color-text-muted)}
+.badge-conditioning{background:var(--color-primary-highlight);color:var(--color-primary)}
+.btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);
+  border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:500;cursor:pointer;white-space:nowrap}
+.btn svg{width:14px;height:14px;flex-shrink:0}
 .btn-primary{background:var(--color-primary);color:var(--color-text-inverse)}
 .btn-primary:hover{background:var(--color-primary-hover)}
-.btn-ghost{color:var(--color-text-muted)}
-.btn-ghost:hover{background:var(--color-surface-offset)}
+.btn-ghost{background:transparent;color:var(--color-text-muted);border:1px solid var(--color-border)}
+.btn-ghost:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.btn-danger{background:var(--color-error-highlight);color:var(--color-error)}
+.btn-warn{background:var(--color-warning-highlight);color:var(--color-warning)}
+.btn-event-cold{background:var(--color-blue-highlight);color:var(--color-blue);border:1px solid var(--color-blue)}
+.btn-event-hop{background:var(--color-success-highlight);color:var(--color-success);border:1px solid var(--color-success)}
+.btn-sm{padding:var(--space-1) var(--space-3);font-size:var(--text-xs)}
+.btn-icon{padding:var(--space-2);width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-md)}
+.btn-icon svg{width:16px;height:16px}
+.modal-overlay{position:fixed;inset:0;background:oklch(.1 0 0/.55);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:1000;padding:var(--space-4)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);
+  padding:var(--space-6);max-width:460px;width:100%;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)}
+.modal-title{font-size:var(--text-base);font-weight:700}
+.modal-body{margin-bottom:var(--space-5)}
+.modal-body p{font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-3)}
+.modal-step{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);
+  border:1px solid var(--color-border);border-radius:var(--radius-lg);margin-bottom:var(--space-3)}
+.modal-step-num{width:28px;height:28px;border-radius:var(--radius-full);background:var(--color-surface-offset);
+  display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);flex-shrink:0}
+.modal-step.done .modal-step-num{background:var(--color-success-highlight);color:var(--color-success)}
+.modal-step-text{flex:1}
+.modal-step-text strong{display:block;font-size:var(--text-sm);font-weight:600}
+.modal-step-text span{font-size:var(--text-xs);color:var(--color-text-muted)}
+.modal-footer{display:flex;gap:var(--space-3);justify-content:flex-end}
+.toast-container{position:fixed;bottom:var(--space-6);right:var(--space-6);display:flex;flex-direction:column;gap:var(--space-2);z-index:2000;pointer-events:none}
+.toast{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);
+  padding:var(--space-3) var(--space-4);box-shadow:var(--shadow-lg);font-size:var(--text-sm);
+  min-width:240px;max-width:320px;display:flex;align-items:center;gap:var(--space-3)}
+.toast-dot{width:8px;height:8px;border-radius:var(--radius-full);flex-shrink:0}
+.toast-success .toast-dot{background:var(--color-success)}
+.toast-error .toast-dot{background:var(--color-error)}
+.toast-info .toast-dot{background:var(--color-primary)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--space-8);text-align:center;color:var(--color-text-muted)}
+.empty-state svg{width:40px;height:40px;color:var(--color-text-faint);margin-bottom:var(--space-3)}
+.empty-state h3{font-size:var(--text-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--space-1)}
+.empty-state p{font-size:var(--text-xs);color:var(--color-text-muted)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:24px;height:24px;border:2px solid var(--color-border);border-top-color:var(--color-primary);border-radius:var(--radius-full);animation:spin .8s linear infinite;margin:0 auto}
+.loading-wrap{display:flex;justify-content:center;padding:var(--space-6)}
+.section-title{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--space-3)}
+.action-row{display:flex;gap:var(--space-2);align-items:center;margin-bottom:var(--space-4);flex-wrap:wrap}
+.divider{height:1px;background:var(--color-divider);margin:var(--space-3) 0}
+.btn-delete-row{color:var(--color-text-faint);padding:2px;border-radius:var(--radius-sm)}
+.btn-delete-row:hover{color:var(--color-error);background:var(--color-error-highlight)}
+.btn-delete-row svg{width:13px;height:13px}
+@media(max-width:900px){.panels-row{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.sidebar{position:fixed;left:0;top:0;height:100%;z-index:100;transform:translateX(-100%);transition:transform var(--transition)}
+  .sidebar.open{transform:none}.kpi-grid{grid-template-columns:repeat(2,1fr)}.workspace{padding:var(--space-4)}.topbar{padding:var(--space-3) var(--space-4)}}
+@media screen{#print-root{display:none!important}}
+@media print{.app,.modal-overlay,.toast-container,#notionExportOverlay{display:none!important}
+  #print-root{display:block!important;font-family:'Noto Sans JP',sans-serif;color:#111;padding:1.5cm}
+  .pr-header{border-bottom:2px solid #01696f;padding-bottom:12pt;margin-bottom:16pt}
+  .pr-title{font-size:18pt;font-weight:700;color:#01696f}
+  .pr-sub{font-size:10pt;color:#666;margin-top:4pt}
+  .pr-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8pt;margin:12pt 0}
+  .pr-meta-item label{display:block;font-size:8pt;color:#888;font-weight:700;text-transform:uppercase}
+  .pr-meta-item span{display:block;font-size:11pt;font-weight:600}
+  .pr-chart-img{width:100%;max-height:200pt;object-fit:contain;margin:12pt 0;border:1px solid #ddd}
+  .pr-section-title{font-size:11pt;font-weight:700;color:#333;border-bottom:1px solid #ddd;padding-bottom:4pt;margin:16pt 0 8pt}
+  .pr-table{width:100%;border-collapse:collapse;font-size:8pt}
+  .pr-table th{background:#f3f3f0;padding:4pt 6pt;text-align:left;font-weight:700;border:1px solid #ddd}
+  .pr-table td{padding:4pt 6pt;border:1px solid #ddd}
+  .pr-footer{margin-top:16pt;font-size:8pt;color:#aaa;text-align:right}
+  @page{margin:1.5cm;size:A4}}
+#notionExportOverlay{display:none;position:fixed;inset:0;background:oklch(.1 0 0/.6);backdrop-filter:blur(4px);
+  z-index:3000;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-4)}
+#notionExportOverlay.open{display:flex}
+.export-modal-box{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);
+  padding:var(--space-6) var(--space-8);min-width:320px;max-width:420px;width:100%;box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;gap:var(--space-4);align-items:center;text-align:center}
+.export-modal-icon{width:44px;height:44px;border-radius:var(--radius-full);background:var(--color-primary-highlight);
+  display:flex;align-items:center;justify-content:center;color:var(--color-primary)}
+.export-modal-title{font-size:var(--text-base);font-weight:700}
+.export-modal-status{font-size:var(--text-xs);color:var(--color-text-muted);min-height:18px}
+.export-modal-status.done{color:var(--color-success);font-weight:600}
+.export-modal-status.err{color:var(--color-error);font-weight:600}
+.progress-track{width:100%;height:6px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--color-primary);border-radius:var(--radius-full);transition:width .4s}
+.progress-fill.complete{background:var(--color-success)}
+.progress-fill.error{background:var(--color-error)}
+.export-steps{width:100%;display:flex;flex-direction:column;gap:var(--space-2)}
+.export-step{display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-xs);color:var(--color-text-faint)}
+.export-step.active{color:var(--color-text);font-weight:600}
+.export-step.done{color:var(--color-success)}
+.export-step.err{color:var(--color-error)}
+.step-dot{width:8px;height:8px;border-radius:var(--radius-full);background:var(--color-border);flex-shrink:0}
+.export-step.active .step-dot{background:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
+.export-step.done .step-dot{background:var(--color-success)}
+.export-step.err .step-dot{background:var(--color-error)}
 </style>
 </head>
-<body data-jaen="ja">
-<div class="loadbar" id="loadbar"></div>
-<div class="shell">
-  <aside class="sidebar">
-    <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l-1 6H7L6 3z"/><path d="M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z"/><path d="M9 13h6"/></svg>
-      <span class="ja">国稀ハブ</span><span class="en">Brewery Hub</span></div>
-    <nav class="nav" id="mainNav">
-      <a href="#home" data-view="home"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="ja">ホーム</span><span class="en">Home</span></a>
-      <a href="#kanban" data-view="kanban"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg><span class="ja">かんばん</span><span class="en">Kanban</span></a>
-      <a href="#gantt" data-view="gantt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h8M3 12h14M3 18h6"/></svg><span class="ja">ガント</span><span class="en">Gantt</span></a>
-      <a href="#tree" data-view="tree"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M12 6v3M6 14v3M18 14v3M8.5 6.5L10 8M15.5 6.5L14 8"/></svg><span class="ja">構造図</span><span class="en">Structure</span></a>
-    </nav>
+<body>
+
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="サイドバー">
+    <div class="sidebar-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" role="img" aria-label="発酵管理">
+        <rect x="10" y="4" width="12" height="20" rx="3" stroke="currentColor" stroke-width="2"/>
+        <path d="M10 12h12" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="24" cy="10" r="4" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      <div class="sidebar-logo-text">発酵管理<span>ブルワリー管理システム</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">タンク状態</div>
+      <div class="tank-grid" id="tankGrid"></div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="btn btn-primary" onclick="openNewBatchFlow()">
+        <i data-lucide="plus" style="width:14px;height:14px"></i> 新規バッチ作成</button>
+      <div id="resetBtnWrap" style="display:none">
+        <button class="btn btn-danger" style="width:100%" onclick="openResetModal()">
+          <i data-lucide="rotate-ccw" style="width:14px;height:14px"></i> タンクリセット</button>
+      </div>
+    </div>
     <div class="sidebar-footer">
-      <span class="ja">L1プロジェクト→L2マイルストーン→L3タスク</span><span class="en">L1 Project → L2 Milestone → L3 Task</span>
-      <span>国稀酒造株式会社</span>
+      <button class="btn btn-ghost btn-icon" onclick="refreshAll()" title="更新"><i data-lucide="refresh-cw"></i></button>
+      <button class="btn btn-ghost btn-icon" data-noi18n id="langToggle" onclick="toggleLang()" title="Switch to English" style="font-weight:700;font-size:11px">EN</button>
+      <button class="btn btn-ghost btn-icon" data-theme-toggle aria-label="テーマ切り替え">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <span style="flex:1"></span>
+      <span data-noi18n style="font-size:var(--text-xs);color:var(--color-primary);font-weight:700">v5.0 ✓</span>
     </div>
   </aside>
-  <div>
-    <div class="topbar">
-      <h1 id="viewTitle" class="ja">ホーム</h1>
+
+  <main class="main" id="mainContent">
+    <header class="topbar">
+      <button class="btn btn-icon btn-ghost" id="menuToggle" onclick="toggleSidebar()" style="display:none"><i data-lucide="menu"></i></button>
+      <div class="topbar-batch" id="topbarInfo">
+        <div class="topbar-batch-name" id="topbarName">タンクを選択してください</div>
+        <div class="topbar-batch-meta" id="topbarMeta">左のサイドバーからタンクカードをクリックしてバッチを選択</div>
+      </div>
       <div class="topbar-actions">
-        <button class="sync-pill" id="connectBtn" title="Connect to Notion">
-          <span class="sync-dot" id="syncDot"></span>
-          <span class="pill-label" id="syncLabel"><span class="ja">サンプル</span><span class="en">Sample</span></span>
-          <span class="pill-time" id="syncTime"></span>
-        </button>
-        <div class="lang-toggle">
-          <button data-lang="ja" class="active">日本語</button>
-          <button data-lang="en">EN</button>
+        <span id="statusBadge"></span>
+        <button class="btn btn-ghost btn-sm" id="pdfBtn" onclick="triggerPrint()" style="display:none">
+          <i data-lucide="file-text" style="width:13px;height:13px"></i> PDF出力</button>
+        <button class="btn btn-ghost btn-sm" id="quickFermBtn" onclick="switchTab('ferm');document.getElementById('fermForm').scrollIntoView({behavior:'smooth'})" style="display:none">
+          <i data-lucide="activity" style="width:13px;height:13px"></i> 発酵ログ追加</button>
+      </div>
+    </header>
+
+    <div class="workspace" id="workspace">
+      <div class="empty-state" id="emptyState">
+        <i data-lucide="flask-conical" style="width:40px;height:40px"></i>
+        <h3>タンクを選択してください</h3>
+        <p>サイドバーのタンクカードをクリックするか、「新規バッチ作成」で開始してください</p>
+      </div>
+
+      <div id="dashboard" style="display:none">
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-card"><div class="kpi-label">初期°P (OG)</div><div class="kpi-value" id="kpiOG">—</div><div class="kpi-sub">°P</div></div>
+          <div class="kpi-card"><div class="kpi-label">現在°P</div><div class="kpi-value" id="kpiGrav">—</div><div class="kpi-sub">°P</div></div>
+          <div class="kpi-card"><div class="kpi-label">発酵日数</div><div class="kpi-value" id="kpiDays">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">温度</div><div class="kpi-value" id="kpiTemp">—</div><div class="kpi-sub">°C</div></div>
+          <div class="kpi-card"><div class="kpi-label">pH</div><div class="kpi-value" id="kpiPH">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">CO₂</div><div class="kpi-value" id="kpiCO2">—</div><div class="kpi-sub">bar</div></div>
         </div>
-        <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+
+        <div class="panels-row">
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">発酵経過グラフ</span>
+              <div class="panel-actions">
+                <button class="btn btn-event-cold btn-sm" onclick="quickAddEvent('coldCrash')">
+                  <i data-lucide="thermometer-snowflake" style="width:12px;height:12px"></i> コールドクラッシュ</button>
+                <button class="btn btn-event-hop btn-sm" onclick="quickAddEvent('dryHop')">
+                  <i data-lucide="leaf" style="width:12px;height:12px"></i> ドライホップ</button>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="fermChart" role="img" aria-label="発酵経過グラフ"></canvas></div>
+            <div style="font-size:10px;color:var(--color-text-faint);margin-top:var(--space-2)">凡例をクリックすると系列を表示/非表示できます</div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">バッチ情報</span></div>
+            <div class="info-grid" id="batchInfoGrid"></div>
+            <div class="divider"></div>
+            <div class="section-title">イベント記録</div>
+            <div id="eventsSummary" style="font-size:var(--text-xs);color:var(--color-text-muted)">—</div>
+          </div>
+        </div>
+
+        <div class="tabs-section">
+          <nav class="tab-nav" role="tablist">
+            <button class="tab-btn active" role="tab" onclick="switchTab('batch')">バッチ設定</button>
+            <button class="tab-btn" role="tab" onclick="switchTab('sheet');renderBrewSheet()">仕込みシート</button>
+            <button class="tab-btn" role="tab" onclick="switchTab('ferm')">発酵ログ</button>
+            <button class="tab-btn" role="tab" onclick="switchTab('vdk')">VDKテスト</button>
+            <button class="tab-btn" role="tab" onclick="switchTab('events')">イベント</button>
+            <button class="tab-btn" role="tab" onclick="switchTab('recipe');loadRecipeUI()">原料/レシピ</button>
+          </nav>
+
+          <div class="tab-content active" id="tab-batch">
+            <div class="section-title">バッチ情報を編集</div>
+            <form id="batchForm" onsubmit="submitBatchForm(event)">
+              <div class="form-grid">
+                <div class="form-group"><label for="f_brand">銘柄名 *</label><input id="f_brand" required placeholder="例：北海道IPA"></div>
+                <div class="form-group"><label for="f_brewDate">仕込み日 *</label><input id="f_brewDate" type="date" required></div>
+                <div class="form-group"><label for="f_tankNo">タンク番号 *</label>
+                  <select id="f_tankNo" required><option value="">選択...</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+                <div class="form-group"><label for="f_sched">醸造スケジュール（製造）</label>
+                  <select id="f_sched"><option value="">スケジュール未選択</option></select></div>
+                <div class="form-group"><label for="f_yeast">酵母</label><input id="f_yeast" placeholder="例：US-05"></div>
+                <div class="form-group"><label for="f_og">初期プラート (OG °P)</label><input id="f_og" type="number" step="0.1" placeholder="例：12.5"></div>
+                <div class="form-group"><label for="f_targetFG">目標最終プラート (FG °P)</label><input id="f_targetFG" type="number" step="0.1" placeholder="例：2.5"></div>
+                <div class="form-group"><label for="f_ev">発酵度目標 EV%</label><input id="f_ev" type="number" step="0.1" placeholder="75"></div>
+                <div class="form-group"><label for="f_av">アルコール度 AV%</label><input id="f_av" type="number" step="0.1" placeholder="5.0"></div>
+                <div class="form-group"><label for="f_ibu">IBU</label><input id="f_ibu" type="number" step="1" placeholder="40"></div>
+                <div class="form-group"><label for="f_slurry">スラリー量 (L)</label><input id="f_slurry" type="number" step="0.1" placeholder="2.0"></div>
+                <div class="form-group"><label for="f_pitchRate">ピッチレート</label><input id="f_pitchRate" type="number" step="0.01" placeholder="0.75"></div>
+                <div class="form-group"><label for="f_status">ステータス</label>
+                  <select id="f_status"><option value="Active">発酵中</option><option value="Conditioning">コンディショニング</option><option value="Closed">クローズ</option></select></div>
+                <div class="form-group full"><label for="f_notes">備考</label><textarea id="f_notes" rows="2" placeholder="特記事項..."></textarea></div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary"><i data-lucide="save" style="width:14px;height:14px"></i> バッチを保存</button>
+                  <button type="button" class="btn btn-ghost" onclick="clearBatchForm()">クリア</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB: 仕込みシート / Brew Sheet -->
+          <div class="tab-content" id="tab-sheet">
+            <div id="sheet_body"></div>
+          </div>
+
+          <div class="tab-content" id="tab-ferm">
+            <div class="action-row"><span class="section-title" style="margin:0">発酵ログ追加</span></div>
+            <form id="fermForm" onsubmit="submitFermLog(event)">
+              <div class="form-grid">
+                <div class="form-group"><label for="fl_date">記録日 *</label><input id="fl_date" type="date" required></div>
+                <div class="form-group"><label for="fl_day">発酵日数 *</label><input id="fl_day" type="number" min="0" required placeholder="例：3"></div>
+                <div class="form-group"><label for="fl_temp">温度 (°C) *</label><input id="fl_temp" type="number" step="0.1" required placeholder="例：18.5"></div>
+                <div class="form-group"><label for="fl_grav">プラート度 (°P) *</label><input id="fl_grav" type="number" step="0.1" required placeholder="例：12.5"></div>
+                <div class="form-group"><label for="fl_ph">pH</label><input id="fl_ph" type="number" step="0.01" placeholder="例：4.30"></div>
+                <div class="form-group"><label for="fl_co2">CO₂ bar</label><input id="fl_co2" type="number" step="0.1" placeholder="例：1.2"></div>
+                <div class="form-group"><label for="fl_cells">酵母細胞数</label><input id="fl_cells" type="number" step="0.1" placeholder="例：25"></div>
+                <div class="form-group"><label for="fl_viab">生存率 (%)</label><input id="fl_viab" type="number" step="1" placeholder="例：95"></div>
+                <div class="form-group full"><label for="fl_notes">備考</label><input id="fl_notes" placeholder="特記事項..."></div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary"><i data-lucide="plus-circle" style="width:14px;height:14px"></i> ログ保存</button>
+                  <button type="button" class="btn btn-ghost" onclick="resetFermForm()">クリア</button>
+                </div>
+              </div>
+            </form>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>記録日</th><th>日数</th><th>温度(°C)</th><th>°P</th><th>pH</th><th>CO₂(bar)</th><th>細胞数</th><th>生存率%</th><th>備考</th><th></th></tr></thead>
+                <tbody id="fermTbody"><tr><td colspan="10" class="loading-wrap"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-vdk">
+            <div class="section-title">VDKテスト（強制試験）記録</div>
+            <form id="vdkForm" onsubmit="submitVdkLog(event)">
+              <div class="form-grid">
+                <div class="form-group"><label for="vdk_date">テスト日 *</label><input id="vdk_date" type="date" required></div>
+                <div class="form-group"><label for="vdk_day">発酵日数 *</label><input id="vdk_day" type="number" min="0" required></div>
+                <div class="form-group"><label for="vdk_sampleTemp">サンプル温度 (°C)</label><input id="vdk_sampleTemp" type="number" step="0.5" placeholder="例：12"></div>
+                <div class="form-group"><label for="vdk_forceTemp">強制温度 (°C)</label><input id="vdk_forceTemp" type="number" step="0.5" placeholder="例：60"></div>
+                <div class="form-group"><label for="vdk_forceTime">強制時間 (分)</label><input id="vdk_forceTime" type="number" step="1" placeholder="例：30"></div>
+                <div class="form-group"><label for="vdk_result">VDK total (ppm)</label><input id="vdk_result" type="number" step="0.001" placeholder="例：0.05"></div>
+                <div class="form-group"><label for="vdk_diacetyl">ジアセチル (ppm)</label><input id="vdk_diacetyl" type="number" step="0.001" placeholder="例：0.03"></div>
+                <div class="form-group"><label for="vdk_penta">ペンタンジオン (ppm)</label><input id="vdk_penta" type="number" step="0.001" placeholder="例：0.02"></div>
+                <div class="form-group"><label for="vdk_pass">合否</label>
+                  <select id="vdk_pass"><option value="1">合格 (PASS)</option><option value="0">不合格 (FAIL)</option></select></div>
+                <div class="form-group full"><label for="vdk_notes">備考</label><input id="vdk_notes" placeholder="特記事項..."></div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary"><i data-lucide="test-tube-2" style="width:14px;height:14px"></i> テスト記録保存</button>
+                  <button type="button" class="btn btn-ghost" onclick="resetVdkForm()">クリア</button>
+                </div>
+              </div>
+            </form>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>日付</th><th>日数</th><th>強制条件</th><th>VDK total</th><th>ジアセチル</th><th>ペンタンジオン</th><th>合否</th><th>備考</th><th></th></tr></thead>
+                <tbody id="vdkTbody"><tr><td colspan="9" class="loading-wrap"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-events">
+            <div class="section-title">イベント記録（コールドクラッシュ・ドライホップ）</div>
+            <form id="eventForm" onsubmit="submitEvent(event)">
+              <div class="form-grid">
+                <div class="form-group"><label for="ev_type">イベント種別 *</label>
+                  <select id="ev_type" required>
+                    <option value="coldCrash">コールドクラッシュ開始</option>
+                    <option value="dryHop">ドライホップ追加</option>
+                    <option value="other">その他</option>
+                  </select></div>
+                <div class="form-group"><label for="ev_date">日付 *</label><input id="ev_date" type="date" required></div>
+                <div class="form-group"><label for="ev_day">発酵日数 *</label><input id="ev_day" type="number" min="0" required placeholder="例：10"></div>
+                <div class="form-group full"><label for="ev_notes">備考</label><input id="ev_notes" placeholder="例：ドライホップ量 200g、品種 Citra"></div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary"><i data-lucide="bookmark-plus" style="width:14px;height:14px"></i> イベント保存</button>
+                  <button type="button" class="btn btn-ghost" onclick="resetEventForm()">クリア</button>
+                </div>
+              </div>
+            </form>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>種別</th><th>日付</th><th>発酵日数</th><th>備考</th><th></th></tr></thead>
+                <tbody id="eventTbody"><tr><td colspan="5" class="loading-wrap"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB: 原料/レシピ -->
+          <div class="tab-content" id="tab-recipe">
+            <div class="section-title">原料 / レシピ（この仕込みの実消費 → 保存時に在庫へ反映）</div>
+            <div id="rp_reviewBanner" style="display:none;margin-bottom:var(--space-3);padding:8px 12px;border-radius:8px;font-size:var(--text-xs);background:#fff4e5;color:#8a5300;border:1px solid #f0c890"></div>
+            <div class="form-grid">
+              <div class="form-group"><label>レシピ（テンプレート）</label>
+                <select id="rp_recipe"><option value="">レシピ選択…</option></select></div>
+              <div class="form-group" style="align-self:end">
+                <button type="button" class="btn btn-ghost" onclick="loadTemplate()">
+                  <i data-lucide="download" style="width:14px;height:14px"></i> テンプレート読込</button></div>
+              <div class="form-group"><label>仕込みシート写真（OCR・任意）</label>
+                <input type="file" id="rp_photo" accept="image/*" onchange="ocrPhoto(this)" style="font-size:var(--text-xs)"></div>
+              <div class="form-group"><label>原料ソース</label>
+                <select id="rp_source" data-noi18n><option>レシピテンプレート</option><option>手入力</option><option>実仕込みログ</option></select></div>
+            </div>
+            <div class="table-wrap" style="margin-top:var(--space-3)">
+              <table class="data-table">
+                <thead><tr><th>原料</th><th>使用量</th><th>単位</th><th>工程</th><th>サブバッチ</th><th>添加タイミング</th><th></th></tr></thead>
+                <tbody id="rp_tbody" data-noi18n></tbody>
+              </table>
+            </div>
+            <div class="form-actions" style="padding-top:var(--space-3)">
+              <button type="button" class="btn btn-ghost" onclick="addRLine()"><i data-lucide="plus" style="width:14px;height:14px"></i> 原料追加</button>
+              <button type="button" class="btn btn-primary" onclick="saveRecipe()"><i data-lucide="save" style="width:14px;height:14px"></i> 原料/レシピを保存</button>
+            </div>
+            <div id="rp_summary" style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-3)"></div>
+          </div>
+
+        </div><!-- /tabs-section -->
+      </div><!-- /dashboard -->
+    </div><!-- /workspace -->
+  </main>
+</div><!-- /app -->
+
+<div class="modal-overlay" id="resetModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">タンクリセット</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closeResetModal()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p id="resetModalDesc">このバッチをクローズしてタンクを空きにします。データはシートに保持されます。</p>
+      <div class="modal-step" id="modalStep1">
+        <div class="modal-step-num">1</div>
+        <div class="modal-step-text"><strong>PDF出力（推奨）</strong><span>バッチ記録をPDFで保存してください</span></div>
+        <button class="btn btn-warn btn-sm" onclick="triggerPrintFromModal()"><i data-lucide="file-text" style="width:13px;height:13px"></i> PDF出力</button>
+      </div>
+      <div class="modal-step" id="modalStepStock" style="align-items:flex-start">
+        <div class="modal-step-num">2</div>
+        <div class="modal-step-text" style="flex:1">
+          <strong>在庫の扱い</strong>
+          <span>この仕込みで使った原料在庫をどうしますか？</span>
+          <label style="display:flex;gap:8px;align-items:center;margin-top:6px;cursor:pointer;font-weight:400">
+            <input type="radio" name="stockChoice" value="keep" checked> 減算のまま（通常の完了）</label>
+          <label style="display:flex;gap:8px;align-items:center;margin-top:4px;cursor:pointer;font-weight:400">
+            <input type="radio" name="stockChoice" value="restore"> 在庫を戻す（誤登録・破棄）</label>
+        </div>
+      </div>
+      <div class="modal-step" id="modalStep2">
+        <div class="modal-step-num">3</div>
+        <div class="modal-step-text"><strong>タンクリセット実行</strong><span>バッチをクローズし、Notionへ同期します</span></div>
+        <button class="btn btn-danger btn-sm" onclick="closeTankAndExport(S.selBatch)"><i data-lucide="rotate-ccw" style="width:13px;height:13px"></i> リセット</button>
       </div>
     </div>
-    <main>
-      <section class="view active" id="view-home"></section>
-      <section class="view" id="view-kanban"></section>
-      <section class="view" id="view-gantt"></section>
-      <section class="view" id="view-tree"></section>
-    </main>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeResetModal()">キャンセル</button></div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="connectModal">
-  <div class="modal">
-    <h2><span class="ja">Notionと接続</span><span class="en">Connect to Notion</span></h2>
-    <p><span class="ja">Code.gs をデプロイした Google Apps Script の Web アプリ URL を貼り付けてください。空欄のままだとサンプルデータを表示します。</span><span class="en">Paste the Google Apps Script Web App URL from deploying Code.gs. Leave blank to keep using sample data.</span></p>
-    <label for="gasUrlInput">Web App URL</label>
-    <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/xxxx/exec">
-    <label for="appKeyInput"><span class="ja">アプリキー（編集に必要）</span><span class="en">App key (required for editing)</span></label>
-    <input type="password" id="appKeyInput" placeholder="APP_KEY from Code.gs">
-    <div class="hint"><span class="ja">接続後は60秒ごとに自動更新します。URLはこのブラウザにのみ保存され、公開ページには含まれません。ガントには開始日・終了日が必要です（Notion側で入力）。</span><span class="en">Refreshes every 60s once connected. The URL is saved in this browser only — it is never published with the page. The Gantt needs Start/End dates, added in Notion.</span></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="modalDisconnect"><span class="ja">切断</span><span class="en">Disconnect</span></button>
-      <button class="btn btn-ghost" id="modalCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
-      <button class="btn btn-primary" id="modalConnect"><span class="ja">接続</span><span class="en">Connect</span></button>
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<div id="print-root">
+  <div class="pr-header"><div class="pr-title" id="pr_title">発酵管理記録</div><div class="pr-sub" id="pr_sub"></div></div>
+  <div class="pr-meta-grid" id="pr_metaGrid"></div>
+  <img id="pr_chartImg" class="pr-chart-img" alt="発酵グラフ">
+  <div class="pr-section-title">バッチ詳細</div>
+  <table class="pr-table"><tbody id="pr_batchDetails"></tbody></table>
+  <div class="pr-section-title">発酵ログ</div>
+  <table class="pr-table"><thead><tr><th>日付</th><th>日数</th><th>温度°C</th><th>°P</th><th>pH</th><th>CO₂bar</th><th>細胞数</th><th>生存率%</th><th>備考</th></tr></thead><tbody id="pr_fermRows"></tbody></table>
+  <div class="pr-section-title">VDKテスト記録</div>
+  <table class="pr-table"><thead><tr><th>日付</th><th>日数</th><th>強制条件</th><th>VDK ppm</th><th>ジアセチル</th><th>ペンタンジオン</th><th>合否</th><th>備考</th></tr></thead><tbody id="pr_vdkRows"></tbody></table>
+  <div class="pr-section-title">イベント記録</div>
+  <table class="pr-table"><thead><tr><th>種別</th><th>日付</th><th>発酵日数</th><th>備考</th></tr></thead><tbody id="pr_eventRows"></tbody></table>
+  <div class="pr-footer" id="pr_footer"></div>
+</div>
+
+<div id="notionExportOverlay" role="dialog" aria-modal="true">
+  <div class="export-modal-box">
+    <div class="export-modal-icon"><i data-lucide="upload-cloud" style="width:22px;height:22px"></i></div>
+    <div><div class="export-modal-title">Notionへ同期中</div><div class="export-modal-status" id="exportStatusText">Preparing...</div></div>
+    <div class="progress-track"><div class="progress-fill" id="exportProgressFill"></div></div>
+    <div class="export-steps">
+      <div class="export-step" id="estep1"><div class="step-dot"></div>発酵チャートを取得</div>
+      <div class="export-step" id="estep2"><div class="step-dot"></div>PDFレポート作成</div>
+      <div class="export-step" id="estep3"><div class="step-dot"></div>Notionへアップロード</div>
+      <div class="export-step" id="estep4"><div class="step-dot"></div>データベース登録＋原料消費</div>
+      <div class="export-step" id="estep5"><div class="step-dot"></div>タンククローズ</div>
     </div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="editModal">
-  <div class="modal wide">
-    <h2 id="editTitle"></h2>
-    <div id="editBody"></div>
-    <div class="form-err" id="editErr"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="editCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
-      <button class="btn btn-primary" id="editSave"><span class="ja">保存</span><span class="en">Save</span></button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="confirmModal">
-  <div class="modal">
-    <h2><span class="ja">ゴミ箱へ移動しますか？</span><span class="en">Move to Trash?</span></h2>
-    <p id="confirmText"></p>
-    <p style="font-size:.75rem;color:var(--color-text-faint)"><span class="ja">Notionのゴミ箱に移動します。30日以内なら復元できます。子項目は削除されず、親を失うだけです。</span><span class="en">This moves the page to Notion's Trash, restorable for 30 days. Child items are not deleted — they simply lose their parent.</span></p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="confirmCancel"><span class="ja">キャンセル</span><span class="en">Cancel</span></button>
-      <button class="btn btn-primary" id="confirmOk" style="background:var(--color-error)"><span class="ja">移動する</span><span class="en">Move to Trash</span></button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="./data.js"></script>
 <script>
-/* ---------- Data source (decoupled from data.js const so live sync can replace it) ---------- */
-let DATA = (typeof PROJECTS !== 'undefined' && Array.isArray(PROJECTS)) ? PROJECTS.slice() : [];
 
-/* ---------- Theme + Lang ---------- */
-(function(){const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';r.setAttribute('data-theme',d);t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d)})})();
-document.querySelectorAll('.lang-toggle button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.lang-toggle button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  document.body.setAttribute('data-jaen', b.dataset.lang);
-  render();
-}));
+/* ============================================================
+   Bilingual runtime (日本語 ⇄ English)  — additive, v5.0
+   Default = Japanese (zero change for the brewer).
+   English is applied only when the user toggles.
+   All translation happens on the rendered DOM; the app's
+   renderers keep producing Japanese, so nothing that gets
+   saved to the sheet / Notion is ever changed.
+   ============================================================ */
+var KMR_LANG = 'ja';
+try { KMR_LANG = localStorage.getItem('kmr_lang') || 'ja'; } catch(e){}
 
-/* ---------- Helpers ---------- */
-const L = ()=>document.body.getAttribute('data-jaen');
-/* Use || not ?? — an empty string must fall through to the other language,
-   otherwise a title with a missing half renders as a blank card. */
-const T = obj => {
-  if(!obj) return '';
-  if(typeof obj === 'string') return obj;
-  return obj[L()] || obj.en || obj.ja || '';
+/* Exact whole-label dictionary: Japanese UI string -> English */
+var I18N_EN = {
+  '発酵管理システム':'Fermentation System','ブルワリー管理システム':'Brewery System',
+  '仕込みシート':'Brew Sheet','仕込みシート — 原料 (Brew Sheet)':'Brew Sheet — Materials',
+  '醸造スケジュール（製造）':'Brew schedule (production)','スケジュール未選択':'No schedule',
+  '仕込みシート写真（OCR・任意）':'Brew-sheet photo (OCR, optional)','原料ソース':'Material source',
+  '原料 / レシピ（この仕込みの実消費 → 保存時に在庫へ反映）':'Materials / Recipe (actual usage for this brew → deducted from stock on Save)',
+  'グレインビル (GRAIN BILL) ・ 総量':'Grain bill · total','ホップビル (HOP BILL) ・ 総量':'Hop bill · total',
+  'ソース / 在庫連携':'Source / Stock link','在庫連携（自動減算）':'Stock link (auto-deduct)',
+  '酵母 (YEAST)':'Yeast','株':'Strain','量 (g)':'Amount (g)','1バッチ':'1 batch','合計 ×2':'Total ×2',
+  'ダブルバッチ (1st + 2nd)':'Double batch (1st + 2nd)','使用量':'Amount','単位':'Unit','工程':'Process','添加タイミング':'Timing',
+  '初期°P (TOG)':'Initial °P (TOG)','目標°P (TFG)':'Target °P (TFG)','ABV（自動）':'ABV (auto)','発酵度 ADF':'Attenuation ADF',
+  '在庫の扱い':'Stock handling','この仕込みで使った原料在庫をどうしますか？':'What should happen to the stock used by this brew?',
+  '減算のまま（通常の完了）':'Keep deducted (normal completion)','在庫を戻す（誤登録・破棄）':'Restore stock (mistake / discard)',
+  '写真は未添付です。「原料/レシピ」タブで仕込みシート写真をアップロード（無料OCR）できます。':'No photo attached. Upload a brew-sheet photo (free OCR) from the Materials / Recipe tab.',
+  '保存時に バッチ原料消費DB へ記録 → 原料データベース.現在在庫 が自動で減少します。':'On Save, rows are written to the consumption DB → current stock auto-decreases.',
+  '写真を読み取り中…（無料OCR）':'Reading photo… (free OCR)','先にバッチを作成してください':'Please create the batch first',
+  '在庫反映のため原料を入力してください（スキップ可）':'Enter materials so stock is tracked (skippable)',
+  'タンクを選択してください':'Please select a tank',
+  'タンク状態':'Tank Status','空きタンク':'Empty','新規バッチ作成':'New Batch',
+  'タンクリセット':'Reset Tank','タンクリセット実行':'Reset Tank','更新':'Refresh',
+  'テーマ切り替え':'Toggle theme','サイドバー':'Sidebar',
+  'バッチ詳細':'Batch Details','発酵ログ':'Ferment Log','VDKテスト':'VDK Test',
+  'イベント':'Events','原料/レシピ':'Materials / Recipe','発酵管理':'Fermentation',
+  'バッチ情報':'Batch Info','バッチ設定':'Batch Settings','バッチ情報を編集':'Edit batch info',
+  'PDF出力':'Export PDF','PDF出力（推奨）':'Export PDF (recommended)',
+  'バッチを保存':'Save batch','バッチを更新しました':'Batch updated','バッチを作成しました':'Batch created',
+  '銘柄':'Brand','銘柄名 *':'Brand name *','タンク番号':'Tank no.','タンク番号 *':'Tank no. *',
+  'タンク':'Tank','選択...':'Select…','ステータス':'Status','酵母':'Yeast',
+  '仕込み日':'Brew date','仕込み日 *':'Brew date *','発酵中':'Active','コンディショニング':'Conditioning','クローズ':'Closed',
+  '発酵経過グラフ':'Fermentation Progress','発酵グラフ':'Ferment chart',
+  '凡例をクリックすると系列を表示/非表示できます':'Click the legend to show / hide a series',
+  '発酵管理記録':'Fermentation Log','発酵ログなし':'No ferment logs','発酵ログ追加':'Add ferment log',
+  '上のフォームからログを追加してください':'Add a log using the form above',
+  '発酵ログを保存しました':'Ferment log saved','発酵ログを削除しますか？':'Delete this ferment log?',
+  'この発酵ログを削除しますか？':'Delete this ferment log?',
+  '発酵日数':'Ferment days','発酵日数 *':'Ferment days *','日数':'Days','日付':'Date','日付 *':'Date *',
+  '記録日':'Log date','記録日 *':'Log date *','温度':'Temp','温度°C':'Temp °C','温度 (°C) *':'Temp (°C) *',
+  'プラート度 (°P) *':'Plato (°P) *','現在°P':'Current °P','目標FG':'Target FG',
+  '初期°P (OG)':'Initial °P (OG)','初期プラート (OG °P)':'Initial Plato (OG °P)',
+  '目標最終プラート (FG °P)':'Target final Plato (FG °P)','°P (プラート)':'°P (Plato)',
+  'アルコール度 AV%':'ABV AV%','発酵度目標 EV%':'Target ADF EV%',
+  '生存率%':'Viability %','生存率 (%)':'Viability (%)','酵母細胞数':'Yeast cells','細胞数':'Cell count',
+  'ピッチレート':'Pitch rate','スラリー':'Slurry','スラリー量':'Slurry vol','スラリー量 (L)':'Slurry vol (L)',
+  '備考':'Notes','特記事項...':'Notes…','記録なし':'No records','ログ保存':'Save log',
+  'VDKテスト記録':'VDK Test Log','VDKテスト（強制試験）記録':'VDK Test (forced) Log','VDKテストなし':'No VDK tests',
+  'VDKテストを保存しました':'VDK test saved','このVDKテスト記録を削除しますか？':'Delete this VDK test record?',
+  '上のフォームからテストを記録してください':'Record a test using the form above',
+  'テスト日 *':'Test date *','テスト記録保存':'Save test','強制条件':'Forcing conditions',
+  '強制温度 (°C)':'Forcing temp (°C)','強制時間 (分)':'Forcing time (min)','サンプル温度 (°C)':'Sample temp (°C)',
+  'ジアセチル':'Diacetyl','ジアセチル (ppm)':'Diacetyl (ppm)','ペンタンジオン':'Pentanedione','ペンタンジオン (ppm)':'Pentanedione (ppm)',
+  '合否':'Result','合格':'Pass','不合格':'Fail','合格 ✓':'Pass ✓','不合格 ✗':'Fail ✗',
+  '合格 (PASS)':'Pass (PASS)','不合格 (FAIL)':'Fail (FAIL)','種別':'Type',
+  'イベント記録':'Log event','イベント記録（コールドクラッシュ・ドライホップ）':'Event log (cold crash / dry hop)',
+  'イベントなし':'No events','イベント未記録':'No events logged','イベント種別 *':'Event type *',
+  'イベント保存':'Save event','イベントを保存しました':'Event saved','このイベントを削除しますか？':'Delete this event?',
+  'コールドクラッシュ・ドライホップのタイミングを記録してください':'Record cold-crash / dry-hop timing',
+  'コールドクラッシュ':'Cold crash','コールドクラッシュ開始':'Cold crash (start)','ドライホップ':'Dry hop','ドライホップ追加':'Dry hop (add)','その他':'Other',
+  '原料 / レシピ（この仕込みの実消費 → タンククローズ時に在庫へ反映）':'Materials / Recipe (actual usage for this brew → deducted from stock at tank close)',
+  'レシピ（テンプレート）':'Recipe (template)','レシピ選択…':'Select recipe…','テンプレート読込':'Load template',
+  '醸造スケジュール（製造）':'Brew schedule (production)','スケジュール未選択':'No schedule',
+  '原料ソース':'Material source','原料':'Material','使用量':'Amount','単位':'Unit','工程':'Process',
+  'サブバッチ':'Sub-batch','添加タイミング':'Timing','原料追加':'Add material','原料/レシピを保存':'Save materials / recipe',
+  '原料/レシピを保存しました':'Materials / recipe saved','バッチが選択されていません':'No batch is selected',
+  '原料未登録。「テンプレート読込」か「原料追加」。':'No materials yet. Use "Load template" or "Add material".',
+  'タンククローズ':'Close Tank','バッチをクローズし、Notionへ同期します':'Close the batch and sync to Notion',
+  'このバッチをクローズしてタンクを空きにします。データはシートに保持されます。':'Close this batch and free the tank. Data is kept in the sheet.',
+  'バッチ記録をPDFで保存してください':'Please save the batch record as a PDF',
+  'PDFレポート作成':'Create PDF report','発酵チャートを取得':'Fetch fermentation chart',
+  'Notionへアップロード':'Upload to Notion','データベース登録＋原料消費':'Save to database + consumption',
+  '発酵チャートを取得中...':'Fetching fermentation chart…','PDFレポート作成中...':'Creating PDF report…',
+  'Notionへアップロード中...':'Uploading to Notion…','データベース登録＋原料消費...':'Saving to database + consumption…',
+  'タンククローズ中...':'Closing tank…','仕上げ中...':'Finishing…','Notionへ同期中':'Syncing to Notion',
+  '完了！Notionへ同期しました ✓':'Done! Synced to Notion ✓','タンククローズ完了。Notion同期 ✓':'Tank closed. Synced to Notion ✓',
+  'PDFダイアログが開きました':'PDF dialog opened','キャンセル':'Cancel','クリア':'Clear','リセット':'Reset','削除しました':'Deleted',
+  'タンクを選択してください':'Please select a tank','バッチを選択してください':'Please select a batch','レシピを選択してください':'Please select a recipe',
+  'データ取得エラー':'Data fetch error','ダッシュボード読み込みエラー':'Dashboard load error','保存エラー':'Save error','削除エラー':'Delete error',
+  '左のサイドバーからタンクカードをクリックしてバッチを選択':'Click a tank card in the left sidebar to select a batch',
+  'サイドバーのタンクカードをクリックするか、「新規バッチ作成」で開始してください':'Click a tank card in the sidebar, or start with "New Batch"'
 };
-const STATUS_LABEL = { todo:{ja:'未着手',en:'To Do'}, doing:{ja:'進行中',en:'In Progress'}, done:{ja:'完了',en:'Done'} };
-const CAT_LABEL = { product:{ja:'製品',en:'Product'}, quality:{ja:'品質',en:'Quality'}, strategy:{ja:'戦略',en:'Strategy'} };
-const VIEW_TITLE = { home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
 
-function hasDates(x){ return !!(x && x.start && x.end); }
-function allTasks(){
-  const out=[];
-  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
+/* Full-string patterns (tried after exact match) */
+var I18N_PAT = [
+  [/^タンク\s*(\d+)$/, 'Tank $1'],
+  [/^(\d+)\s*日目$/, 'Day $1'],
+  [/^(\d+)\s*日$/, '$1 d'],
+  [/^例[：:]\s*(.+)$/, 'e.g. $1']
+];
+
+/* Substring phrases for mixed static+dynamic nodes (longest first at runtime) */
+var I18N_PHRASES = [
+  ['をクローズしてNotionへ同期します。シートのデータは保持されます。',' — close & sync to Notion. Sheet data is kept.'],
+  ['この仕込みの原料を入力（テンプレート読込／写真OCR／手入力）して「保存」すると在庫に反映されます。今はスキップも可能です。','Enter this brew\'s materials (Load template / photo OCR / manual) and Save to update stock. You can skip for now.'],
+  ['確認後「原料/レシピを保存」で在庫に反映されます。','After checking, press "Save materials / recipe" to update stock.'],
+  ['グレインビル (GRAIN BILL) ・ 総量 ','Grain bill (GRAIN BILL) · total '],
+  ['ホップビル (HOP BILL) ・ 総量 ','Hop bill (HOP BILL) · total '],
+  ['原料未登録（原料/レシピタブで入力）','No materials (enter in Materials / Recipe tab)'],
+  ['原料ソース: ','Material source: '],
+  ['原料/レシピを保存し、在庫を反映しました（','Saved materials/recipe and updated stock ('],
+  ['件の候補を読み取りました。値を必ず確認してください。',' candidates read. Please double-check the values.'],
+  ['自動抽出できませんでした。写真を見ながら手入力してください。','Could not auto-extract. Please type values while viewing the photo.'],
+  ['OCR結果は必ず確認してください。','Always double-check the OCR values.'],
+  ['写真を見ながら手入力してください。','Please type the values while viewing the photo.'],
+  ['原料在庫を戻しました','materials stock restored'],
+  ['原料未登録','No materials'],
+  ['水処理: ','Water: '],
+  ['仕込みログDB','brew-log DB'],
+  ['在庫を反映しました（','stock updated ('],
+  ['件）',')'],
+  ['サイドバーのタンクカードをクリックするか、','Click a tank card in the sidebar, or '],
+  ['「新規バッチ作成」で開始してください','start with "New Batch"'],
+  ['原料マスタ読込中…','loading material master…'],
+  ['レシピを選び「テンプレート読込」','pick a recipe, then "Load template"'],
+  ['保存前にタンクを選択してください','select a tank before saving'],
+  ['レシピ取得エラー: ','recipe fetch error: '],
+  ['データ取得エラー: ','Data fetch error: '],
+  ['テンプレート読込: ','Template loaded: '],
+  ['発酵管理記録','Fermentation Log'],
+  ['レシピ候補 ','Recipes '],
+  ['原料マスタ ','materials '],
+  ['原料消費 ','materials used '],
+  ['保存エラー: ','Save error: '],
+  ['出力日時: ','Exported: '],
+  ['仕込み日: ','Brew date: '],
+  ['ステータス: ','Status: '],
+  ['コンディショニング','Conditioning'],
+  ['エラー: ','Error: '],
+  ['失敗: ','Failed: '],
+  ['発酵中','Active'],
+  ['クローズ','Closed'],
+  ['酵母: ','Yeast: '],
+  ['｜タンク ',' | Tank '],
+  ['(タンク ','(Tank '],
+  ['（タンク ','(Tank '],
+  ['タンク ','Tank '],
+  ['空きタンク','Empty'],
+  [' 原料',' materials'],
+  ['分',' min'],
+  ['件',''],
+  ['　',' ']
+];
+
+/* ---- translation core ---- */
+var I18N_SKIP_TAGS = { SCRIPT:1, STYLE:1, SVG:1, PATH:1, CANVAS:1, NOSCRIPT:1, TEXTAREA:1 };
+var I18N_ATTRS = ['title','placeholder','aria-label'];
+var I18N_OBS = null;
+var I18N_OBS_CFG = { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:I18N_ATTRS };
+
+function i18nPhrases(s){
+  var out = s;
+  for (var i=0;i<I18N_PHRASES.length;i++){ out = out.split(I18N_PHRASES[i][0]).join(I18N_PHRASES[i][1]); }
   return out;
 }
-function progressOf(list){ if(!list.length) return 0; return Math.round(list.filter(x=>x.status==='done').length/list.length*100); }
-function projectProgress(p){
-  const msProg = p.milestones.map(m=>progressOf(m.tasks));
-  return msProg.length ? Math.round(msProg.reduce((a,b)=>a+b,0)/msProg.length) : 0;
+function trStr(s){
+  if (s == null) return s;
+  var key = s.trim();
+  if (!key) return s;
+  if (Object.prototype.hasOwnProperty.call(I18N_EN, key)) return s.replace(key, I18N_EN[key]);
+  for (var i=0;i<I18N_PAT.length;i++){ if (I18N_PAT[i][0].test(key)) return s.replace(I18N_PAT[i][0], I18N_PAT[i][1]); }
+  return i18nPhrases(s);
 }
-function initials(name){ if(!name||name==='—') return '—'; return name.trim()[0].toUpperCase(); }
+/* tr(): use inside JS (e.g. confirm dialogs) — only translates in EN mode */
+function tr(s){ return KMR_LANG === 'en' ? trStr(s) : s; }
 
-/* ---------- Router ---------- */
-function setActiveNav(view){
-  document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active', a.dataset.view===view));
+function translateTextNode(t){
+  if (!t) return;
+  if (t.__ja === undefined) t.__ja = t.nodeValue;
+  var out = (KMR_LANG === 'en') ? trStr(t.__ja) : t.__ja;
+  if (t.nodeValue !== out) t.nodeValue = out;
 }
-function navigate(){
-  const hash = (location.hash||'#home').replace('#','');
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const el = document.getElementById('view-'+hash) || document.getElementById('view-home');
-  el.classList.add('active');
-  setActiveNav(hash in VIEW_TITLE ? hash : 'home');
-  render(hash);
-}
-window.addEventListener('hashchange', navigate);
-
-/* ---------- Renderers ---------- */
-function render(hash){
-  hash = hash || (location.hash||'#home').replace('#','');
-  if(hash==='home') renderHome();
-  else if(hash==='kanban') renderKanban();
-  else if(hash==='gantt') renderGantt();
-  else if(hash==='tree') renderTree();
-  const vt = VIEW_TITLE[hash] || VIEW_TITLE.home;
-  document.getElementById('viewTitle').textContent = T(vt);
-}
-
-function noDataEmpty(){
-  return `<div class="empty">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg>
-    <h3><span class="ja">データがありません</span><span class="en">Nothing to show yet</span></h3>
-    <p><span class="ja">右上の同期バッジから Notion に接続するか、data.js のサンプルを読み込んでください。</span><span class="en">Connect to Notion from the sync badge (top right), or load the data.js sample.</span></p>
-  </div>`;
-}
-
-/* HOME */
-function renderHome(){
-  const el = document.getElementById('view-home');
-  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
-  const tasks = allTasks();
-  const total = DATA.length;
-  const inProgress = DATA.filter(p=>p.status==='doing').length;
-  const doneCount = DATA.filter(p=>p.status==='done').length;
-  const todoCount = DATA.filter(p=>p.status==='todo').length;
-  const pct = progressOf(tasks);
-  const taskDone = tasks.filter(t=>t.status==='done').length;
-  const taskDoing = tasks.filter(t=>t.status==='doing').length;
-  const taskTodo = tasks.filter(t=>t.status==='todo').length;
-  const C = 2*Math.PI*40; // ring circumference (r=40)
-
-  el.innerHTML = `
-  <div class="view-toolbar">
-    <button class="add-btn" onclick="openEditor('project','create')">${ICON_ADD}<span class="ja">プロジェクトを追加</span><span class="en">Add Project</span></button>
-    ${canEdit()?`<span class="readonly-note"><span class="ja">Notionと同期中 — 変更は即反映</span><span class="en">Synced with Notion — changes save instantly</span></span>`:`<span class="readonly-note"><span class="ja">閲覧のみ — 同期バッジから接続</span><span class="en">Read-only — connect via the sync badge</span></span>`}
-  </div>
-  <div class="bento">
-
-    <div class="bento-card hero-card span-2 span-2-row">
-      <div class="label"><span class="ja">全体の完了率</span><span class="en">Overall completion</span></div>
-      <div class="ring-wrap">
-        <svg class="ring" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-surface-offset-2)" stroke-width="9"/>
-          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-primary)" stroke-width="9" stroke-linecap="round"
-            stroke-dasharray="${(pct/100*C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 50 50)"/>
-          <text class="num" x="50" y="50" text-anchor="middle" dominant-baseline="central" style="font-size:1.4rem">${pct}%</text>
-        </svg>
-        <div class="ring-stats">
-          <div class="ring-stat"><span class="dot" style="background:var(--color-gold)"></span><b>${taskDone}</b><span class="ja">完了タスク</span><span class="en">tasks done</span></div>
-          <div class="ring-stat"><span class="dot" style="background:var(--color-primary)"></span><b>${taskDoing}</b><span class="ja">進行中</span><span class="en">in progress</span></div>
-          <div class="ring-stat"><span class="dot" style="background:var(--color-text-faint)"></span><b>${taskTodo}</b><span class="ja">未着手</span><span class="en">to do</span></div>
-        </div>
-      </div>
-      <div class="sub"><span class="ja">${tasks.length}件のタスク全体の完了割合</span><span class="en">Share of all ${tasks.length} tasks completed</span></div>
-    </div>
-
-    <div class="bento-card">
-      <div class="label"><span class="ja">進行中</span><span class="en">In Progress</span></div>
-      <div class="big-num" style="color:var(--color-primary)">${inProgress}</div>
-      <div class="sub"><span class="ja">全${total}プロジェクト中</span><span class="en">of ${total} projects</span></div>
-    </div>
-
-    <div class="bento-card">
-      <div class="label"><span class="ja">完了</span><span class="en">Completed</span></div>
-      <div class="big-num" style="color:var(--color-gold)">${doneCount}</div>
-      <div class="sub"><span class="ja">達成済み</span><span class="en">shipped</span></div>
-    </div>
-
-    <div class="bento-card">
-      <div class="label"><span class="ja">未着手</span><span class="en">Not Started</span></div>
-      <div class="big-num" style="color:var(--color-text-muted)">${todoCount}</div>
-      <div class="sub"><span class="ja">計画待ち</span><span class="en">awaiting kickoff</span></div>
-    </div>
-
-    <div class="bento-card clickable" onclick="location.hash='#kanban'">
-      <div class="label"><span class="ja">タスクボード</span><span class="en">Task Board</span></div>
-      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">かんばんを開く</span><span class="en">Open Kanban</span></div>
-      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <div class="bento-card span-2">
-      <div class="label"><span class="ja">プロジェクト別進捗</span><span class="en">Progress by Project</span></div>
-      <div class="trend-list">
-      ${DATA.map(p=>`
-        <div class="trend-item">
-          <span class="trend-name"><span class="cat-dot" style="background:var(--cat-${p.category||'product'})"></span><span>${T(p.name)}</span></span>
-          <div class="trend-bar-bg"><div class="trend-bar" style="width:${projectProgress(p)}%;background:${p.status==='done'?'var(--color-gold)':'var(--color-primary)'}"></div></div>
-          <span style="width:34px;text-align:right;font-weight:600">${projectProgress(p)}%</span>
-        </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="bento-card clickable" onclick="location.hash='#gantt'">
-      <div class="label"><span class="ja">スケジュール</span><span class="en">Schedule</span></div>
-      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">ガントを開く</span><span class="en">Open Gantt</span></div>
-      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <div class="bento-card clickable" onclick="location.hash='#tree'">
-      <div class="label"><span class="ja">構造マップ</span><span class="en">Structure Map</span></div>
-      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600"><span class="ja">親子チャートを開く</span><span class="en">Open Hierarchy</span></div>
-      <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-    </div>
-
-  </div>`;
-}
-
-/* KANBAN */
-function renderKanban(){
-  const el = document.getElementById('view-kanban');
-  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
-  const tasks = allTasks();
-  const cols = [ {key:'todo'}, {key:'doing'}, {key:'done'} ];
-  el.innerHTML = `
-    <div class="kanban-wrap">
-    ${cols.map(c=>{
-      const items = tasks.filter(t=>t.status===c.key);
-      return `<div class="kanban-col ${c.key}">
-        <div class="kanban-col-head"><span>${T(STATUS_LABEL[c.key])}</span><span class="kanban-count">${items.length}</span></div>
-        <div class="kanban-list">
-        ${items.map(t=>{
-          const dates = hasDates(t) ? `<span class="tc-date">${t.start.slice(5)} → ${t.end.slice(5)}</span>` : '';
-          const ctrls = t.pageId ? `<div class="row-actions">
-              <select class="status-select" onchange="quickStatus('task','${t.pageId}',this.value)">
-                ${OPT_STATUS.map(o=>`<option value="${o[0]}" ${o[0]===t.status?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('')}
-              </select>
-              <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
-              <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
-            </div>` : '';
-          return `<div class="task-card cat-${t.projectCategory}">
-            <div class="tc-id">${t.projectId} · ${t.id}</div>
-            <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
-            <div class="tc-meta">
-              <span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>
-              ${dates}
-            </div>
-            <div class="tc-proj"><span class="cat-dot" style="background:var(--cat-${t.projectCategory})"></span>${T(t.projectName)}</div>
-            ${ctrls}
-          </div>`;
-        }).join('') || `<div class="col-empty">—</div>`}
-        </div>
-      </div>`;
-    }).join('')}
-    </div>`;
-}
-
-/* GANTT */
-const DAYWIDTH = 10;
-function dayDiff(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
-let ganttFilter = 'all';
-
-function datedItems(){
-  // every item that has both dates, to compute the range
-  const items=[];
-  DATA.forEach(p=>{
-    if(ganttFilter!=='all' && p.id!==ganttFilter) return;
-    if(hasDates(p)) items.push(p);
-    p.milestones.forEach(m=>{ if(hasDates(m)) items.push(m); m.tasks.forEach(t=>{ if(hasDates(t)) items.push(t); }); });
-  });
-  return items;
-}
-function ganttRange(){
-  let min=null,max=null;
-  datedItems().forEach(x=>{
-    const s=new Date(x.start), e=new Date(x.end);
-    if(!min||s<min) min=s; if(!max||e>max) max=e;
-  });
-  return {min,max};
-}
-function barStyle(rangeMin, start, end){
-  const left = dayDiff(rangeMin, start)*DAYWIDTH;
-  const width = Math.max(dayDiff(start,end)*DAYWIDTH, DAYWIDTH*1.5);
-  return `left:${left}px;width:${width}px;`;
-}
-function monthMarkers(min, totalDays){
-  // returns {labels:[{left,text}], lines:[left]}
-  const labels=[], lines=[];
-  const d = new Date(min.getFullYear(), min.getMonth(), 1);
-  const end = new Date(min); end.setDate(end.getDate()+totalDays);
-  while(d <= end){
-    const left = dayDiff(min, d.toISOString().slice(0,10))*DAYWIDTH;
-    if(left >= 0){
-      labels.push({left, text:(d.getMonth()+1)+ (L()==='ja'?'月':'') + (d.getMonth()===0?` ${d.getFullYear()}`:'')});
-      lines.push(left);
+function translateAttrs(el){
+  if (!el || el.nodeType !== 1) return;
+  for (var i=0;i<I18N_ATTRS.length;i++){
+    var a = I18N_ATTRS[i];
+    if (el.hasAttribute && el.hasAttribute(a)){
+      var k = '__ja_' + a;
+      if (el[k] === undefined) el[k] = el.getAttribute(a);
+      var out = (KMR_LANG === 'en') ? trStr(el[k]) : el[k];
+      if (el.getAttribute(a) !== out) el.setAttribute(a, out);
     }
-    d.setMonth(d.getMonth()+1);
   }
-  return {labels, lines};
 }
-function renderGantt(){
-  const el = document.getElementById('view-gantt');
-  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
-
-  const projectOptions = `<option value="all">${L()==='ja'?'全プロジェクト':'All projects'}</option>` +
-    DATA.map(p=>`<option value="${p.id}" ${ganttFilter===p.id?'selected':''}>${T(p.name)}</option>`).join('');
-  const toolbar = `<div class="gantt-toolbar">
-      <select class="select-chip" id="ganttFilter">${projectOptions}</select>
-    </div>`;
-
-  const items = datedItems();
-  if(!items.length){
-    el.innerHTML = toolbar + `<div class="card-panel"><div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-      <h3><span class="ja">日付が未入力です</span><span class="en">No dates yet</span></h3>
-      <p><span class="ja">タイムラインを表示するには、Notion の各項目に「開始日」と「終了日」を入力してください。日付が入り次第、ここに自動で表示されます。</span><span class="en">Add a Start Date and End Date to items in Notion to see the timeline. Bars appear here automatically once dates exist.</span></p>
-    </div></div>`;
-    document.getElementById('ganttFilter').addEventListener('change', e=>{ ganttFilter=e.target.value; renderGantt(); });
-    return;
+function translateEl(el){
+  if (!el || el.nodeType !== 1) return;
+  var nm = el.nodeName ? el.nodeName.toUpperCase() : '';
+  if (I18N_SKIP_TAGS[nm]) return;
+  if (el.hasAttribute && el.hasAttribute('data-noi18n')) return;
+  translateAttrs(el);
+  var kids = el.childNodes, i;
+  for (i=0;i<kids.length;i++){
+    var c = kids[i];
+    if (c.nodeType === 3) translateTextNode(c);
+    else if (c.nodeType === 1) translateEl(c);
   }
-
-  const {min,max} = ganttRange();
-  const totalDays = dayDiff(min,max)+5;
-  const trackW = totalDays*DAYWIDTH;
-  const todayLeft = dayDiff(min, new Date().toISOString().slice(0,10))*DAYWIDTH;
-  const showToday = todayLeft>=0 && todayLeft<=trackW;
-  const {labels, lines} = monthMarkers(min, totalDays);
-  const gridlines = `<div class="gantt-gridlines">${lines.map(l=>`<div class="gantt-gridline" style="left:${l}px"></div>`).join('')}${showToday?`<div class="today-line" style="left:${todayLeft}px"></div>`:''}</div>`;
-
-  function trackCell(inner){
-    return `<div class="gantt-track" style="width:${trackW}px">${gridlines}${inner}</div>`;
+}
+function translateDOM(node){
+  if (!node) return;
+  if (node.nodeType === 3) translateTextNode(node);
+  else if (node.nodeType === 1) translateEl(node);
+}
+function i18nUnderNo(node){
+  var el = (node && node.nodeType === 1) ? node : (node ? node.parentNode : null);
+  while (el){
+    if (el.nodeType === 1){
+      var nm = el.nodeName ? el.nodeName.toUpperCase() : '';
+      if (I18N_SKIP_TAGS[nm]) return true;
+      if (el.hasAttribute && el.hasAttribute('data-noi18n')) return true;
+    }
+    el = el.parentNode;
   }
-  function bar(cls, style, label){ return `<div class="gantt-bar ${cls}" style="${style}">${label}</div>`; }
-  function noDate(){ return `<div class="gantt-nodate"><span class="ja">日付なし</span><span class="en">no dates</span></div>`; }
-
-  let rows='';
-  DATA.forEach(p=>{
-    if(ganttFilter!=='all' && p.id!==ganttFilter) return;
-    const pProg = projectProgress(p);
-    const pBar = hasDates(p)
-      ? bar('l1', barStyle(min,p.start,p.end), `<span class="fill" style="width:${pProg}%"></span><span>${pProg}%</span>`)
-      : noDate();
-    rows += `<div class="gantt-row"><div class="gantt-label l1">${T(p.name)}</div>${trackCell(pBar)}</div>`;
-    p.milestones.forEach(m=>{
-      const mBar = hasDates(m) ? bar('l2', barStyle(min,m.start,m.end), m.id) : noDate();
-      rows += `<div class="gantt-row"><div class="gantt-label l2">${T(m.name)}</div>${trackCell(mBar)}</div>`;
-      m.tasks.forEach(t=>{
-        const tBar = hasDates(t) ? bar('l3 '+t.status, barStyle(min,t.start,t.end), t.owner) : noDate();
-        rows += `<div class="gantt-row"><div class="gantt-label l3">${t.id} ${T(t.name)}</div>${trackCell(tBar)}</div>`;
-      });
+  return false;
+}
+function i18nStopObs(){ if (I18N_OBS) I18N_OBS.disconnect(); }
+function i18nStartObs(){
+  if (!document.body) return;
+  if (!I18N_OBS){
+    I18N_OBS = new MutationObserver(function(muts){
+      i18nStopObs();
+      try {
+        for (var i=0;i<muts.length;i++){
+          var m = muts[i];
+          if (i18nUnderNo(m.target)) continue;
+          if (m.type === 'childList'){
+            for (var j=0;j<m.addedNodes.length;j++) translateDOM(m.addedNodes[j]);
+          } else if (m.type === 'characterData'){
+            m.target.__ja = undefined; translateTextNode(m.target);
+          } else if (m.type === 'attributes'){
+            var el = m.target, k = '__ja_' + m.attributeName;
+            if (el && el.nodeType === 1){ el[k] = el.getAttribute(m.attributeName); translateAttrs(el); }
+          }
+        }
+      } catch(e){}
+      if (KMR_LANG === 'en') I18N_OBS.observe(document.body, I18N_OBS_CFG);
     });
+  }
+  I18N_OBS.observe(document.body, I18N_OBS_CFG);
+}
+function updateLangBtn(){
+  var b = document.getElementById('langToggle');
+  if (!b) return;
+  b.textContent = (KMR_LANG === 'en') ? '日本語' : 'EN';
+  b.setAttribute('title', (KMR_LANG === 'en') ? '日本語に切り替え' : 'Switch to English');
+}
+function applyLang(){
+  try {
+    document.documentElement.setAttribute('lang', KMR_LANG);
+    i18nStopObs();
+    if (document.body) translateDOM(document.body);   // EN: translate · JA: restore
+    if (KMR_LANG === 'en') i18nStartObs();
+    updateLangBtn();
+  } catch(e){}
+}
+function toggleLang(){
+  KMR_LANG = (KMR_LANG === 'en') ? 'ja' : 'en';
+  try { localStorage.setItem('kmr_lang', KMR_LANG); } catch(e){}
+  applyLang();
+}
+document.addEventListener('DOMContentLoaded', function(){
+  try { updateLangBtn(); if (KMR_LANG === 'en') applyLang(); } catch(e){}
+});
+/* ============================================================ */
+
+const S = { tanks:{1:null,2:null,3:null,4:null,5:null}, selTank:null, selBatch:null,
+  db:{batch:null,fermLogs:[],vdkLogs:[],events:[]}, chart:null, editBatchId:null,
+  recipe:{lines:[],schedulePageId:'',source:''}, panel:null };
+const EVENT_LABELS = { coldCrash:'コールドクラッシュ', dryHop:'ドライホップ', other:'その他' };
+const STATUS_LABELS = { Active:'発酵中', Conditioning:'コンディショニング', Closed:'クローズ' };
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme(); lucide.createIcons(); setTodayDefaults(); refreshAll(); setupTabNav(); setupMobileMenu();
+});
+
+function initTheme() {
+  const btn = document.querySelector('[data-theme-toggle]');
+  const root = document.documentElement;
+  let theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+  btn && btn.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', theme);
+    if (S.chart) rebuildChart();
   });
+}
+function setTodayDefaults() {
+  const today = new Date().toISOString().split('T')[0];
+  ['fl_date','vdk_date','ev_date','f_brewDate'].forEach(id => { const el=document.getElementById(id); if(el) el.value=today; });
+}
+function setupTabNav() {
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    const tabs = ['batch','ferm','vdk','events','recipe'];
+    btn.setAttribute('data-tab', tabs[i]);
+  });
+}
+function setupMobileMenu() {
+  const btn = document.getElementById('menuToggle');
+  if (window.innerWidth <= 700) btn && (btn.style.display = 'flex');
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 700) btn && (btn.style.display = 'flex');
+    else { btn && (btn.style.display = 'none'); document.getElementById('sidebar').classList.remove('open'); }
+  });
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
-  const axis = `<div class="gantt-row axis">
-      <div class="gantt-label"><span class="ja">階層 / 名称</span><span class="en">Layer / Name</span></div>
-      <div class="gantt-track" style="width:${trackW}px">
-        <div class="gantt-months">
-          ${labels.map(l=>`<div class="gantt-month" style="left:${l.left}px">${l.text}</div>`).join('')}
-          ${showToday?`<div class="today-flag" style="left:${todayLeft}px"><span class="ja">本日</span><span class="en">Today</span></div>`:''}
-        </div>
-      </div>
-    </div>`;
-
-  el.innerHTML = toolbar + `
-    <div class="gantt-wrap"><div class="gantt-grid">${axis}${rows}</div></div>
-    <div class="legend">
-      <span><span class="sw" style="background:var(--color-text)"></span><span class="ja">L1 プロジェクト（バー内は進捗）</span><span class="en">L1 Project (fill = progress)</span></span>
-      <span><span class="sw" style="background:var(--color-primary)"></span><span class="ja">L2 マイルストーン</span><span class="en">L2 Milestone</span></span>
-      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
-      <span><span class="sw" style="background:var(--color-surface-dynamic)"></span><span class="ja">L3 未着手</span><span class="en">L3 To Do</span></span>
-      <span><span class="sw" style="background:var(--color-error)"></span><span class="ja">本日</span><span class="en">Today</span></span>
-    </div>`;
-
-  document.getElementById('ganttFilter').addEventListener('change', e=>{ ganttFilter=e.target.value; renderGantt(); });
+function callServer(action, payload = {}) {
+  return new Promise((res, rej) => {
+    google.script.run.withSuccessHandler(r => res(r)).withFailureHandler(e => rej(e)).handleRequest(action, payload);
+  });
 }
 
-/* TREE */
-function renderTree(){
-  const el = document.getElementById('view-tree');
-  if(!DATA.length){ el.innerHTML = noDataEmpty(); return; }
-  el.innerHTML = `
-    <div class="card-panel">
-      <div class="section-title"><span class="ja">分解（上→下）と集約（下→上）</span><span class="en">Decompose (top-down) & roll-up (bottom-up)</span></div>
-      <p style="font-size:.82rem;color:var(--color-text-muted);max-width:72ch">
-        <span class="ja">L1プロジェクト（1〜6ヶ月・名詞目標）を3〜7個のL2マイルストーン（1〜4週間・状態）に分解し、L2を3〜10個のL3タスク（半日〜3日・動詞）に分解します。タスクの完了がマイルストーンへ、マイルストーンの進捗がプロジェクトへ自動集約されます。</span>
-        <span class="en">L1 Projects (1–6 mo, noun-goal) break into 3–7 L2 Milestones (1–4 wk, state), which break into 3–10 L3 Tasks (half-day to 3 days, verb-action). Task completion rolls up into milestone progress, and milestone progress rolls up into project progress.</span>
-      </p>
-    </div>
-    <div class="view-toolbar">
-      <button class="add-btn" onclick="openEditor('project','create')">${ICON_ADD}<span class="ja">プロジェクトを追加</span><span class="en">Add Project</span></button>
-      ${canEdit()?'':`<span class="readonly-note"><span class="ja">閲覧のみ — 編集するには同期バッジから接続</span><span class="en">Read-only — connect via the sync badge to edit</span></span>`}
-    </div>
-    <div class="tree-wrap">
-      <div class="tree">
-      ${DATA.map(p=>`
-        <div class="tree-l1-block">
-          <div class="tree-node l1">${T(p.name)}<span class="tn-sub">${projectProgress(p)}% · ${p.owner}</span>
-            <div class="row-actions">
-              <button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
-              <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
-              <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>
-            </div>
-          </div>
-          <div class="tree-l2-row" style="margin-top:1.25rem">
-            ${p.milestones.map(m=>`
-              <div class="tree-col">
-                <div class="tree-node l2">${T(m.name)}<span class="tn-sub">${progressOf(m.tasks)}%</span>
-                  <div class="row-actions">
-                    <button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
-                    <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
-                    <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>
-                  </div>
-                </div>
-                <div class="tree-tasks" style="margin-top:1rem">
-                  ${m.tasks.map(t=>`<div class="tree-node l3 ${t.status}">${T(t.name)}<span class="status-chip ${t.status}" style="margin-top:.35rem">${T(STATUS_LABEL[t.status])}</span>
-                    <div class="row-actions">
-                      <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
-                      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
-                    </div></div>`).join('') || `<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`}
-                </div>
-              </div>`).join('') || `<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`}
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>
-    <div class="legend">
-      <span><span class="sw" style="background:var(--color-text)"></span>L1</span>
-      <span><span class="sw" style="background:var(--color-primary)"></span>L2</span>
-      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
-    </div>`;
+async function refreshAll() {
+  try {
+    S.tanks = await callServer('getTankStatus');
+    renderTankGrid();
+    if (S.selBatch) await loadDashboard(S.selBatch);
+  } catch(e) { toast('データ取得エラー: ' + (e.message||e), 'error'); }
 }
 
-/* ---------- Write layer (create / update / archive in Notion) ---------- */
-const LS_KEY_APP = 'breweryHub.appKey';
-function loadKey(){ try{ return localStorage.getItem(LS_KEY_APP) || ""; }catch(e){ return ""; } }
-function saveKey(k){ try{ k ? localStorage.setItem(LS_KEY_APP,k) : localStorage.removeItem(LS_KEY_APP); }catch(e){} }
-let APP_KEY = loadKey();
-
-const canEdit = () => !!(GAS_URL && APP_KEY);
-
-function toast(msg, isErr){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show'+(isErr?' err':'');
-  clearTimeout(t._timer);
-  t._timer=setTimeout(()=>{ t.className='toast'+(isErr?' err':''); }, 3200);
+function renderTankGrid() {
+  const grid = document.getElementById('tankGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const b = S.tanks[String(i)];
+    const card = document.createElement('div');
+    card.className = 'tank-card' + (!b ? ' empty' : '') + (S.selTank === i ? ' active' : '');
+    card.onclick = () => selectTank(i);
+    card.innerHTML = `<div class="tank-card-dot ${b?'active':''}"></div>
+      <div class="tank-card-num">タンク ${i}</div>
+      <div class="tank-card-name">${b?esc(b.brand):'空きタンク'}</div>
+      <div class="tank-card-sub">${b?calcDays(b.brewDate):'—'}</div>`;
+    grid.appendChild(card);
+  }
+  lucide.createIcons();
+}
+function selectTank(n) {
+  const b = S.tanks[String(n)];
+  S.selTank = n; renderTankGrid();
+  if (b) { loadDashboard(b.batchId); document.getElementById('resetBtnWrap').style.display='block'; }
+  else { clearDashboard(); openNewBatchFlow(n); document.getElementById('resetBtnWrap').style.display='none'; }
 }
 
-/* Sent as text/plain on purpose: Apps Script cannot answer CORS preflight,
-   and application/json would trigger one and be blocked by the browser. */
-async function writeAction(payload){
-  if(!GAS_URL) throw new Error(L()==='ja'?'先にNotionへ接続してください。':'Connect to Notion first.');
-  if(!APP_KEY) throw new Error(L()==='ja'?'アプリキーが未設定です。':'App key is not set.');
-  loadbar('on');
-  try{
-    const res = await fetch(GAS_URL, {
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({...payload, key: APP_KEY})
+async function loadDashboard(batchId) {
+  S.selBatch = batchId;
+  try {
+    S.db = await callServer('getDashboardData', { batchId });
+    renderDashboard();
+    document.getElementById('resetBtnWrap').style.display='block';
+    document.getElementById('pdfBtn').style.display='flex';
+    document.getElementById('quickFermBtn').style.display='flex';
+    loadBatchExtras();
+  } catch(e) { toast('ダッシュボード読み込みエラー', 'error'); }
+}
+
+function renderDashboard() {
+  const { batch, fermLogs, events } = S.db;
+  if (!batch) return;
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('dashboard').style.display='';
+  document.getElementById('topbarName').textContent = `${batch.brand}｜タンク ${batch.tankNo}`;
+  document.getElementById('topbarMeta').textContent = `仕込み日: ${fmtDate(batch.brewDate)}　酵母: ${batch.yeast||'—'}　OG: ${batch.og||'—'}　IBU: ${batch.ibu||'—'}`;
+  const sb = document.getElementById('statusBadge');
+  const sc = batch.status==='Active'?'active':batch.status==='Conditioning'?'conditioning':'closed';
+  sb.innerHTML = `<span class="badge badge-${sc}">${STATUS_LABELS[batch.status]||batch.status}</span>`;
+  const last = fermLogs.length ? fermLogs[fermLogs.length-1] : null;
+  document.getElementById('kpiOG').textContent = batch.og||'—';
+  document.getElementById('kpiGrav').textContent = (last&&last.gravity)||'—';
+  document.getElementById('kpiDays').textContent = last?`${last.day}日`:(batch.brewDate?calcDays(batch.brewDate):'—');
+  document.getElementById('kpiTemp').textContent = (last&&last.temp)||'—';
+  document.getElementById('kpiPH').textContent = (last&&last.ph)?fmtPH(last.ph):'—';
+  document.getElementById('kpiCO2').textContent = (last&&last.co2Bar)||'—';
+  renderBatchInfo(batch);
+  const evSum = document.getElementById('eventsSummary');
+  evSum.innerHTML = events.length===0 ? '<span style="color:var(--color-text-faint)">イベント未記録</span>'
+    : events.map(e=>`<div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:3px">
+        <span class="badge badge-${e.eventType==='coldCrash'?'cold':e.eventType==='dryHop'?'dryhop':'other'}" style="font-size:10px">${EVENT_LABELS[e.eventType]||e.eventType}</span>
+        <span style="font-size:var(--text-xs);color:var(--color-text-muted)">D${e.day} · ${fmtDate(e.eventDate)}</span></div>`).join('');
+  rebuildChart(); renderFermTable(); renderVdkTable(); renderEventsTable(); prefillBatchForm(batch);
+}
+function clearDashboard() {
+  document.getElementById('emptyState').style.display='';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('topbarName').textContent='タンクを選択してください';
+  document.getElementById('topbarMeta').textContent='左のサイドバーからタンクカードをクリックしてバッチを選択';
+  document.getElementById('statusBadge').innerHTML='';
+  document.getElementById('pdfBtn').style.display='none';
+  document.getElementById('quickFermBtn').style.display='none';
+  S.selBatch=null; S.db={batch:null,fermLogs:[],vdkLogs:[],events:[]};
+  if (S.chart) { S.chart.destroy(); S.chart=null; }
+}
+function renderBatchInfo(b) {
+  const items = [['銘柄',b.brand],['タンク',`タンク ${b.tankNo}`],['仕込み日',fmtDate(b.brewDate)],
+    ['ステータス',STATUS_LABELS[b.status]||b.status],['酵母',b.yeast||'—'],['OG',b.og||'—'],
+    ['目標FG',b.targetFG||'—'],['EV%',b.ev||'—'],['AV%',b.av||'—'],['IBU',b.ibu||'—'],
+    ['スラリー',b.slurryVol||'—'],['ピッチレート',b.yeastPitchRate||'—']];
+  document.getElementById('batchInfoGrid').innerHTML = items.map(([l,val])=>
+    `<div class="info-row"><div class="info-label">${l}</div><div class="info-val">${esc(String(val||'—'))}</div></div>`).join('');
+}
+
+function rebuildChart() {
+  const { fermLogs, events } = S.db;
+  const ctx = document.getElementById('fermChart');
+  if (!ctx) return;
+  const allDays = [...new Set([...fermLogs.map(r=>Number(r.day)),...events.map(e=>Number(e.day))])].sort((a,b)=>a-b);
+  const labels = allDays.map(d=>`D${d}`);
+  const get = (arr,day,key)=>{ const r=arr.find(r=>Number(r.day)===day); return r&&r[key]!==''&&r[key]!==null?parseFloat(r[key]):null; };
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const gridColor = isDark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)';
+  const textColor = isDark?'#797876':'#7a7974';
+  if (S.chart) { S.chart.destroy(); S.chart=null; }
+  const annotations = {};
+  events.forEach((ev,i)=>{
+    const lbl = `D${ev.day}`;
+    annotations[`ev_${i}`] = { type:'line', xMin:lbl, xMax:lbl,
+      borderColor: ev.eventType==='coldCrash'?'rgba(0,100,200,.75)':ev.eventType==='dryHop'?'rgba(30,150,60,.75)':'rgba(150,150,150,.65)',
+      borderWidth:2, borderDash:[6,4],
+      label:{ display:true, content:EVENT_LABELS[ev.eventType]||ev.eventType, position:'start',
+        backgroundColor: ev.eventType==='coldCrash'?'rgba(0,100,200,.10)':ev.eventType==='dryHop'?'rgba(30,150,60,.10)':'rgba(150,150,150,.10)',
+        color: ev.eventType==='coldCrash'?'rgba(0,100,200,1)':ev.eventType==='dryHop'?'rgba(30,150,60,1)':'rgba(120,120,120,1)',
+        font:{ family:"'Noto Sans JP',sans-serif", size:10, weight:'600' }, padding:3, borderRadius:3 } };
+  });
+  S.chart = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'温度(°C)', data:allDays.map(d=>get(fermLogs,d,'temp')), borderColor:'#01696f', backgroundColor:'rgba(1,105,111,.08)', yAxisID:'y', tension:.3, pointRadius:3, fill:true, order:1, datalabels:{display:false} },
+      { label:'°P (プラート)', data:allDays.map(d=>get(fermLogs,d,'gravity')), borderColor:'#da7101', backgroundColor:'rgba(218,113,1,.06)', yAxisID:'y1', tension:.3, pointRadius:3, fill:false, order:2, datalabels:{display:false} },
+      { label:'pH', data:allDays.map(d=>get(fermLogs,d,'ph')), borderColor:'#7a39bb', yAxisID:'y2', tension:.3, pointRadius:3, borderDash:[4,3], fill:false, order:3, datalabels:{display:false} },
+      { label:'CO₂(bar)', data:allDays.map(d=>get(fermLogs,d,'co2Bar')), borderColor:'#006494', yAxisID:'y3', tension:.3, pointRadius:3, borderDash:[2,3], fill:false, order:4, datalabels:{display:false} }
+    ]},
+    options:{ animation:false, responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{ position:'top', labels:{ color:textColor, font:{family:"'Noto Sans JP',sans-serif",size:11}, boxWidth:12, padding:12 } }, annotation:{ annotations } },
+      scales:{
+        x:{ grid:{color:gridColor}, ticks:{ color:textColor, font:{family:"'Noto Sans JP',sans-serif",size:10}, maxRotation:0 } },
+        y:{ type:'linear', position:'left', grid:{color:gridColor}, ticks:{color:'#01696f',font:{size:10}}, title:{display:true,text:'温度(°C)',color:'#01696f',font:{size:10}} },
+        y1:{ type:'linear', position:'right', min:0, max:30, grid:{drawOnChartArea:false}, ticks:{color:'#da7101',font:{size:10}}, title:{display:true,text:'°P',color:'#da7101',font:{size:10}} },
+        y2:{ type:'linear', position:'right', min:3, max:7.5, grid:{drawOnChartArea:false}, ticks:{color:'#7a39bb',font:{size:10}}, title:{display:true,text:'pH',color:'#7a39bb',font:{size:10}}, offset:true },
+        y3:{ type:'linear', position:'right', min:0, max:3, grid:{drawOnChartArea:false}, ticks:{color:'#006494',font:{size:10}}, title:{display:true,text:'CO₂(bar)',color:'#006494',font:{size:10}}, offset:true }
+      } }
+  });
+}
+
+function renderFermTable() {
+  const tbody = document.getElementById('fermTbody');
+  const rows = S.db.fermLogs;
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i data-lucide="clipboard-list" style="width:32px;height:32px"></i><h3>発酵ログなし</h3><p>上のフォームからログを追加してください</p></div></td></tr>`; lucide.createIcons(); return; }
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td>${fmtDate(r.logDate)}</td><td>${r.day}</td><td>${r.temp||'—'}</td><td>${r.gravity||'—'}</td>
+    <td>${r.ph!==''&&r.ph!==null?fmtPH(r.ph):'—'}</td><td>${r.co2Bar||'—'}</td><td>${r.yeastCellCount||'—'}</td><td>${r.viability||'—'}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.notes||'')}</td>
+    <td><button class="btn-delete-row" onclick="deleteFermLog('${r.logId}')"><i data-lucide="trash-2"></i></button></td></tr>`).join('');
+  lucide.createIcons();
+}
+function renderVdkTable() {
+  const tbody = document.getElementById('vdkTbody');
+  const rows = S.db.vdkLogs;
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i data-lucide="test-tube-2" style="width:32px;height:32px"></i><h3>VDKテストなし</h3><p>上のフォームからテストを記録してください</p></div></td></tr>`; lucide.createIcons(); return; }
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td>${fmtDate(r.testDate)}</td><td>${r.day}</td><td>${r.forcingTemp||'—'}°C × ${r.forcingTime||'—'}分</td>
+    <td>${r.result_ppm||'—'}</td><td>${r.diacetyl_ppm||'—'}</td><td>${r.pentanedione_ppm||'—'}</td>
+    <td><span class="badge badge-${r.passedTest==='PASS'?'pass':'fail'}">${r.passedTest==='PASS'?'合格 ✓':'不合格 ✗'}</span></td>
+    <td>${esc(r.notes||'')}</td>
+    <td><button class="btn-delete-row" onclick="deleteVdkLog('${r.vdkId}')"><i data-lucide="trash-2"></i></button></td></tr>`).join('');
+  lucide.createIcons();
+}
+function renderEventsTable() {
+  const tbody = document.getElementById('eventTbody');
+  const rows = S.db.events;
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i data-lucide="bookmark" style="width:32px;height:32px"></i><h3>イベントなし</h3><p>コールドクラッシュ・ドライホップのタイミングを記録してください</p></div></td></tr>`; lucide.createIcons(); return; }
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td><span class="badge badge-${r.eventType==='coldCrash'?'cold':r.eventType==='dryHop'?'dryhop':'other'}">${EVENT_LABELS[r.eventType]||r.eventType}</span></td>
+    <td>${fmtDate(r.eventDate)}</td><td>D${r.day}</td><td>${esc(r.notes||'')}</td>
+    <td><button class="btn-delete-row" onclick="deleteEvent('${r.eventId}')"><i data-lucide="trash-2"></i></button></td></tr>`).join('');
+  lucide.createIcons();
+}
+
+function openNewBatchFlow(tankNo) {
+  switchTab('batch');
+  if (tankNo) document.getElementById('f_tankNo').value = String(tankNo);
+  document.getElementById('f_brand').focus();
+  S.editBatchId = null;
+  S.recipe = {lines:[],schedulePageId:'',source:''}; RLINES = [];
+  fillSchedules();
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('dashboard').style.display='';
+}
+function prefillBatchForm(b) {
+  S.editBatchId = b.batchId;
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el) el.value=val||''; };
+  set('f_brand',b.brand); set('f_brewDate', b.brewDate?b.brewDate.split('T')[0]:'');
+  set('f_tankNo',b.tankNo); set('f_yeast',b.yeast); set('f_og',b.og); set('f_targetFG',b.targetFG);
+  set('f_ev',b.ev); set('f_av',b.av); set('f_ibu',b.ibu); set('f_slurry',b.slurryVol);
+  set('f_pitchRate',b.yeastPitchRate); set('f_notes',b.notes); set('f_status',b.status);
+}
+function clearBatchForm() {
+  document.getElementById('batchForm').reset(); S.editBatchId=null;
+  if (S.selTank) document.getElementById('f_tankNo').value=String(S.selTank);
+}
+async function submitBatchForm(e) {
+  e.preventDefault();
+  const payload = { brand:v('f_brand'), brewDate:v('f_brewDate'), tankNo:v('f_tankNo'), yeast:v('f_yeast'),
+    og:v('f_og'), targetFG:v('f_targetFG'), ev:v('f_ev'), av:v('f_av'), ibu:v('f_ibu'),
+    slurryVol:v('f_slurry'), yeastPitchRate:v('f_pitchRate'), notes:v('f_notes'), status:v('f_status') };
+  const isNew = !S.editBatchId;
+  const sched = (document.getElementById('f_sched')||{}).value || '';
+  try {
+    if (S.editBatchId) { await callServer('updateBatch', {...payload, batchId:S.editBatchId}); toast('バッチを更新しました','success'); }
+    else { const res = await callServer('createBatch', payload); S.selBatch = res.batchId; toast('バッチを作成しました','success'); }
+    // persist the chosen brew schedule with the batch (kept in BatchRecipe)
+    if (S.selBatch) {
+      try{ await callServer('saveBatchRecipe', { batchId:S.selBatch, lines:RLINES, schedulePageId:sched,
+        source:(document.getElementById('rp_source')||{}).value||'手入力' }); }catch(e){}
+    }
+    await refreshAll();
+    if (S.selBatch) await loadDashboard(S.selBatch);
+    // warn-but-allow: on a brand-new tank, nudge to enter materials so stock is tracked
+    if (isNew && (!RLINES || !RLINES.length)) {
+      switchTab('recipe'); loadRecipeUI();
+      showReviewBanner('⚠ この仕込みの原料を入力（テンプレート読込／写真OCR／手入力）して「保存」すると在庫に反映されます。今はスキップも可能です。');
+      toast('在庫反映のため原料を入力してください（スキップ可）','info');
+    }
+  } catch(err) { toast('保存エラー: ' + (err.message||err), 'error'); }
+}
+
+async function submitFermLog(e) {
+  e.preventDefault();
+  if (!S.selBatch) { toast('バッチを選択してください','error'); return; }
+  try {
+    await callServer('addFermLog', { batchId:S.selBatch, logDate:v('fl_date'), day:v('fl_day'), temp:v('fl_temp'),
+      gravity:v('fl_grav'), ph:v('fl_ph'), co2Bar:v('fl_co2'), yeastCellCount:v('fl_cells'), viability:v('fl_viab'), notes:v('fl_notes') });
+    toast('発酵ログを保存しました','success'); resetFermForm(); await loadDashboard(S.selBatch);
+  } catch(err) { toast('保存エラー','error'); }
+}
+function resetFermForm() {
+  document.getElementById('fermForm').reset();
+  document.getElementById('fl_date').value = new Date().toISOString().split('T')[0];
+  const n = S.db.fermLogs.length;
+  if (n && S.db.batch) document.getElementById('fl_day').value = Number(S.db.fermLogs[n-1].day)+1;
+}
+async function deleteFermLog(logId) {
+  if (!confirm(tr('この発酵ログを削除しますか？'))) return;
+  try { await callServer('deleteFermLog',{logId}); toast('削除しました','success'); await loadDashboard(S.selBatch); }
+  catch(e){ toast('削除エラー','error'); }
+}
+
+async function submitVdkLog(e) {
+  e.preventDefault();
+  if (!S.selBatch) { toast('バッチを選択してください','error'); return; }
+  try {
+    await callServer('addVdkLog', { batchId:S.selBatch, testDate:v('vdk_date'), day:v('vdk_day'),
+      sampleTemp:v('vdk_sampleTemp'), forcingTemp:v('vdk_forceTemp'), forcingTime:v('vdk_forceTime'),
+      result_ppm:v('vdk_result'), diacetyl_ppm:v('vdk_diacetyl'), pentanedione_ppm:v('vdk_penta'),
+      passedTest: document.getElementById('vdk_pass').value==='1', notes:v('vdk_notes') });
+    toast('VDKテストを保存しました','success'); resetVdkForm(); await loadDashboard(S.selBatch);
+  } catch(e){ toast('保存エラー','error'); }
+}
+function resetVdkForm() {
+  document.getElementById('vdkForm').reset();
+  document.getElementById('vdk_date').value = new Date().toISOString().split('T')[0];
+}
+async function deleteVdkLog(vdkId) {
+  if (!confirm(tr('このVDKテスト記録を削除しますか？'))) return;
+  try { await callServer('deleteVdkLog',{vdkId}); toast('削除しました','success'); await loadDashboard(S.selBatch); }
+  catch(e){ toast('削除エラー','error'); }
+}
+
+function quickAddEvent(type) { switchTab('events'); document.getElementById('ev_type').value=type; document.getElementById('ev_day').focus(); }
+async function submitEvent(e) {
+  e.preventDefault();
+  if (!S.selBatch) { toast('バッチを選択してください','error'); return; }
+  try {
+    await callServer('addEvent', { batchId:S.selBatch, eventType:v('ev_type'), eventDate:v('ev_date'), day:v('ev_day'), notes:v('ev_notes') });
+    toast('イベントを保存しました','success'); resetEventForm(); await loadDashboard(S.selBatch);
+  } catch(e){ toast('保存エラー','error'); }
+}
+function resetEventForm() {
+  document.getElementById('eventForm').reset();
+  document.getElementById('ev_date').value = new Date().toISOString().split('T')[0];
+}
+async function deleteEvent(eventId) {
+  if (!confirm(tr('このイベントを削除しますか？'))) return;
+  try { await callServer('deleteEvent',{eventId}); toast('削除しました','success'); await loadDashboard(S.selBatch); }
+  catch(e){ toast('削除エラー','error'); }
+}
+
+function openResetModal() {
+  if (!S.selBatch || !S.db.batch) { toast('バッチが選択されていません','error'); return; }
+  const b = S.db.batch;
+  document.getElementById('resetModalDesc').textContent = `「${b.brand}」(タンク ${b.tankNo}) をクローズしてNotionへ同期します。シートのデータは保持されます。`;
+  document.getElementById('modalStep1').classList.remove('done');
+  document.getElementById('resetModal').classList.add('open');
+}
+function closeResetModal() { document.getElementById('resetModal').classList.remove('open'); }
+function triggerPrintFromModal() { populatePrintSection(); window.print(); document.getElementById('modalStep1').classList.add('done'); toast('PDFダイアログが開きました','info'); }
+
+function exportOverlayOpen(){ document.getElementById('notionExportOverlay').classList.add('open'); lucide.createIcons(); }
+function exportOverlayClose(){ document.getElementById('notionExportOverlay').classList.remove('open'); }
+function exportStep(n,state){ const el=document.getElementById('estep'+n); if(el) el.className='export-step '+state; }
+function exportProgress(pct,state){ const bar=document.getElementById('exportProgressFill'); if(bar){ bar.style.width=pct+'%'; bar.className='progress-fill '+(state||''); } }
+function exportStatus(msg,type){ const el=document.getElementById('exportStatusText'); if(el){ el.textContent=msg; el.className='export-modal-status '+(type||''); } }
+
+function closeTankAndExport(batchId) {
+  const restoreStock = ((document.querySelector('input[name="stockChoice"]:checked')||{}).value === 'restore');
+  exportOverlayOpen(); exportStatus('Preparing...'); exportProgress(0);
+  [1,2,3,4,5].forEach(n=>exportStep(n,''));
+  exportStep(1,'active'); exportStatus('発酵チャートを取得中...'); exportProgress(10);
+  const doExport = function() {
+    let chartImg = null;
+    if (S.chart) { try { S.chart.options.animation=false; S.chart.update('none'); chartImg=S.chart.toBase64Image('image/png',1.0); if(!chartImg||chartImg.length<200) chartImg=null; } catch(e){ chartImg=null; } }
+    exportStep(1,'done'); exportProgress(25); exportStep(2,'active'); exportStatus('PDFレポート作成中...');
+    let simPct = 25;
+    [{pct:45,delay:400,d:2,a:3,msg:'Notionへアップロード中...'},
+     {pct:65,delay:1200,d:3,a:4,msg:'データベース登録＋原料消費...'},
+     {pct:80,delay:2200,d:4,a:5,msg:'タンククローズ中...'},
+     {pct:90,delay:3200,d:null,a:null,msg:'仕上げ中...'}].forEach(function(s){
+      setTimeout(function(){ exportProgress(s.pct); exportStatus(s.msg); if(s.d) exportStep(s.d,'done'); if(s.a) exportStep(s.a,'active'); }, s.delay);
     });
-    const out = await res.json();
-    if(!out.ok) throw new Error(out.error || 'Unknown error');
-    if(Array.isArray(out.data)){ DATA = out.data; stamp(); render(); }
-    return out;
-  } finally { loadbar('off'); }
+    google.script.run
+      .withSuccessHandler(function(result){
+        if (result && result.success) {
+          exportStep(5,'done'); exportProgress(100,'complete');
+          exportStatus('完了！Notionへ同期しました ✓' + (restoreStock?' ・原料在庫を戻しました':''), 'done');
+          setTimeout(function(){ exportOverlayClose(); closeResetModal(); toast('タンククローズ完了。Notion同期 ✓','success'); refreshAll(); }, 1400);
+        } else {
+          exportStep(5,'err'); exportProgress(simPct,'error');
+          exportStatus('エラー: ' + (result?result.error:'unknown'), 'err');
+          setTimeout(exportOverlayClose, 4000);
+        }
+      })
+      .withFailureHandler(function(err){
+        [1,2,3,4,5].forEach(function(n){ const el=document.getElementById('estep'+n); if(el&&el.classList.contains('active')) exportStep(n,'err'); });
+        exportProgress(simPct,'error'); exportStatus('失敗: ' + (err.message||err), 'err');
+        setTimeout(exportOverlayClose, 4000);
+      })
+      .handleRequest('sendBatchPdfToNotion', { batchId: batchId, chartImage: chartImg, restoreStock: restoreStock });
+  };
+  if (S.chart) requestAnimationFrame(function(){ requestAnimationFrame(doExport); });
+  else doExport();
 }
 
-/* ----- editor modal ----- */
-let editState = null;
-const OPT_STATUS = [['todo','未着手','To Do'],['doing','進行中','In Progress'],['done','完了','Done']];
-const OPT_CAT = [['product','製品','Product'],['quality','品質','Quality'],['strategy','戦略','Strategy']];
-function optionsHtml(list, selected){
-  return list.map(o=>`<option value="${o[0]}" ${o[0]===selected?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('');
-}
-function parentOptions(entity, selected){
-  if(entity==='milestone'){
-    return DATA.map(p=>`<option value="${p.pageId}" ${p.pageId===selected?'selected':''}>${T(p.name)}</option>`).join('');
-  }
-  if(entity==='task'){
-    let out='';
-    DATA.forEach(p=>p.milestones.forEach(m=>{
-      out+=`<option value="${m.pageId}" ${m.pageId===selected?'selected':''}>${T(p.name)} › ${T(m.name)}</option>`;
-    }));
-    return out;
-  }
-  return '';
-}
-const ENTITY_LABEL={project:{ja:'プロジェクト',en:'Project'},milestone:{ja:'マイルストーン',en:'Milestone'},task:{ja:'タスク',en:'Task'}};
-
-function openEditor(entity, mode, item, parentId){
-  if(!canEdit()){
-    toast(L()==='ja'?'編集にはNotion接続とアプリキーが必要です':'Editing needs a Notion connection and app key', true);
-    document.getElementById('connectModal').classList.add('open');
-    return;
-  }
-  editState={entity, mode, pageId:item?item.pageId:null,
-             origParent: (mode==='edit' ? ((item&&item.parentId)||'') : (parentId||''))};
-  const it=item||{};
-  const isNew = mode==='create';
-  document.getElementById('editTitle').textContent =
-    (isNew ? (L()==='ja'?'新規 ':'New ') : (L()==='ja'?'編集 ':'Edit ')) + T(ENTITY_LABEL[entity]);
-
-  const nameHint = entity==='milestone'
-    ? (L()==='ja'?'「〜した状態」で書く':'Write as "… is completed"')
-    : entity==='task' ? (L()==='ja'?'「〜する」で書く':'Write as an action, "Order malt"') : '';
-
-  let html = `
-    <div class="field-row">
-      <div class="field"><label>日本語 ${nameHint?`<span style="font-weight:400">— ${nameHint}</span>`:''}</label>
-        <input type="text" id="f_ja" value="${(it.name&&it.name.ja||'').replace(/"/g,'&quot;')}"></div>
-      <div class="field"><label>English</label>
-        <input type="text" id="f_en" value="${(it.name&&it.name.en||'').replace(/"/g,'&quot;')}"></div>
-    </div>`;
-
-  if(entity!=='project'){
-    /* On edit, preselect the item's CURRENT parent. Without this the browser
-       selects the first <option> and Save silently reparents the item — which
-       is what scrambled the tree. On create, use the parent that was clicked. */
-    const selParent = (mode==='edit') ? (it.parentId || parentId || '') : (parentId || '');
-    // If the backend predates the parentId fix we cannot know the current
-    // parent, so lock the field rather than risk moving the item.
-    const unknownParent = (mode==='edit' && !it.parentId);
-    const lbl = entity==='milestone'?(L()==='ja'?'親プロジェクト':'Parent Project'):(L()==='ja'?'親マイルストーン':'Parent Milestone');
-    html += `<div class="field"><label>${lbl}</label>
-      <select id="f_parent" ${unknownParent?'disabled':''}>${parentOptions(entity, selParent)}</select>
-      ${unknownParent?`<div style="font-size:.72rem;color:var(--color-warning);margin-top:.3rem">${L()==='ja'?'親を変更するにはCode.gsを再デプロイしてください。':'Re-deploy Code.gs to enable changing the parent.'}</div>`:''}</div>`;
-  }
-  html += `<div class="field-row">
-      <div class="field"><label>${L()==='ja'?'ステータス':'Status'}</label>
-        <select id="f_status">${optionsHtml(OPT_STATUS, it.status||'todo')}</select></div>`;
-  if(entity==='project'){
-    html += `<div class="field"><label>${L()==='ja'?'カテゴリ':'Category'}</label>
-        <select id="f_cat">${optionsHtml(OPT_CAT, it.category||'product')}</select></div>`;
-  }
-  html += `</div>
-    <div class="field-row">
-      <div class="field"><label>${L()==='ja'?'開始日':'Start Date'}</label><input type="date" id="f_start" value="${it.start||''}"></div>
-      <div class="field"><label>${L()==='ja'?'終了日':'End Date'}</label><input type="date" id="f_end" value="${it.end||''}"></div>
-    </div>
-    <div style="font-size:.72rem;color:var(--color-text-faint)">${L()==='ja'?'日付を入れるとガントチャートに表示されます。担当者はNotion側で設定してください。':'Dates make the item appear on the Gantt. Set Owner in Notion.'}</div>`;
-
-  document.getElementById('editBody').innerHTML = html;
-  document.getElementById('editErr').textContent = '';
-  document.getElementById('editModal').classList.add('open');
-  setTimeout(()=>{ const f=document.getElementById('f_ja'); if(f) f.focus(); }, 50);
+function triggerPrint() { populatePrintSection(); window.print(); }
+function populatePrintSection() {
+  const { batch, fermLogs, vdkLogs, events } = S.db;
+  if (!batch) return;
+  document.getElementById('pr_title').textContent = `発酵管理記録｜${batch.brand}｜タンク ${batch.tankNo}`;
+  document.getElementById('pr_sub').textContent = `ステータス: ${STATUS_LABELS[batch.status]||batch.status}　酵母: ${batch.yeast||'—'}　IBU: ${batch.ibu||'—'}`;
+  const meta = [['仕込み日',fmtDate(batch.brewDate)],['タンク',`タンク ${batch.tankNo}`],['OG',batch.og||'—'],['目標FG',batch.targetFG||'—'],['EV%',batch.ev||'—'],['AV%',batch.av||'—']];
+  document.getElementById('pr_metaGrid').innerHTML = meta.map(([l,val])=>`<div class="pr-meta-item"><label>${l}</label><span>${esc(String(val))}</span></div>`).join('');
+  const ci = document.getElementById('pr_chartImg');
+  if (S.chart) { ci.src=S.chart.toBase64Image(); ci.style.display=''; } else ci.style.display='none';
+  const bd = [['銘柄',batch.brand],['タンク番号',batch.tankNo],['仕込み日',fmtDate(batch.brewDate)],['ステータス',STATUS_LABELS[batch.status]||batch.status],
+    ['酵母',batch.yeast||'—'],['OG',batch.og||'—'],['目標FG',batch.targetFG||'—'],['EV%',batch.ev||'—'],['AV%',batch.av||'—'],['IBU',batch.ibu||'—'],
+    ['スラリー量',batch.slurryVol||'—'],['ピッチレート',batch.yeastPitchRate||'—'],['備考',batch.notes||'—']];
+  document.getElementById('pr_batchDetails').innerHTML = bd.map(([l,val])=>`<tr><th style="width:120px">${l}</th><td>${esc(String(val||'—'))}</td></tr>`).join('');
+  document.getElementById('pr_fermRows').innerHTML = fermLogs.length ? fermLogs.map(r=>`<tr><td>${fmtDate(r.logDate)}</td><td>${r.day}</td><td>${r.temp||'—'}</td><td>${r.gravity||'—'}</td><td>${r.ph!==''&&r.ph!==null?fmtPH(r.ph):'—'}</td><td>${r.co2Bar||'—'}</td><td>${r.yeastCellCount||'—'}</td><td>${r.viability||'—'}</td><td>${esc(r.notes||'')}</td></tr>`).join('') : '<tr><td colspan="9">記録なし</td></tr>';
+  document.getElementById('pr_vdkRows').innerHTML = vdkLogs.length ? vdkLogs.map(r=>`<tr><td>${fmtDate(r.testDate)}</td><td>${r.day}</td><td>${r.forcingTemp||'—'}°C × ${r.forcingTime||'—'}分</td><td>${r.result_ppm||'—'}</td><td>${r.diacetyl_ppm||'—'}</td><td>${r.pentanedione_ppm||'—'}</td><td>${r.passedTest==='PASS'?'合格':'不合格'}</td><td>${esc(r.notes||'')}</td></tr>`).join('') : '<tr><td colspan="8">記録なし</td></tr>';
+  document.getElementById('pr_eventRows').innerHTML = events.length ? events.map(r=>`<tr><td>${EVENT_LABELS[r.eventType]||r.eventType}</td><td>${fmtDate(r.eventDate)}</td><td>D${r.day}</td><td>${esc(r.notes||'')}</td></tr>`).join('') : '<tr><td colspan="4">記録なし</td></tr>';
+  document.getElementById('pr_footer').textContent = `出力日時: ${new Date().toLocaleString('ja-JP')}`;
 }
 
-document.getElementById('editCancel').addEventListener('click', ()=>document.getElementById('editModal').classList.remove('open'));
-document.getElementById('editModal').addEventListener('click', e=>{ if(e.target.id==='editModal') e.currentTarget.classList.remove('open'); });
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active', c.id===`tab-${name}`));
+}
 
-document.getElementById('editSave').addEventListener('click', async ()=>{
-  if(!editState) return;
-  const g=id=>{ const el=document.getElementById(id); return el?el.value:undefined; };
-  const fields={ ja:g('f_ja')||'', en:g('f_en')||'', status:g('f_status'), start:g('f_start')||'', end:g('f_end')||'' };
-  if(editState.entity==='project'){
-    fields.category=g('f_cat');
-  } else {
-    const chosen = g('f_parent');
-    /* Second guard: on edit, only send the parent when we KNOW the original
-       and the user actually changed it. If origParent is empty on an edit the
-       backend did not tell us the current parent, so we send nothing and the
-       item stays where it is. A status-only edit can never move an item. */
-    if(editState.mode==='create'){
-      fields.parentId = chosen;
-      if(!chosen){
-        document.getElementById('editErr').textContent = L()==='ja'?'先に親を作成してください。':'Create a parent first.';
-        return;
+function toast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span class="toast-dot"></span><span>${esc(msg)}</span>`;
+  c.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 3600);
+}
+function v(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function fmtPH(val){ const n=parseFloat(val); return isNaN(n)?'—':n.toFixed(2); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(d){ if(!d) return '—'; const dt=new Date(d); if(isNaN(dt)) return String(d).split('T')[0]; return `${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}`; }
+function calcDays(brewDate){ if(!brewDate) return '—'; const diff=Math.floor((new Date()-new Date(brewDate))/86400000); return diff>=0?`${diff}日目`:'—'; }
+
+// ===== Recipe / full-recipe capture =====
+let MAT_CACHE = [], RLINES = [], REC_CACHE = null, SCHED_CACHE = null;
+async function loadMaterialsCache(){ try{ MAT_CACHE = await callServer('getMaterials'); }catch(e){ MAT_CACHE = []; } }
+async function loadRecipeUI(){
+  const sum = document.getElementById('rp_summary');
+  // A) RECIPES FIRST — small & fast; show the dropdown immediately (instant from cache on later opens)
+  try { if(!REC_CACHE) REC_CACHE = await callServer('getRecipeOptions') || []; }
+  catch(e){ if(sum) sum.textContent = 'v5.0 ✓ ・ レシピ取得エラー: '+(e.message||e); }
+  const recipes = Array.isArray(REC_CACHE) ? REC_CACHE : [];
+  document.getElementById('rp_recipe').innerHTML =
+    '<option value="">レシピ選択…</option>' + recipes.map(r=>`<option>${esc(r)}</option>`).join('');
+  if(sum) sum.textContent = `v5.0 ✓ ・ レシピ候補 ${recipes.length}件（原料マスタ読込中…）`;
+  // B) MATERIALS + SCHEDULE + SAVED — load in PARALLEL in the background (do not block the dropdown)
+  const jobs = [];
+  if(!MAT_CACHE.length){
+    jobs.push(callServer('getMaterials').then(m=>{ MAT_CACHE = Array.isArray(m)?m:[]; }).catch(()=>{}));
+  }
+  jobs.push(fillSchedules());
+  RLINES = [];
+  if(S.selBatch){
+    jobs.push(callServer('getBatchRecipe',{batchId:S.selBatch}).then(saved=>{
+      saved = saved || {};
+      const fs = document.getElementById('f_sched'); if(fs && saved.schedulePageId) fs.value = saved.schedulePageId;
+      if(saved.source) document.getElementById('rp_source').value = saved.source;
+      RLINES = saved.lines || []; renderRLines();
+    }).catch(()=>{}));
+  }
+  await Promise.all(jobs);
+  renderRLines();
+  if(sum) sum.textContent = `v5.0 ✓ ・ レシピ候補 ${recipes.length}件 ・ 原料マスタ ${MAT_CACHE.length}件`
+    + (S.selBatch ? '（レシピを選び「テンプレート読込」）' : ' ・ ⚠ 保存前にタンクを選択してください');
+}
+async function loadTemplate(){
+  const r = document.getElementById('rp_recipe').value; if(!r){ toast('レシピを選択してください','error'); return; }
+  const t = await callServer('getRecipeTemplate', { recipe: r });
+  RLINES = t.map(x=>({ materialId:x.materialId, name:x.name, qty:x.qty, unit:x.unit, process:x.process, timing:x.timing, subBatch:'全体' }));
+  document.getElementById('rp_source').value = 'レシピテンプレート';
+  renderRLines(); toast('テンプレート読込: '+RLINES.length+' 原料','success');
+}
+function addRLine(){ RLINES.push({materialId:'',name:'',qty:'',unit:'kg',process:'マッシング',timing:'',subBatch:'全体'}); renderRLines(); }
+function rmRLine(i){ RLINES.splice(i,1); renderRLines(); }
+function matOptions(sel){ return '<option value="">—</option>' + MAT_CACHE.map(m=>`<option value="${m.id}" ${m.id===sel?'selected':''}>${esc(m.ja||m.en)}</option>`).join(''); }
+function renderRLines(){
+  const P = ['マッシング','ボイル','ワールプール','ドライホップ','発酵','水処理'];
+  const tb = document.getElementById('rp_tbody');
+  tb.innerHTML = RLINES.map((l,i)=>`<tr>
+    <td><select onchange="RLINES[${i}].materialId=this.value;RLINES[${i}].name=this.options[this.selectedIndex].text">${matOptions(l.materialId)}</select></td>
+    <td><input type="number" step="0.001" value="${l.qty==null?'':l.qty}" oninput="RLINES[${i}].qty=this.value" style="width:80px"></td>
+    <td><select onchange="RLINES[${i}].unit=this.value">${['kg','L','g'].map(u=>`<option ${l.unit===u?'selected':''}>${u}</option>`).join('')}</select></td>
+    <td><select onchange="RLINES[${i}].process=this.value">${P.map(p=>`<option ${l.process===p?'selected':''}>${p}</option>`).join('')}</select></td>
+    <td><select onchange="RLINES[${i}].subBatch=this.value">${['全体','1st','2nd'].map(s=>`<option ${l.subBatch===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td><input value="${esc(l.timing||'')}" oninput="RLINES[${i}].timing=this.value" style="width:110px"></td>
+    <td><button class="btn-delete-row" onclick="rmRLine(${i})"><i data-lucide="trash-2"></i></button></td>
+  </tr>`).join('') || '<tr><td colspan="7" style="color:var(--color-text-faint);padding:12px">原料未登録。「テンプレート読込」か「原料追加」。</td></tr>';
+  lucide.createIcons();
+}
+async function saveRecipe(){
+  if(!S.selBatch){ toast('バッチが選択されていません','error'); return; }
+  const sched = (document.getElementById('f_sched')||{}).value || '';
+  await callServer('saveBatchRecipe', { batchId:S.selBatch, lines:RLINES,
+    schedulePageId:sched, source:document.getElementById('rp_source').value||'手入力' });
+  // Deduct stock NOW (batch start). Reversible at タンクリセット.
+  try{
+    const r = await callServer('commitBatchStock', { batchId:S.selBatch, lines:RLINES });
+    toast('原料/レシピを保存し、在庫を反映しました（'+((r&&r.created)||0)+'件）','success');
+  }catch(e){ toast('原料/レシピを保存しました（在庫反映は後で）','info'); }
+  clearReviewBanner();
+  if(S.recipe) S.recipe.lines = RLINES.slice();
+  renderBrewSheet();
+}
+
+// ===== schedules (batch-settings dropdown) =====
+async function fillSchedules(){
+  try{ if(!SCHED_CACHE) SCHED_CACHE = await callServer('getScheduleOptions') || []; }catch(e){ SCHED_CACHE = SCHED_CACHE||[]; }
+  const el = document.getElementById('f_sched'); if(!el) return;
+  const cur = el.value;
+  el.innerHTML = '<option value="">スケジュール未選択</option>' +
+    (SCHED_CACHE||[]).map(s=>`<option value="${s.id}">${esc(s.name)} ${s.date||''}</option>`).join('');
+  if(cur) el.value = cur;
+}
+
+// ===== load per-batch recipe + panel extras when a tank is opened =====
+async function loadBatchExtras(){
+  await fillSchedules();
+  if(!S.selBatch){ renderBrewSheet(); return; }
+  try{
+    const saved = await callServer('getBatchRecipe',{batchId:S.selBatch}) || {};
+    S.recipe = { lines: saved.lines||[], schedulePageId: saved.schedulePageId||'', source: saved.source||'' };
+    RLINES = (S.recipe.lines||[]).slice();
+    const fs=document.getElementById('f_sched'); if(fs && S.recipe.schedulePageId) fs.value=S.recipe.schedulePageId;
+    const rs=document.getElementById('rp_source'); if(rs && S.recipe.source) rs.value=S.recipe.source;
+  }catch(e){ S.recipe={lines:[],schedulePageId:'',source:''}; }
+  try{ S.panel = await callServer('getBatchPanel',{batchId:S.selBatch}); }catch(e){ S.panel=null; }
+  renderBrewSheet();
+}
+
+// ===== photo -> free Google Drive OCR (values flagged for review) =====
+function showReviewBanner(msg){ const b=document.getElementById('rp_reviewBanner'); if(!b) return; b.style.display='block'; b.textContent=msg; }
+function clearReviewBanner(){ const b=document.getElementById('rp_reviewBanner'); if(b){ b.style.display='none'; b.textContent=''; } }
+async function ocrPhoto(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  if(!S.selBatch){ toast('先にバッチを作成してください','error'); input.value=''; return; }
+  showReviewBanner('写真を読み取り中…（無料OCR）');
+  const reader = new FileReader();
+  reader.onload = async function(){
+    const b64 = String(reader.result).split(',')[1] || '';
+    try{
+      const r = await callServer('ocrBrewSheetNow', { imageB64:b64, mime:f.type||'image/jpeg', name:f.name||'photo.jpg', batchId:S.selBatch });
+      if(r && r.error){ showReviewBanner(r.message || ('OCRエラー: '+r.error)); document.getElementById('rp_source').value='手入力'; return; }
+      const lines = (r && r.lines) || [];
+      if(lines.length){
+        RLINES = lines.map(x=>({materialId:x.materialId||'',name:x.name||'',qty:x.qty,unit:x.unit||'kg',process:x.process||'マッシング',timing:x.timing||'',subBatch:x.subBatch||'全体'}));
+        renderRLines();
       }
-    } else if(editState.origParent && chosen && chosen !== editState.origParent){
-      fields.parentId = chosen;
-    }
-  }
-
-  if(!fields.ja.trim() && !fields.en.trim()){
-    document.getElementById('editErr').textContent = L()==='ja'?'名前を入力してください。':'Please enter a name.';
-    return;
-  }
-  if(fields.start && fields.end && fields.end < fields.start){
-    document.getElementById('editErr').textContent = L()==='ja'?'終了日が開始日より前です。':'End date is before start date.';
-    return;
-  }
-  const btn=document.getElementById('editSave'); btn.disabled=true;
-  try{
-    await writeAction({ action:editState.mode==='create'?'create':'update', entity:editState.entity, id:editState.pageId, fields });
-    document.getElementById('editModal').classList.remove('open');
-    toast(L()==='ja'?'Notionに保存しました':'Saved to Notion');
-  }catch(err){
-    document.getElementById('editErr').textContent = err.message;
-  }finally{ btn.disabled=false; }
-});
-
-/* ----- archive ----- */
-let pendingArchive=null;
-function askArchive(entity, item){
-  if(!canEdit()){ toast(L()==='ja'?'編集にはNotion接続が必要です':'Editing needs a Notion connection', true); return; }
-  pendingArchive={entity, pageId:item.pageId};
-  document.getElementById('confirmText').textContent = T(item.name);
-  document.getElementById('confirmModal').classList.add('open');
-}
-document.getElementById('confirmCancel').addEventListener('click', ()=>document.getElementById('confirmModal').classList.remove('open'));
-document.getElementById('confirmModal').addEventListener('click', e=>{ if(e.target.id==='confirmModal') e.currentTarget.classList.remove('open'); });
-document.getElementById('confirmOk').addEventListener('click', async ()=>{
-  if(!pendingArchive) return;
-  const btn=document.getElementById('confirmOk'); btn.disabled=true;
-  try{
-    await writeAction({ action:'archive', entity:pendingArchive.entity, id:pendingArchive.pageId });
-    document.getElementById('confirmModal').classList.remove('open');
-    toast(L()==='ja'?'ゴミ箱へ移動しました':'Moved to Trash');
-  }catch(err){ toast(err.message, true); }
-  finally{ btn.disabled=false; pendingArchive=null; }
-});
-
-/* ----- quick status change from the kanban ----- */
-async function quickStatus(entity, pageId, status){
-  try{ await writeAction({action:'update', entity, id:pageId, fields:{status}}); toast(L()==='ja'?'更新しました':'Updated'); }
-  catch(err){ toast(err.message, true); render(); }
+      document.getElementById('rp_source').value='実仕込みログ';
+      showReviewBanner('⚠ '+((r&&r.note)||'OCR結果は必ず確認してください。')+' 確認後「原料/レシピを保存」で在庫に反映されます。');
+    }catch(e){ showReviewBanner('OCR失敗。写真を見ながら手入力してください。'); }
+    finally{ input.value=''; }
+  };
+  reader.readAsDataURL(f);
 }
 
-/* Lookup helpers so inline handlers can find the live object by page id */
-function findTask(pid){ for(const p of DATA) for(const m of p.milestones) for(const t of m.tasks) if(t.pageId===pid) return t; return null; }
-function findMs(pid){ for(const p of DATA) for(const m of p.milestones) if(m.pageId===pid) return m; return null; }
-function findProj(pid){ return DATA.find(p=>p.pageId===pid)||null; }
+// ===== ABV from OG/FG (°Plato) =====
+function computeABV(og, fg){
+  const o=parseFloat(og), f=parseFloat(fg);
+  if(isNaN(o)||isNaN(f)) return null;
+  const sg=p=>1+(p/(258.6-(p/258.2)*227.1));
+  const abv=(sg(o)-sg(f))*131.25;
+  return isFinite(abv)&&abv>=0 ? abv.toFixed(1) : null;
+}
 
-const ICON_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
-const ICON_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
-const ICON_ADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+// ===== Brew Sheet panel (mockup) — computed from recipe lines + batch =====
+function renderBrewSheet(){
+  const host=document.getElementById('sheet_body'); if(!host) return;
+  const b=S.db&&S.db.batch;
+  if(!b){ host.innerHTML='<div class="empty-state" style="padding:28px"><i data-lucide="clipboard-list" style="width:32px;height:32px"></i><h3>仕込みシート</h3><p>タンクを選択してください</p></div>'; lucide.createIcons(); return; }
+  const lines=RLINES||[];
+  const num=x=>{const n=parseFloat(x);return isNaN(n)?0:n;};
+  const has=l=>(l.name||(l.qty!=null&&l.qty!==''));
+  const grains=lines.filter(l=>has(l)&&(l.unit==='kg'||l.unit==='L'));
+  const hops=lines.filter(l=>has(l)&&l.unit==='g');
+  const water=lines.filter(l=>has(l)&&l.process==='水処理');
+  const gTot=grains.reduce((s,l)=>s+num(l.qty),0);
+  const hTot=hops.reduce((s,l)=>s+num(l.qty),0);
+  const hasSub=lines.some(l=>l.subBatch==='1st'||l.subBatch==='2nd');
+  const lastFG=(S.db.fermLogs&&S.db.fermLogs.length)?S.db.fermLogs[S.db.fermLogs.length-1].gravity:null;
+  const abv=computeABV(b.og, (lastFG!=null&&lastFG!=='')?lastFG:b.targetFG) || (b.av||null);
+  const src=(S.recipe&&S.recipe.source)|| '—';
+  const photo=S.panel&&S.panel.photo;
+  const metric=(lbl,val,sub)=>`<div class="kpi-card"><div class="kpi-label">${lbl}</div><div class="kpi-value">${val==null||val===''?'—':esc(String(val))}</div>${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
+  const procBadge=p=>{const c=p==='ボイル'||p==='ワールプール'?'dryhop':(p==='水処理'?'cold':'active');return `<span class="badge badge-${c}" style="font-size:10px">${esc(p||'—')}</span>`;};
+  const gRows=grains.length?grains.map(l=>`<tr><td>${esc(l.name||'—')}</td><td style="text-align:right">${l.qty==null||l.qty===''?'—':esc(String(l.qty))}</td>${hasSub?`<td style="text-align:right">${l.qty!=null&&l.qty!==''?(num(l.qty)*2).toFixed(1):'—'}</td>`:''}<td>${esc(l.unit||'kg')}</td><td>${procBadge(l.process)}</td></tr>`).join('')
+    :`<tr><td colspan="${hasSub?5:4}" style="color:var(--color-text-faint);padding:10px">原料未登録（原料/レシピタブで入力）</td></tr>`;
+  const hRows=hops.length?hops.map(l=>`<tr><td>${esc(l.name||'—')}</td><td style="text-align:right">${l.qty==null||l.qty===''?'—':esc(String(l.qty))}</td><td>${esc(l.timing||'')}</td><td>${procBadge(l.process)}</td></tr>`).join(''):'';
+  const stockRows=lines.filter(has).map(l=>`<div class="info-row"><div class="info-label">${esc(l.name||'—')}${l.subBatch&&l.subBatch!=='全体'?` <span style="color:var(--color-text-faint)">(${esc(l.subBatch)})</span>`:''}</div><div class="info-val" style="color:#c0392b;font-weight:700">−${l.qty==null||l.qty===''?'?':esc(String(l.qty))} ${esc(l.unit||'kg')}</div></div>`).join('') || '<div style="color:var(--color-text-faint);font-size:var(--text-xs);padding:6px">原料未登録</div>';
 
-/* ---------- Live Notion Sync ---------- */
-/* The Apps Script URL is stored per-browser (localStorage), never in this repo.
-   That keeps your brewery data off a public GitHub page: a visitor without the
-   URL just sees the sample data. Wrapped in try/catch so the app still works in
-   sandboxed previews where storage is blocked. */
-const LS_KEY = 'breweryHub.gasUrl';
-function loadSavedUrl(){
-  try{ return localStorage.getItem(LS_KEY) || ""; }catch(e){ return ""; }
+  host.innerHTML = `
+  <div class="kpi-grid" style="margin-bottom:var(--space-4)">
+    ${metric('初期°P (TOG)', b.og, '°P')}
+    ${metric('目標°P (TFG)', b.targetFG, '°P')}
+    ${metric('ABV（自動）', abv, '% ・ OG/FGから算出')}
+    ${metric('IBU', b.ibu, '目標')}
+    ${metric('発酵度 ADF', b.ev, '%')}
+    ${metric('スラリー', b.slurryVol, 'L')}
+  </div>
+  <div class="panels-row">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">仕込みシート — 原料 (Brew Sheet)</span>
+        <span style="font-size:var(--text-xs);color:var(--color-text-muted)">${hasSub?'ダブルバッチ (1st + 2nd)':''}</span></div>
+      <div class="section-title" style="margin-top:var(--space-2)">グレインビル (GRAIN BILL) ・ 総量 ${gTot?gTot.toFixed(1):'—'} kg</div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>原料</th><th style="text-align:right">${hasSub?'1バッチ':'使用量'}</th>${hasSub?'<th style="text-align:right">合計 ×2</th>':''}<th>単位</th><th>工程</th></tr></thead>
+        <tbody>${gRows}</tbody></table></div>
+      ${hops.length?`<div class="section-title" style="margin-top:var(--space-3)">ホップビル (HOP BILL) ・ 総量 ${hTot?hTot.toFixed(0):'—'} g</div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>原料</th><th style="text-align:right">量 (g)</th><th>添加タイミング</th><th>工程</th></tr></thead>
+        <tbody>${hRows}</tbody></table></div>`:''}
+      ${water.length?`<div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2)">水処理: ${water.map(w=>esc((w.name||'')+' '+(w.qty||'')+(w.unit||''))).join(' ・ ')}</div>`:''}
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">ソース / 在庫連携</span>
+        <span class="badge badge-active" style="font-size:10px" data-noi18n>原料ソース: ${esc(src)}</span></div>
+      ${photo&&photo.url?`<img src="${esc(photo.url)}" alt="brew sheet" style="width:100%;border-radius:8px;border:1px solid var(--color-border);margin-bottom:var(--space-2)">
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">${esc((photo.name||'仕込みシート'))} ・ 仕込みログDB</div>`
+        :`<div style="font-size:var(--text-xs);color:var(--color-text-muted);padding:10px 0">写真は未添付です。「原料/レシピ」タブで仕込みシート写真をアップロード（無料OCR）できます。</div>`}
+      <div class="section-title">酵母 (YEAST)</div>
+      <div class="info-row"><div class="info-label">株</div><div class="info-val">${esc(b.yeast||'—')}</div></div>
+      <div class="info-row"><div class="info-label">ピッチレート</div><div class="info-val">${esc(b.yeastPitchRate||'—')}</div></div>
+      <div class="divider"></div>
+      <div class="section-title">在庫連携（自動減算）</div>
+      ${stockRows}
+      <div style="font-size:10px;color:var(--color-text-faint);margin-top:var(--space-2)">保存時に バッチ原料消費DB へ記録 → 原料データベース.現在在庫 が自動で減少します。</div>
+    </div>
+  </div>`;
+  lucide.createIcons();
 }
-function saveUrl(url){
-  try{ url ? localStorage.setItem(LS_KEY, url) : localStorage.removeItem(LS_KEY); }catch(e){}
-}
-// ?gas=<url> in the address bar overrides the saved value (handy for bookmarks).
-function urlFromQuery(){
-  try{ return new URLSearchParams(location.search).get('gas') || ""; }catch(e){ return ""; }
-}
-let GAS_URL = urlFromQuery() || loadSavedUrl();
-function setSync(state, label){
-  const pill=document.getElementById('connectBtn');
-  pill.className='sync-pill'+(state?(' '+state):'');
-  const lbl=document.getElementById('syncLabel');
-  if(label) lbl.innerHTML = `<span class="ja">${label.ja}</span><span class="en">${label.en}</span>`;
-}
-function stamp(){
-  const d=new Date();
-  document.getElementById('syncTime').textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
-function loadbar(state){
-  const b=document.getElementById('loadbar');
-  if(state==='on'){ b.className='loadbar on'; }
-  else { b.className='loadbar done'; setTimeout(()=>{ b.className='loadbar'; }, 350); }
-}
-async function fetchLiveData(){
-  if(!GAS_URL){ setSync('', {ja:'サンプル',en:'Sample'}); return; }
-  setSync('syncing', {ja:'同期中…',en:'Syncing…'});
-  loadbar('on');
-  try{
-    const res = await fetch(GAS_URL);
-    const json = await res.json();
-    if(json.ok && Array.isArray(json.data)){
-      DATA = json.data;
-      setSync('live', {ja:'ライブ',en:'Live'});
-      stamp();
-      render();
-    } else {
-      setSync('error', {ja:'同期エラー',en:'Sync error'});
-    }
-  }catch(err){
-    setSync('error', {ja:'接続エラー',en:'Connection error'});
-  }finally{
-    loadbar('off');
-  }
-}
-document.getElementById('connectBtn').addEventListener('click', ()=>{
-  document.getElementById('gasUrlInput').value = GAS_URL;
-  document.getElementById('appKeyInput').value = APP_KEY;
-  document.getElementById('connectModal').classList.add('open');
-});
-document.getElementById('modalCancel').addEventListener('click', ()=>{
-  document.getElementById('connectModal').classList.remove('open');
-});
-document.getElementById('connectModal').addEventListener('click', e=>{
-  if(e.target.id==='connectModal') e.currentTarget.classList.remove('open');
-});
-let syncTimer=null;
-function applyConnection(url){
-  GAS_URL = url;
-  saveUrl(url);
-  if(syncTimer){ clearInterval(syncTimer); syncTimer=null; }
-  if(GAS_URL){
-    fetchLiveData();
-    syncTimer = setInterval(fetchLiveData, 60000);
-  } else {
-    // Disconnected: fall back to the bundled sample data.
-    DATA = (typeof PROJECTS !== 'undefined' && Array.isArray(PROJECTS)) ? PROJECTS.slice() : [];
-    document.getElementById('syncTime').textContent = '';
-    setSync('', {ja:'サンプル',en:'Sample'});
-    render();
-  }
-}
-document.getElementById('modalConnect').addEventListener('click', ()=>{
-  document.getElementById('connectModal').classList.remove('open');
-  APP_KEY = document.getElementById('appKeyInput').value.trim();
-  saveKey(APP_KEY);
-  applyConnection(document.getElementById('gasUrlInput').value.trim());
-});
-document.getElementById('modalDisconnect').addEventListener('click', ()=>{
-  document.getElementById('gasUrlInput').value = '';
-  document.getElementById('appKeyInput').value = '';
-  document.getElementById('connectModal').classList.remove('open');
-  APP_KEY = ''; saveKey('');
-  applyConnection('');
-});
-
-navigate();
-// Reconnect automatically if this browser already knows the URL.
-if(GAS_URL){ applyConnection(GAS_URL); }
 </script>
 </body>
 </html>
