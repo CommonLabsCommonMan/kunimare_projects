@@ -1277,6 +1277,23 @@ function setSync(state, label){
   const lbl=document.getElementById('syncLabel');
   if(label) lbl.innerHTML = `<span class="ja">${label.ja}</span><span class="en">${label.en}</span>`;
 }
+/* Surface the backend's real error instead of a blank "Sync error". The 60s
+   auto-refresh would spam a toast, so toast only when the message changes;
+   the pill's hover tooltip and the console always carry the latest reason. */
+let _lastSyncDetail = null;
+function setSyncDetail(msg){
+  const pill=document.getElementById('connectBtn');
+  if(msg){
+    pill.title = (L()==='ja'?'同期エラー: ':'Sync error: ') + msg;
+    if(msg !== _lastSyncDetail){
+      console.warn('[Brewery Hub] sync error:', msg);
+      toast((L()==='ja'?'同期エラー: ':'Sync error: ') + msg, true);
+    }
+  } else {
+    pill.title = '';
+  }
+  _lastSyncDetail = msg || null;
+}
 function stamp(){
   const d=new Date();
   document.getElementById('syncTime').textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
@@ -1292,17 +1309,27 @@ async function fetchLiveData(){
   loadbar('on');
   try{
     const res = await fetch(GAS_URL);
-    const json = await res.json();
+    let json;
+    try{ json = await res.json(); }
+    catch(parseErr){
+      // Google served HTML (a login/redirect or a script error page), not JSON —
+      // almost always the deployment's access isn't "Anyone", or the URL is stale.
+      throw new Error('Web App URL returned non-JSON (HTTP '+res.status+'). Re-check the /exec deployment and set access to "Anyone".');
+    }
     if(json.ok && Array.isArray(json.data)){
       DATA = json.data;
       setSync('live', {ja:'ライブ',en:'Live'});
+      setSyncDetail('');
       stamp();
       render();
     } else {
+      // Reached Code.gs but it returned {ok:false} — surface Notion's reason.
       setSync('error', {ja:'同期エラー',en:'Sync error'});
+      setSyncDetail(json.error || 'Backend returned ok:false with no message');
     }
   }catch(err){
     setSync('error', {ja:'接続エラー',en:'Connection error'});
+    setSyncDetail(err.message || String(err));
   }finally{
     loadbar('off');
   }
@@ -1338,6 +1365,7 @@ document.getElementById('modalConnect').addEventListener('click', ()=>{
   document.getElementById('connectModal').classList.remove('open');
   APP_KEY = document.getElementById('appKeyInput').value.trim();
   saveKey(APP_KEY);
+  _lastSyncDetail = null; // a manual retry should re-toast the reason even if unchanged
   applyConnection(document.getElementById('gasUrlInput').value.trim());
 });
 document.getElementById('modalDisconnect').addEventListener('click', ()=>{
