@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brewery Project Hub</title>
-<!-- Favicon: the brand tankard on a teal tile, inlined as a data URI. Kept inline
-     rather than a .ico file so there is no extra request and nothing to 404 on
-     GitHub Pages. A solid tile reads at 16px and works on light or dark tab bars.
-     '#' must be percent-encoded (%23) inside a data URI. -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2301696f'/%3E%3Cg transform='translate(12 12) scale(.74) translate(-12 -12)' fill='none' stroke='%23f9f8f4' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M6 3h12l-1 6H7L6 3z'/%3E%3Cpath d='M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%2301696f'/%3E%3Cg transform='translate(12 12) scale(.68) translate(-12 -12)' fill='none' stroke='%23f9f8f4' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M6 3h12l-1 6H7L6 3z'/%3E%3Cpath d='M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z'/%3E%3C/g%3E%3C/svg%3E">
-<meta name="theme-color" content="#01696f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=boska@500,600&display=swap" rel="stylesheet">
@@ -31,9 +24,6 @@
   --color-gold:#d19900; --color-gold-highlight:#e9e0c6;
   --color-blue:#006494; --color-blue-highlight:#c6d8e4;
   --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
-  /* Branch connectors need far more contrast than a divider to read as lines.
-     Held at >=3:1 against the card surface (WCAG non-text contrast). */
-  --tree-line:#8f8981;
   --radius-sm:.375rem; --radius-md:.5rem; --radius-lg:.75rem; --radius-xl:1rem; --radius-full:9999px;
   --transition-interactive:180ms cubic-bezier(.16,1,.3,1);
   --shadow-sm:0 1px 2px oklch(0.2 0.01 80/.06); --shadow-md:0 4px 12px oklch(0.2 0.01 80/.08); --shadow-lg:0 12px 32px oklch(0.2 0.01 80/.12);
@@ -50,7 +40,6 @@
   --color-gold:#e8af34; --color-gold-highlight:#4d4332;
   --color-blue:#5591c7; --color-blue-highlight:#3a4550;
   --cat-product:var(--color-blue); --cat-quality:var(--color-primary); --cat-strategy:var(--color-error);
-  --tree-line:#6f6b66;
   --shadow-sm:0 1px 2px oklch(0 0 0/.2); --shadow-md:0 4px 12px oklch(0 0 0/.3); --shadow-lg:0 12px 32px oklch(0 0 0/.4);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -64,14 +53,10 @@ a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 /* Layout shell */
-/* minmax(0,…) not 1fr: a bare 1fr track takes its minimum from content, so a wide
-   child (the nav row on mobile) stretches the whole page instead of scrolling itself. */
-.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100dvh}
-@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100dvh}
+@media (max-width:900px){.shell{grid-template-columns:1fr}}
 .sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:0;height:100dvh}
-/* min-width:0 — as a grid item the sidebar defaults to min-width:auto, which lets
-   the nav row push it wider than the viewport instead of scrolling inside it. */
-@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;min-width:0;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
+@media (max-width:900px){.sidebar{position:sticky;top:0;z-index:30;height:auto;flex-direction:row;align-items:center;gap:1rem;overflow-x:auto;border-right:none;border-bottom:1px solid var(--color-divider);padding:.75rem 1rem}}
 .brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:600;font-size:1.05rem;white-space:nowrap}
 .brand svg{color:var(--color-primary);flex:0 0 auto}
 .nav{display:flex;flex-direction:column;gap:.25rem}
@@ -166,10 +151,7 @@ main{padding:1.5rem}
 .kanban-col-head{padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text);border-bottom:1px solid var(--color-divider)}
 .kanban-count{background:var(--color-surface-dynamic);color:var(--color-text);font-size:.7rem;padding:.1rem .5rem;border-radius:var(--radius-full)}
 .kanban-list{padding:.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;flex:1;min-height:60px}
-/* flex:0 0 auto is load-bearing: as flex items these default to flex-shrink:1 and
-   compress to fit the column's max-height instead of overflowing into the scroll,
-   which squashed a 171px card down to its 26px id line once a column held ~15. */
-.task-card{flex:0 0 auto;background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
+.task-card{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:.75rem .85rem .75rem 1rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition-interactive),transform var(--transition-interactive);position:relative;overflow:hidden}
 .task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat-product)}
 .task-card.cat-quality::before{background:var(--cat-quality)}
 .task-card.cat-strategy::before{background:var(--cat-strategy)}
@@ -217,35 +199,21 @@ select.select-chip{cursor:pointer}
 .today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--color-error);z-index:2}
 .today-flag{position:absolute;top:0;transform:translateX(-50%);background:var(--color-error);color:#fff;font-size:.6rem;font-weight:700;padding:.05rem .3rem;border-radius:0 0 var(--radius-sm) var(--radius-sm);white-space:nowrap;z-index:4}
 
-/* Tree / hierarchy view — indented tree, one card per L1 project.
-   Connectors: each branch draws its own vertical spine segment (top→bottom, so
-   consecutive siblings join seamlessly) plus a horizontal elbow into its node.
-   The last sibling's spine stops at the elbow, closing the branch. --elbow must
-   track the vertical centre of a node's first text line. */
-.tree-wrap{padding:.25rem 0}
-.tree{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,430px),1fr));gap:1rem;align-items:start;--elbow:33px}
-.tree-project{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow-sm)}
-.tree-children{position:relative;margin-left:20px;padding-left:26px}
-.tree-branch{position:relative;padding-top:12px}
-.tree-branch::after{content:'';position:absolute;left:-26px;top:0;bottom:0;width:2px;background:var(--tree-line);border-radius:1px}
-.tree-branch:last-child::after{bottom:auto;height:var(--elbow)}
-.tree-branch::before{content:'';position:absolute;left:-26px;top:var(--elbow);width:20px;height:2px;background:var(--tree-line);border-radius:1px}
-.tree-node{border-radius:var(--radius-md);padding:.6rem .75rem;font-size:.85rem;line-height:1.5;border:1px solid var(--color-divider);background:var(--color-surface-2)}
-.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);border-color:var(--color-text);font-family:var(--font-display);font-size:.98rem;padding:.7rem .85rem}
-.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);border-color:var(--color-primary);font-weight:600}
-.tree-node.l3{background:var(--color-surface-2);color:var(--color-text)}
-.tree-node.l3.doing{border-color:color-mix(in oklch,var(--color-primary) 45%,var(--color-border))}
-.tree-node.l3.done{border-color:var(--color-gold);background:color-mix(in oklch,var(--color-gold) 8%,var(--color-surface-2))}
-.tn-head{display:flex;align-items:flex-start;gap:.4rem}
-.tn-title{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}
-.tree-node.l3 .tn-title{font-weight:500}
-.tn-meta{display:flex;align-items:center;gap:.45rem;margin-top:.45rem;font-size:.72rem;flex-wrap:wrap}
-.tree-node.l1 .tn-meta,.tree-node.l2 .tn-meta{opacity:.92}
-.tn-cat{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
-.tn-prog{flex:1;min-width:46px;height:5px;border-radius:var(--radius-full);background:rgba(255,255,255,.24);overflow:hidden}
-.tn-prog-bar{display:block;height:100%;border-radius:var(--radius-full);background:var(--color-gold)}
-.tn-meta b{font-variant-numeric:tabular-nums}
-.tree-empty{padding:.7rem .2rem;font-size:.78rem;color:var(--color-text-faint)}
+/* Tree / hierarchy view */
+.tree-wrap{overflow:auto;padding:1rem 0}
+.tree{display:flex;gap:2.5rem;padding:1rem 1.5rem;min-width:max-content}
+.tree-node{border-radius:var(--radius-md);padding:.7rem 1rem;font-size:.86rem;line-height:1.55;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--color-divider);min-width:190px;max-width:260px}
+.tree-node.l1{background:var(--color-text);color:var(--color-text-inverse);font-family:var(--font-display);font-weight:600;font-size:.95rem;min-width:220px}
+.tree-node.l2{background:var(--color-primary);color:var(--color-text-inverse);font-weight:600}
+.tree-node.l3{background:var(--color-surface);color:var(--color-text)}
+.tree-node.l3.done{border-color:var(--color-gold)}
+.tree-node .tn-sub{display:block;font-size:.72rem;opacity:.85;margin-top:.25rem;font-weight:400}
+.tree-col{display:flex;flex-direction:column;gap:.6rem;align-items:center;position:relative;padding-top:1.25rem}
+.tree-col::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.25rem;background:var(--color-divider)}
+.tree-l1-block{position:relative;padding-top:1.5rem}
+.tree-l1-block::before{content:'';position:absolute;top:0;left:50%;width:1px;height:1.5rem;background:var(--color-divider)}
+.tree-l2-row{display:flex;gap:1.25rem}
+.tree-tasks{display:flex;flex-direction:column;gap:.5rem}
 
 .section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
 .card-panel{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm)}
@@ -256,39 +224,6 @@ select.select-chip{cursor:pointer}
 [data-jaen="ja"] .en{display:none}
 .back-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:1rem}
 .back-link:hover{color:var(--color-primary)}
-
-/* Today view: daily checklist + today's project tasks */
-.today-date{font-size:.85rem;color:var(--color-text-muted);margin-bottom:1rem;font-weight:500}
-.today-grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:1rem;align-items:start}
-@media (max-width:1100px){.today-grid{grid-template-columns:1fr}}
-.check-progress{display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--color-text-muted);margin-bottom:.9rem}
-.check-progress .trend-bar-bg{height:6px}
-.check-list{list-style:none;display:flex;flex-direction:column;gap:.15rem}
-.check-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:var(--radius-md);transition:background var(--transition-interactive)}
-.check-item:hover{background:var(--color-surface-offset)}
-.check-item input[type=checkbox]{appearance:none;-webkit-appearance:none;width:19px;height:19px;border:1.5px solid var(--color-border);border-radius:6px;cursor:pointer;flex:0 0 auto;display:grid;place-content:center;background:var(--color-surface-2);transition:background var(--transition-interactive),border-color var(--transition-interactive)}
-.check-item input[type=checkbox]:checked{background:var(--color-primary);border-color:var(--color-primary)}
-.check-item input[type=checkbox]:checked::before{content:'';width:10px;height:10px;background:var(--color-text-inverse);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%)}
-.check-text{flex:1;font-size:.88rem;min-width:0;overflow-wrap:anywhere;line-height:1.45}
-.check-item.done .check-text{text-decoration:line-through;color:var(--color-text-faint)}
-.check-item .mini-btn{opacity:.3}
-.check-item:hover .mini-btn,.check-item .mini-btn:focus-visible{opacity:1}
-.repeat-badge{display:flex;align-items:center;justify-content:center;width:20px;height:20px;color:var(--color-primary);flex:0 0 auto}
-.repeat-badge svg{width:12px;height:12px;display:block}
-.carry-badge{display:inline-block;margin-left:.4rem;font-size:.62rem;font-weight:600;color:var(--color-warning);background:var(--color-warning-highlight);border-radius:var(--radius-full);padding:.1rem .45rem;vertical-align:middle}
-.check-add{display:flex;gap:.5rem;margin-top:.9rem}
-.check-add input[type=text]{flex:1;min-width:0;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);color:var(--color-text);font-size:.85rem;font-family:inherit}
-.check-add .btn svg{width:15px;height:15px;display:block}
-.check-hint{font-size:.68rem;color:var(--color-text-faint);margin-top:.6rem}
-.tmr-wrap{margin-top:.9rem;padding-top:.75rem;border-top:1px dashed var(--color-divider)}
-.tmr-head{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-faint);margin-bottom:.3rem}
-.tmr-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--color-text-faint);padding:.25rem .5rem}
-.tmr-item span{flex:1;min-width:0;overflow-wrap:anywhere}
-.due-badge{display:inline-flex;align-items:center;font-size:.62rem;font-weight:700;padding:.12rem .45rem;border-radius:var(--radius-full);margin-left:.4rem;vertical-align:middle}
-.due-badge.today{background:var(--color-gold-highlight);color:var(--color-warning)}
-.due-badge.overdue{background:var(--color-error-highlight);color:var(--color-error)}
-.today-tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.65rem}
-.today-empty{font-size:.8rem;color:var(--color-text-muted);padding:.75rem 0}
 
 /* empty state */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.6rem;padding:3rem 1.5rem;color:var(--color-text-muted)}
@@ -302,9 +237,8 @@ select.select-chip{cursor:pointer}
 .mini-btn:hover{background:var(--color-primary);color:var(--color-text-inverse)}
 .mini-btn.danger:hover{background:var(--color-error);color:#fff}
 .mini-btn svg{width:12px;height:12px}
-.tree-node .row-actions{margin:0;flex:0 0 auto}
-.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.18);color:inherit}
-.tree-node.l1 .mini-btn:hover,.tree-node.l2 .mini-btn:hover{background:rgba(255,255,255,.34)}
+.tree-node .row-actions{margin-top:.35rem;margin-left:0;display:flex;justify-content:center}
+.tree-node.l1 .mini-btn,.tree-node.l2 .mini-btn{background:rgba(255,255,255,.16);color:inherit}
 .add-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .75rem;border:1px dashed var(--color-border);border-radius:var(--radius-md);font-size:.75rem;font-weight:600;color:var(--color-text-muted);transition:all var(--transition-interactive)}
 .add-btn:hover{border-color:var(--color-primary);color:var(--color-primary);border-style:solid}
 .add-btn svg{width:13px;height:13px}
@@ -345,7 +279,6 @@ select.select-chip{cursor:pointer}
     <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l-1 6H7L6 3z"/><path d="M6 9h12l1 4a5 5 0 0 1-5 8H10a5 5 0 0 1-5-8l1-4z"/><path d="M9 13h6"/></svg>
       <span class="ja">国稀ハブ</span><span class="en">Brewery Hub</span></div>
     <nav class="nav" id="mainNav">
-      <a href="#today" data-view="today"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><span class="ja">今日</span><span class="en">Today</span></a>
       <a href="#home" data-view="home"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="ja">ホーム</span><span class="en">Home</span></a>
       <a href="#kanban" data-view="kanban"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg><span class="ja">かんばん</span><span class="en">Kanban</span></a>
       <a href="#gantt" data-view="gantt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h8M3 12h14M3 18h6"/></svg><span class="ja">ガント</span><span class="en">Gantt</span></a>
@@ -373,8 +306,7 @@ select.select-chip{cursor:pointer}
       </div>
     </div>
     <main>
-      <section class="view active" id="view-today"></section>
-      <section class="view" id="view-home"></section>
+      <section class="view active" id="view-home"></section>
       <section class="view" id="view-kanban"></section>
       <section class="view" id="view-gantt"></section>
       <section class="view" id="view-tree"></section>
@@ -450,22 +382,13 @@ const T = obj => {
 };
 const STATUS_LABEL = { todo:{ja:'未着手',en:'To Do'}, doing:{ja:'進行中',en:'In Progress'}, done:{ja:'完了',en:'Done'} };
 const CAT_LABEL = { product:{ja:'製品',en:'Product'}, quality:{ja:'品質',en:'Quality'}, strategy:{ja:'戦略',en:'Strategy'} };
-const VIEW_TITLE = { today:{ja:'今日',en:'Today'}, home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
+const VIEW_TITLE = { home:{ja:'ホーム',en:'Home'}, kanban:{ja:'かんばん',en:'Kanban'}, gantt:{ja:'ガントチャート',en:'Gantt Chart'}, tree:{ja:'プロジェクト構造図',en:'Project Structure'} };
 
 function hasDates(x){ return !!(x && x.start && x.end); }
 function allTasks(){
   const out=[];
-  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectPageId:p.pageId, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
+  DATA.forEach(p=>p.milestones.forEach(m=>m.tasks.forEach(t=>out.push({...t, projectId:p.id, projectName:p.name, projectCategory:p.category||'product', milestoneName:m.name}))));
   return out;
-}
-
-/* Code.gs labels live rows with the FIRST 8 chars of the Notion page UUID, which
-   are identical for every page in a workspace — every card read "3a4f5289 ·
-   3a4f5289". The tail is what actually differs. Bundled ids (PRJ-01, T2-1) are
-   already meaningful and pass through untouched. */
-function idTag(display, pageId){
-  if(pageId && /^[0-9a-f]{8}$/i.test(display||'')) return pageId.replace(/-/g,'').slice(-5).toUpperCase();
-  return display||'';
 }
 function progressOf(list){ if(!list.length) return 0; return Math.round(list.filter(x=>x.status==='done').length/list.length*100); }
 function projectProgress(p){
@@ -479,24 +402,23 @@ function setActiveNav(view){
   document.querySelectorAll('#mainNav a').forEach(a=>a.classList.toggle('active', a.dataset.view===view));
 }
 function navigate(){
-  const hash = (location.hash||'#today').replace('#','');
+  const hash = (location.hash||'#home').replace('#','');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const el = document.getElementById('view-'+hash) || document.getElementById('view-today');
+  const el = document.getElementById('view-'+hash) || document.getElementById('view-home');
   el.classList.add('active');
-  setActiveNav(hash in VIEW_TITLE ? hash : 'today');
+  setActiveNav(hash in VIEW_TITLE ? hash : 'home');
   render(hash);
 }
 window.addEventListener('hashchange', navigate);
 
 /* ---------- Renderers ---------- */
 function render(hash){
-  hash = hash || (location.hash||'#today').replace('#','');
+  hash = hash || (location.hash||'#home').replace('#','');
   if(hash==='home') renderHome();
   else if(hash==='kanban') renderKanban();
   else if(hash==='gantt') renderGantt();
   else if(hash==='tree') renderTree();
-  else renderToday();
-  const vt = VIEW_TITLE[hash] || VIEW_TITLE.today;
+  const vt = VIEW_TITLE[hash] || VIEW_TITLE.home;
   document.getElementById('viewTitle').textContent = T(vt);
 }
 
@@ -522,9 +444,6 @@ function renderHome(){
   const taskDoing = tasks.filter(t=>t.status==='doing').length;
   const taskTodo = tasks.filter(t=>t.status==='todo').length;
   const C = 2*Math.PI*40; // ring circumference (r=40)
-  const dsToday = dailyStats();
-  const tpToday = todayProjectTasks();
-  const todayTaskCount = tpToday.active.length + tpToday.overdue.length;
 
   el.innerHTML = `
   <div class="view-toolbar">
@@ -599,15 +518,6 @@ function renderHome(){
       <div class="badge-cta"><span class="ja">開く</span><span class="en">Open</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
     </div>
 
-    <div class="bento-card clickable span-2" onclick="location.hash='#today'">
-      <div class="label"><span class="ja">今日</span><span class="en">Today</span></div>
-      <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:600">
-        <span class="ja">チェックリスト ${dsToday.done}/${dsToday.total} ・ タスク ${todayTaskCount}件</span>
-        <span class="en">Checklist ${dsToday.done}/${dsToday.total} · ${todayTaskCount} task${todayTaskCount===1?'':'s'} today</span>
-      </div>
-      <div class="badge-cta"><span class="ja">今日のビューを開く</span><span class="en">Open Today</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
-    </div>
-
   </div>`;
 }
 
@@ -634,7 +544,7 @@ function renderKanban(){
               <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
             </div>` : '';
           return `<div class="task-card cat-${t.projectCategory}">
-            <div class="tc-id">${idTag(t.projectId,t.projectPageId)} · ${idTag(t.id,t.pageId)}</div>
+            <div class="tc-id">${t.projectId} · ${t.id}</div>
             <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
             <div class="tc-meta">
               <span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>
@@ -787,275 +697,42 @@ function renderTree(){
     </div>
     <div class="tree-wrap">
       <div class="tree">
-      ${DATA.map(p=>treeProject(p)).join('')}
+      ${DATA.map(p=>`
+        <div class="tree-l1-block">
+          <div class="tree-node l1">${T(p.name)}<span class="tn-sub">${projectProgress(p)}% · ${p.owner}</span>
+            <div class="row-actions">
+              <button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
+              <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
+              <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>
+            </div>
+          </div>
+          <div class="tree-l2-row" style="margin-top:1.25rem">
+            ${p.milestones.map(m=>`
+              <div class="tree-col">
+                <div class="tree-node l2">${T(m.name)}<span class="tn-sub">${progressOf(m.tasks)}%</span>
+                  <div class="row-actions">
+                    <button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
+                    <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
+                    <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>
+                  </div>
+                </div>
+                <div class="tree-tasks" style="margin-top:1rem">
+                  ${m.tasks.map(t=>`<div class="tree-node l3 ${t.status}">${T(t.name)}<span class="status-chip ${t.status}" style="margin-top:.35rem">${T(STATUS_LABEL[t.status])}</span>
+                    <div class="row-actions">
+                      <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
+                      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>
+                    </div></div>`).join('') || `<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`}
+                </div>
+              </div>`).join('') || `<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`}
+          </div>
+        </div>`).join('')}
       </div>
     </div>
     <div class="legend">
-      <span><span class="sw" style="background:var(--color-text)"></span><span class="ja">L1 プロジェクト</span><span class="en">L1 Project</span></span>
-      <span><span class="sw" style="background:var(--color-primary)"></span><span class="ja">L2 マイルストーン</span><span class="en">L2 Milestone</span></span>
-      <span><span class="sw" style="background:var(--color-surface-dynamic)"></span><span class="ja">L3 タスク</span><span class="en">L3 Task</span></span>
-      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">完了</span><span class="en">Done</span></span>
+      <span><span class="sw" style="background:var(--color-text)"></span>L1</span>
+      <span><span class="sw" style="background:var(--color-primary)"></span>L2</span>
+      <span><span class="sw" style="background:var(--color-gold)"></span><span class="ja">L3 完了</span><span class="en">L3 Done</span></span>
     </div>`;
-}
-
-/* ----- tree node builders ----- */
-function rowActions(btns){ return btns ? `<div class="row-actions">${btns}</div>` : ''; }
-
-/* A branch with no children still needs a connector stub, so the "empty" text
-   sits inside a real .tree-branch rather than replacing the whole subtree. */
-function treeEmptyChild(addBtn, ja, en){
-  return `<div class="tree-children"><div class="tree-branch"><div class="tree-empty">${
-    addBtn || `<span class="ja">${ja}</span><span class="en">${en}</span>`
-  }</div></div></div>`;
-}
-
-function treeTask(t){
-  const btns = t.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
-      <button class="mini-btn danger" title="Trash" onclick="askArchive('task',findTask('${t.pageId}'))">${ICON_DEL}</button>` : '';
-  const owner = (t.owner && t.owner !== '—') ? `<span>${t.owner}</span>` : '';
-  return `<div class="tree-branch">
-    <div class="tree-node l3 ${t.status}">
-      <div class="tn-head"><span class="tn-title">${T(t.name)}</span>${rowActions(btns)}</div>
-      <div class="tn-meta"><span class="status-chip ${t.status}">${T(STATUS_LABEL[t.status])}</span>${owner}</div>
-    </div>
-  </div>`;
-}
-
-function treeMilestone(m){
-  const prog = progressOf(m.tasks);
-  const btns = m.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('milestone','edit',findMs('${m.pageId}'))">${ICON_EDIT}</button>
-      <button class="mini-btn" title="Add task" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}</button>
-      <button class="mini-btn danger" title="Trash" onclick="askArchive('milestone',findMs('${m.pageId}'))">${ICON_DEL}</button>` : '';
-  const kids = m.tasks.length
-    ? `<div class="tree-children">${m.tasks.map(treeTask).join('')}</div>`
-    : treeEmptyChild(m.pageId?`<button class="add-btn" onclick="openEditor('task','create',null,'${m.pageId}')">${ICON_ADD}<span class="ja">タスク</span><span class="en">Task</span></button>`:'',
-        'タスク未登録', 'No tasks yet');
-  return `<div class="tree-branch">
-    <div class="tree-node l2 ${m.status}">
-      <div class="tn-head"><span class="tn-title">${T(m.name)}</span>${rowActions(btns)}</div>
-      <div class="tn-meta"><span class="tn-prog"><span class="tn-prog-bar" style="width:${prog}%"></span></span><b>${prog}%</b></div>
-    </div>
-    ${kids}
-  </div>`;
-}
-
-function treeProject(p){
-  const prog = projectProgress(p);
-  const cat = p.category || 'product';
-  const btns = p.pageId ? `<button class="mini-btn" title="Edit" onclick="openEditor('project','edit',findProj('${p.pageId}'))">${ICON_EDIT}</button>
-      <button class="mini-btn" title="Add milestone" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}</button>
-      <button class="mini-btn danger" title="Trash" onclick="askArchive('project',findProj('${p.pageId}'))">${ICON_DEL}</button>` : '';
-  const kids = p.milestones.length
-    ? `<div class="tree-children">${p.milestones.map(treeMilestone).join('')}</div>`
-    : treeEmptyChild(p.pageId?`<button class="add-btn" onclick="openEditor('milestone','create',null,'${p.pageId}')">${ICON_ADD}<span class="ja">マイルストーン</span><span class="en">Milestone</span></button>`:'',
-        'マイルストーン未登録', 'No milestones yet');
-  return `<div class="tree-project">
-    <div class="tree-node l1">
-      <div class="tn-head"><span class="tn-title">${T(p.name)}</span>${rowActions(btns)}</div>
-      <div class="tn-meta">
-        <span class="tn-cat" style="background:var(--cat-${cat})"></span><span>${T(CAT_LABEL[cat])}</span>
-        <span>·</span><span>${p.owner}</span>
-        <span class="tn-prog"><span class="tn-prog-bar" style="width:${prog}%"></span></span><b>${prog}%</b>
-      </div>
-    </div>
-    ${kids}
-  </div>`;
-}
-
-/* ---------- TODAY (daily checklist + today's project tasks) ---------- */
-/* The checklist is personal scratch space stored in this browser's localStorage,
-   deliberately not synced to Notion (no Code.gs change needed). Done-checks are
-   stored per date, so recurring items reset themselves every morning. */
-const DAILY_KEY = 'breweryHub.daily.items';
-const DAILY_DONE_KEY = 'breweryHub.daily.done';
-
-function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function addDaysStr(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-function loadDailyItems(){ try{ return JSON.parse(localStorage.getItem(DAILY_KEY)) || []; }catch(e){ return []; } }
-function saveDailyItems(list){ try{ localStorage.setItem(DAILY_KEY, JSON.stringify(list)); }catch(e){} }
-function loadDailyDone(){ try{ return JSON.parse(localStorage.getItem(DAILY_DONE_KEY)) || {}; }catch(e){ return {}; } }
-function saveDailyDone(map){
-  const cutoff=addDaysStr(todayStr(),-30); // prune old dates so storage never bloats
-  Object.keys(map).forEach(k=>{ if(k<cutoff) delete map[k]; });
-  try{ localStorage.setItem(DAILY_DONE_KEY, JSON.stringify(map)); }catch(e){}
-}
-
-/* item: {id, text, repeat:bool, date (one-offs: the day it shows), snooze (repeats: hidden until), completed, doneOn, created} */
-function dailyVisible(it, D){
-  if(it.repeat) return !(it.snooze && it.snooze > D);
-  if(it.completed) return it.doneOn === D;   // struck-through until midnight, then gone
-  return it.date <= D;                        // unfinished one-offs carry over
-}
-function dailyChecked(it, D, doneToday){
-  return it.repeat ? doneToday.indexOf(it.id)>=0 : !!(it.completed && it.doneOn===D);
-}
-function dailyStats(){
-  const D=todayStr();
-  const doneToday=loadDailyDone()[D]||[];
-  const vis=loadDailyItems().filter(it=>dailyVisible(it,D));
-  return { total:vis.length, done:vis.filter(it=>dailyChecked(it,D,doneToday)).length };
-}
-function todayProjectTasks(){
-  const D=todayStr();
-  const open=allTasks().filter(t=>t.status!=='done');
-  const overdue = open.filter(t=>t.end && t.end<D).sort((a,b)=>a.end<b.end?-1:1);
-  const active = open.filter(t=>{
-    if(t.start && t.end) return t.start<=D && t.end>=D;
-    return t.end===D || t.start===D; // partially-dated items still surface on their day
-  }).sort((a,b)=>((a.end===D?0:1)-(b.end===D?0:1)) || ((a.end||'9999')<(b.end||'9999')?-1:1));
-
-  /* Until Start/End dates are filled in Notion, nothing can match "today" and this
-     panel would sit empty forever. Fall back to whatever is in progress so the view
-     is useful immediately; `undated` tells the UI to explain why. */
-  if(!overdue.length && !active.length && !open.some(t=>t.start||t.end)){
-    return { overdue:[], active: open.filter(t=>t.status==='doing'), undated:true };
-  }
-  return { overdue, active, undated:false };
-}
-
-function toggleDaily(id){
-  const D=todayStr(), items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
-  if(it.repeat){
-    const map=loadDailyDone(); const arr=map[D]=map[D]||[];
-    const i=arr.indexOf(id); i>=0 ? arr.splice(i,1) : arr.push(id);
-    saveDailyDone(map);
-  }else{
-    if(it.completed && it.doneOn===D){ it.completed=false; delete it.doneOn; }
-    else { it.completed=true; it.doneOn=D; }
-    saveDailyItems(items);
-  }
-  renderToday();
-}
-function postponeDaily(id){
-  const D=todayStr(), tmr=addDaysStr(D,1);
-  const items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
-  if(it.repeat) it.snooze=tmr;
-  else { it.date=tmr; it.completed=false; delete it.doneOn; }
-  saveDailyItems(items);
-  toast(L()==='ja'?'明日へ移動しました':'Moved to tomorrow');
-  renderToday();
-}
-function unpostponeDaily(id){
-  const D=todayStr(), items=loadDailyItems(), it=items.find(x=>x.id===id); if(!it) return;
-  if(it.repeat) delete it.snooze; else it.date=D;
-  saveDailyItems(items);
-  renderToday();
-}
-function deleteDaily(id){
-  saveDailyItems(loadDailyItems().filter(x=>x.id!==id));
-  toast(L()==='ja'?'削除しました':'Deleted');
-  renderToday();
-}
-function addDailyItem(){
-  const inp=document.getElementById('dailyNewText'); if(!inp) return;
-  const text=inp.value.trim(); if(!text) return;
-  const repeat=document.getElementById('dailyNewRepeat').value==='1';
-  const items=loadDailyItems();
-  items.push({ id:'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), text, repeat, date:repeat?null:todayStr(), created:todayStr() });
-  saveDailyItems(items);
-  inp.value='';
-  renderToday();
-}
-
-function renderToday(){
-  const el=document.getElementById('view-today'); if(!el) return;
-  const D=todayStr(), tmr=addDaysStr(D,1);
-
-  // preserve the add-form state across re-renders (the 60s sync also lands here)
-  const oldInp=document.getElementById('dailyNewText');
-  const keepText=oldInp?oldInp.value:'', hadFocus=!!oldInp && document.activeElement===oldInp;
-  const oldSel=document.getElementById('dailyNewRepeat');
-  const keepRepeat=oldSel?oldSel.value:'1';
-
-  const items=loadDailyItems();
-  const doneToday=loadDailyDone()[D]||[];
-  const visible=items.filter(it=>dailyVisible(it,D));
-  const checkedOf=it=>dailyChecked(it,D,doneToday);
-  const sorted=[...visible.filter(it=>!checkedOf(it)), ...visible.filter(checkedOf)];
-  const doneN=visible.filter(checkedOf).length;
-  const pct=visible.length?Math.round(doneN/visible.length*100):0;
-  const tmrItems=items.filter(it=> it.repeat ? it.snooze===tmr : (!it.completed && it.date===tmr));
-
-  const dObj=new Date();
-  const dateLine=`<div class="today-date"><span class="ja">${dObj.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</span><span class="en">${dObj.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}</span></div>`;
-
-  const rows=sorted.map(it=>{
-    const done=checkedOf(it);
-    const carried=!it.repeat && !it.completed && it.date<D;
-    return `<li class="check-item ${done?'done':''}">
-      <input type="checkbox" ${done?'checked':''} onchange="toggleDaily('${it.id}')" aria-label="${esc(it.text)}">
-      <span class="check-text">${esc(it.text)}${carried?`<span class="carry-badge"><span class="ja">持ち越し</span><span class="en">carried over</span></span>`:''}</span>
-      ${it.repeat?`<span class="repeat-badge" title="${L()==='ja'?'毎日くり返し':'Repeats daily'}">${ICON_REPEAT}</span>`:''}
-      <button class="mini-btn" title="${L()==='ja'?'明日へ':'Postpone to tomorrow'}" onclick="postponeDaily('${it.id}')">${ICON_FWD}</button>
-      <button class="mini-btn danger" title="${L()==='ja'?'削除':'Delete'}" onclick="deleteDaily('${it.id}')">${ICON_DEL}</button>
-    </li>`;
-  }).join('');
-
-  const tmrHtml=tmrItems.length?`<div class="tmr-wrap">
-      <div class="tmr-head"><span class="ja">明日へ（${tmrItems.length}）</span><span class="en">Tomorrow (${tmrItems.length})</span></div>
-      ${tmrItems.map(it=>`<div class="tmr-item"><span>${esc(it.text)}</span>
-        <button class="mini-btn" title="${L()==='ja'?'今日に戻す':'Bring back to today'}" onclick="unpostponeDaily('${it.id}')">${ICON_UNDO}</button></div>`).join('')}
-    </div>`:'';
-
-  const checklist=`<div class="card-panel" style="margin-bottom:0">
-    <div class="section-title"><span class="ja">毎日のチェックリスト</span><span class="en">Daily Checklist</span></div>
-    <div class="check-progress"><span style="font-weight:700">${doneN}/${visible.length}</span>
-      <div class="trend-bar-bg"><div class="trend-bar" style="width:${pct}%;${pct===100&&visible.length?'background:var(--color-gold)':''}"></div></div>
-    </div>
-    <ul class="check-list">${rows||`<li class="today-empty"><span class="ja">まだ項目がありません。下の欄から追加してください。</span><span class="en">No items yet — add your first one below.</span></li>`}</ul>
-    ${tmrHtml}
-    <div class="check-add">
-      <input type="text" id="dailyNewText" maxlength="200" placeholder="${L()==='ja'?'新しい項目を追加…':'Add an item…'}" onkeydown="if(event.key==='Enter')addDailyItem()">
-      <select id="dailyNewRepeat" class="select-chip">
-        <option value="1">${L()==='ja'?'毎日':'Daily'}</option>
-        <option value="0">${L()==='ja'?'今日のみ':'Today only'}</option>
-      </select>
-      <button class="btn btn-primary" onclick="addDailyItem()" aria-label="${L()==='ja'?'追加':'Add'}">${ICON_ADD}</button>
-    </div>
-    <div class="check-hint"><span class="ja">チェックは毎朝自動でリセットされます。この端末のブラウザにのみ保存されます。</span><span class="en">Checks reset automatically each morning. Stored in this browser only.</span></div>
-  </div>`;
-
-  const {overdue,active,undated}=todayProjectTasks();
-  function tcard(t){
-    const od=!!(t.end&&t.end<D), dueToday=t.end===D;
-    const badge= od?`<span class="due-badge overdue">${dayDiff(t.end,D)}${L()==='ja'?'日遅れ':'d late'}</span>`
-        : dueToday?`<span class="due-badge today"><span class="ja">今日締切</span><span class="en">Due today</span></span>`:'';
-    const dates=hasDates(t)?`<span class="tc-date">${t.start.slice(5)} → ${t.end.slice(5)}</span>`:(t.end?`<span class="tc-date">→ ${t.end.slice(5)}</span>`:'');
-    const ctrls=t.pageId?`<div class="row-actions">
-        <select class="status-select" onchange="quickStatus('task','${t.pageId}',this.value)">
-          ${OPT_STATUS.map(o=>`<option value="${o[0]}" ${o[0]===t.status?'selected':''}>${L()==='ja'?o[1]:o[2]}</option>`).join('')}
-        </select>
-        <button class="mini-btn" title="Edit" onclick="openEditor('task','edit',findTask('${t.pageId}'))">${ICON_EDIT}</button>
-      </div>`:'';
-    return `<div class="task-card cat-${t.projectCategory}">
-      <div class="tc-id">${idTag(t.projectId,t.projectPageId)} · ${idTag(t.id,t.pageId)}${badge}</div>
-      <div class="tc-title">${T(t.name)}<small>${T(t.milestoneName)}</small></div>
-      <div class="tc-meta"><span class="tc-owner"><span class="dot">${initials(t.owner)}</span><span>${t.owner}</span></span>${dates}</div>
-      <div class="tc-proj"><span class="cat-dot" style="background:var(--cat-${t.projectCategory})"></span>${T(t.projectName)}</div>
-      ${ctrls}
-    </div>`;
-  }
-  const overduePanel=overdue.length?`<div class="card-panel">
-      <div class="section-title" style="color:var(--color-error)"><span class="ja">期限超過</span><span class="en">Overdue</span>&nbsp;(${overdue.length})</div>
-      <div class="today-tasks-grid">${overdue.map(tcard).join('')}</div>
-    </div>`:'';
-  const activePanel=`<div class="card-panel" style="margin-bottom:0">
-      <div class="section-title">
-        ${undated?`<span class="ja">進行中のプロジェクトタスク</span><span class="en">Project Tasks In Progress</span>`
-                 :`<span class="ja">今日のプロジェクトタスク</span><span class="en">Today's Project Tasks</span>`}&nbsp;(${active.length})</div>
-      ${undated?`<div class="check-hint" style="margin:-.4rem 0 .8rem"><span class="ja">Notion に開始日・終了日を入力すると、日付でその日のタスクだけを表示します。</span><span class="en">Add Start/End dates in Notion and this switches to showing only what is scheduled for today.</span></div>`:''}
-      ${active.length?`<div class="today-tasks-grid">${active.map(tcard).join('')}</div>`
-        :`<div class="today-empty"><span class="ja">今日予定されているプロジェクトタスクはありません。</span><span class="en">No project tasks scheduled for today.</span></div>`}
-    </div>`;
-
-  el.innerHTML=dateLine+`<div class="today-grid">${checklist}<div>${overduePanel}${activePanel}</div></div>`;
-
-  const ni=document.getElementById('dailyNewText');
-  if(ni){ ni.value=keepText; if(hadFocus) ni.focus(); }
-  const ns=document.getElementById('dailyNewRepeat');
-  if(ns) ns.value=keepRepeat;
 }
 
 /* ---------- Write layer (create / update / archive in Notion) ---------- */
@@ -1120,7 +797,8 @@ function openEditor(entity, mode, item, parentId){
     document.getElementById('connectModal').classList.add('open');
     return;
   }
-  editState={entity, mode, pageId:item?item.pageId:null};
+  editState={entity, mode, pageId:item?item.pageId:null,
+             origParent: (mode==='edit' ? ((item&&item.parentId)||'') : (parentId||''))};
   const it=item||{};
   const isNew = mode==='create';
   document.getElementById('editTitle').textContent =
@@ -1139,8 +817,17 @@ function openEditor(entity, mode, item, parentId){
     </div>`;
 
   if(entity!=='project'){
-    html += `<div class="field"><label>${entity==='milestone'?(L()==='ja'?'親プロジェクト':'Parent Project'):(L()==='ja'?'親マイルストーン':'Parent Milestone')}</label>
-      <select id="f_parent">${parentOptions(entity, parentId||null)}</select></div>`;
+    /* On edit, preselect the item's CURRENT parent. Without this the browser
+       selects the first <option> and Save silently reparents the item — which
+       is what scrambled the tree. On create, use the parent that was clicked. */
+    const selParent = (mode==='edit') ? (it.parentId || parentId || '') : (parentId || '');
+    // If the backend predates the parentId fix we cannot know the current
+    // parent, so lock the field rather than risk moving the item.
+    const unknownParent = (mode==='edit' && !it.parentId);
+    const lbl = entity==='milestone'?(L()==='ja'?'親プロジェクト':'Parent Project'):(L()==='ja'?'親マイルストーン':'Parent Milestone');
+    html += `<div class="field"><label>${lbl}</label>
+      <select id="f_parent" ${unknownParent?'disabled':''}>${parentOptions(entity, selParent)}</select>
+      ${unknownParent?`<div style="font-size:.72rem;color:var(--color-warning);margin-top:.3rem">${L()==='ja'?'親を変更するにはCode.gsを再デプロイしてください。':'Re-deploy Code.gs to enable changing the parent.'}</div>`:''}</div>`;
   }
   html += `<div class="field-row">
       <div class="field"><label>${L()==='ja'?'ステータス':'Status'}</label>
@@ -1169,15 +856,27 @@ document.getElementById('editSave').addEventListener('click', async ()=>{
   if(!editState) return;
   const g=id=>{ const el=document.getElementById(id); return el?el.value:undefined; };
   const fields={ ja:g('f_ja')||'', en:g('f_en')||'', status:g('f_status'), start:g('f_start')||'', end:g('f_end')||'' };
-  if(editState.entity==='project') fields.category=g('f_cat');
-  else fields.parentId=g('f_parent');
+  if(editState.entity==='project'){
+    fields.category=g('f_cat');
+  } else {
+    const chosen = g('f_parent');
+    /* Second guard: on edit, only send the parent when we KNOW the original
+       and the user actually changed it. If origParent is empty on an edit the
+       backend did not tell us the current parent, so we send nothing and the
+       item stays where it is. A status-only edit can never move an item. */
+    if(editState.mode==='create'){
+      fields.parentId = chosen;
+      if(!chosen){
+        document.getElementById('editErr').textContent = L()==='ja'?'先に親を作成してください。':'Create a parent first.';
+        return;
+      }
+    } else if(editState.origParent && chosen && chosen !== editState.origParent){
+      fields.parentId = chosen;
+    }
+  }
 
   if(!fields.ja.trim() && !fields.en.trim()){
     document.getElementById('editErr').textContent = L()==='ja'?'名前を入力してください。':'Please enter a name.';
-    return;
-  }
-  if(editState.entity!=='project' && !fields.parentId){
-    document.getElementById('editErr').textContent = L()==='ja'?'先に親を作成してください。':'Create a parent first.';
     return;
   }
   if(fields.start && fields.end && fields.end < fields.start){
@@ -1229,9 +928,6 @@ function findProj(pid){ return DATA.find(p=>p.pageId===pid)||null; }
 const ICON_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 const ICON_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
 const ICON_ADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
-const ICON_FWD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h12M13 6l6 6-6 6"/></svg>';
-const ICON_UNDO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
-const ICON_REPEAT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>';
 
 /* ---------- Live Notion Sync ---------- */
 /* The Apps Script URL is stored per-browser (localStorage), never in this repo.
@@ -1326,13 +1022,6 @@ document.getElementById('modalDisconnect').addEventListener('click', ()=>{
   APP_KEY = ''; saveKey('');
   applyConnection('');
 });
-
-/* Re-render when the date flips, so an always-open tab gets a fresh
-   checklist in the morning (also fires when a sleeping laptop wakes up). */
-let _lastDay = todayStr();
-function checkDayChange(){ if(todayStr() !== _lastDay){ _lastDay = todayStr(); render(); } }
-setInterval(checkDayChange, 60000);
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkDayChange(); });
 
 navigate();
 // Reconnect automatically if this browser already knows the URL.
